@@ -12,7 +12,10 @@ import logging
 import voluptuous as vol
 
 from homeassistant.components.fan import (FanEntity, PLATFORM_SCHEMA,
-                                          SUPPORT_SET_SPEED, DOMAIN, SPEED_OFF, SUPPORT_OSCILLATE, SUPPORT_DIRECTION, ATTR_SPEED, ATTR_SPEED_LIST, ATTR_OSCILLATING, ATTR_DIRECTION, )
+                                          SUPPORT_SET_SPEED, DOMAIN, SPEED_OFF,
+                                          SUPPORT_OSCILLATE, SUPPORT_DIRECTION,
+                                          ATTR_SPEED, ATTR_SPEED_LIST,
+                                          ATTR_OSCILLATING, ATTR_DIRECTION, )
 from homeassistant.const import (CONF_NAME, CONF_HOST, CONF_TOKEN,
                                  ATTR_ENTITY_ID, )
 from homeassistant.exceptions import PlatformNotReady
@@ -57,7 +60,7 @@ AVAILABLE_ATTRIBUTES_FAN = {
     ATTR_TEMPERATURE: 'temperature',
     ATTR_HUMIDITY: 'humidity',
     ATTR_LED: 'led',
-    ATTR_LED_BRIGHTNESS: 'led_brightness', # FIXME
+    ATTR_LED_BRIGHTNESS: 'led_brightness',
     ATTR_BUZZER: 'buzzer',
     ATTR_CHILD_LOCK: 'child_lock',
     ATTR_NATURAL_LEVEL: 'natural_level',
@@ -74,26 +77,13 @@ FAN_SPEED_LEVEL2 = 'Level 2'
 FAN_SPEED_LEVEL3 = 'Level 3'
 FAN_SPEED_LEVEL4 = 'Level 4'
 
-FAN_SPEED_DIRECT_MODE = {
+FAN_SPEED_LIST = {
     SPEED_OFF: range(0, 1),
-    FAN_SPEED_LEVEL1: range(1, 28),
-    FAN_SPEED_LEVEL2: range(28, 56),
-    FAN_SPEED_LEVEL3: range(56, 82),
-    FAN_SPEED_LEVEL4: range(82, 101)
+    FAN_SPEED_LEVEL1: range(1, 26),
+    FAN_SPEED_LEVEL2: range(26, 51),
+    FAN_SPEED_LEVEL3: range(51, 76),
+    FAN_SPEED_LEVEL4: range(76, 101)
 }
-
-FAN_SPEED_NATURAL_MODE = {
-    SPEED_OFF: range(0, 1),
-    FAN_SPEED_LEVEL1: range(1, 29),
-    FAN_SPEED_LEVEL2: range(29, 55),
-    FAN_SPEED_LEVEL3: range(55, 81),
-    FAN_SPEED_LEVEL4: range(81, 100)
-}
-
-FAN_SPEED_LIST = [FAN_SPEED_LEVEL1,
-                  FAN_SPEED_LEVEL2,
-                  FAN_SPEED_LEVEL3,
-                  FAN_SPEED_LEVEL4]
 
 SUCCESS = ['ok']
 
@@ -357,9 +347,11 @@ class XiaomiFan(XiaomiGenericDevice):
 
         self._device_features = FEATURE_FLAGS_FAN
         self._available_attributes = AVAILABLE_ATTRIBUTES_FAN
-        self._speed_list = FAN_SPEED_LIST
+        self._speed_list = list(FAN_SPEED_LIST)
         self._speed = None
         self._oscillate = None
+        self._direction = None
+        self._natural_mode = False
 
         self._state_attrs.update(
             {attribute: None for attribute in self._available_attributes})
@@ -379,31 +371,28 @@ class XiaomiFan(XiaomiGenericDevice):
             return
 
         try:
-            state = await self.hass.async_add_job(
-                self._device.status)
+            state = await self.hass.async_add_job(self._device.status)
             _LOGGER.debug("Got new state: %s", state)
 
             self._available = True
             self._oscillate = state.oscillate
+            self._direction = state.angle
+            self._natural_mode = (state.natural_level != 0)
             self._state = state.is_on
             self._state_attrs.update(
                 {key: self._extract_value_from_attribute(state, value) for
                  key, value in self._available_attributes.items()})
 
-            if state.oscillate:
-                self._direction = 'forward'
-                for level, range in FAN_SPEED_NATURAL_MODE.items():
+            if self._natural_mode:
+                for level, range in FAN_SPEED_LIST.items():
                     if state.natural_level in range:
                         self._speed = level
                         break
-
             else:
-                self._direction = state.angle
-                for level, range in FAN_SPEED_DIRECT_MODE.items():
+                for level, range in FAN_SPEED_LIST.items():
                     if state.speed_level in range:
                         self._speed = level
                         break
-
 
         except DeviceException as ex:
             self._available = False
@@ -430,22 +419,20 @@ class XiaomiFan(XiaomiGenericDevice):
             self.turn_off()
             return
 
-        if self._oscillate:
-            if speed in FAN_SPEED_LIST:
-                speed = FAN_SPEED_NATURAL_MODE[speed][
-                    int(len(FAN_SPEED_NATURAL_MODE[speed]) / 2)]
+        # Map speed level to speed
+        if speed in FAN_SPEED_LIST:
+            speed = FAN_SPEED_LIST[speed][int(len(FAN_SPEED_LIST[speed]) / 2)]
 
-            await self._try_command(
-                "Setting fan speed of the miio device failed.",
-                self._device.set_natural_level, speed)
-        else:
-            if speed in FAN_SPEED_LIST:
-                speed = FAN_SPEED_DIRECT_MODE[speed][
-                    int(len(FAN_SPEED_DIRECT_MODE[speed]) / 2)]
-
-            await self._try_command(
-                "Setting fan speed of the miio device failed.",
-                self._device.set_speed_level, speed)
+        if speed.isdigit():
+            speed = int(speed)
+            if self._oscillate:
+                await self._try_command(
+                    "Setting fan speed of the miio device failed.",
+                    self._device.set_natural_level, speed)
+            else:
+                await self._try_command(
+                    "Setting fan speed of the miio device failed.",
+                    self._device.set_speed_level, speed)
 
     @property
     def current_direction(self) -> str:
@@ -454,7 +441,7 @@ class XiaomiFan(XiaomiGenericDevice):
 
     async def async_set_direction(self, direction: str) -> None:
         """Set the direction of the fan."""
-        if direction in ["left", "right"]:
+        if direction in ['left', 'right']:
             await self._try_command(
                 "Setting move direction of the miio device failed.",
                 self._device.set_move, direction)
@@ -465,7 +452,7 @@ class XiaomiFan(XiaomiGenericDevice):
         elif direction == '0':
             await self._try_command(
                 "Setting angle of the miio device failed.",
-                self._device.oscillate_off)  # FIXME: oscillate != angle enable off
+                self._device.oscillate_off)
 
     @property
     def oscillating(self):
