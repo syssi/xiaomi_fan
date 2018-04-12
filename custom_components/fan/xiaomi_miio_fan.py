@@ -1,5 +1,5 @@
 """
-Support for Xiaomi Mi Smart Fan.
+Support for Xiaomi Mi Smart Pedestal Fan.
 
 For more details about this platform, please refer to the documentation
 https://home-assistant.io/components/fan.xiaomi_miio/
@@ -91,22 +91,26 @@ FEATURE_SET_BUZZER = 1
 FEATURE_SET_LED = 2
 FEATURE_SET_CHILD_LOCK = 4
 FEATURE_SET_LED_BRIGHTNESS = 8
+FEATURE_SET_OSCILLATION_ANGLE = 16
+FEATURE_SET_NATURAL_MODE = 32
 
 # FIXME: Align buzzer, child lock, led method (set_method(bool) vs. set_method_{on,off})
 FEATURE_FLAGS_GENERIC = (FEATURE_SET_BUZZER |
                          FEATURE_SET_CHILD_LOCK)
 
 FEATURE_FLAGS_FAN = (FEATURE_FLAGS_GENERIC |
-                     FEATURE_SET_LED |
-                     FEATURE_SET_LED_BRIGHTNESS)
+                     FEATURE_SET_LED_BRIGHTNESS |
+                     FEATURE_SET_OSCILLATION_ANGLE |
+                     FEATURE_SET_NATURAL_MODE)
 
 SERVICE_SET_BUZZER_ON = 'xiaomi_miio_set_buzzer_on'
 SERVICE_SET_BUZZER_OFF = 'xiaomi_miio_set_buzzer_off'
-SERVICE_SET_LED_ON = 'xiaomi_miio_set_led_on'
-SERVICE_SET_LED_OFF = 'xiaomi_miio_set_led_off'
 SERVICE_SET_CHILD_LOCK_ON = 'xiaomi_miio_set_child_lock_on'
 SERVICE_SET_CHILD_LOCK_OFF = 'xiaomi_miio_set_child_lock_off'
 SERVICE_SET_LED_BRIGHTNESS = 'xiaomi_miio_set_led_brightness'
+SERVICE_SET_OSCILLATION_ANGLE = 'xiaomi_miio_set_oscillation_angle'
+SERVICE_SET_NATURAL_MODE_ON = 'xiaomi_miio_set_natural_mode_on'
+SERVICE_SET_NATURAL_MODE_OFF = 'xiaomi_miio_set_natural_mode_off'
 
 AIRPURIFIER_SERVICE_SCHEMA = vol.Schema({
     vol.Optional(ATTR_ENTITY_ID): cv.entity_ids,
@@ -117,16 +121,24 @@ SERVICE_SCHEMA_LED_BRIGHTNESS = AIRPURIFIER_SERVICE_SCHEMA.extend({
         vol.All(vol.Coerce(int), vol.Clamp(min=0, max=2))
 })
 
+SERVICE_SCHEMA_OSCILLATION_ANGLE = AIRPURIFIER_SERVICE_SCHEMA.extend({
+    vol.Required(ATTR_ANGLE):
+        vol.All(vol.Coerce(int), vol.In([30, 60, 90, 120]))
+})
+
 SERVICE_TO_METHOD = {
     SERVICE_SET_BUZZER_ON: {'method': 'async_set_buzzer_on'},
     SERVICE_SET_BUZZER_OFF: {'method': 'async_set_buzzer_off'},
-    SERVICE_SET_LED_ON: {'method': 'async_set_led_on'},
-    SERVICE_SET_LED_OFF: {'method': 'async_set_led_off'},
     SERVICE_SET_CHILD_LOCK_ON: {'method': 'async_set_child_lock_on'},
     SERVICE_SET_CHILD_LOCK_OFF: {'method': 'async_set_child_lock_off'},
     SERVICE_SET_LED_BRIGHTNESS: {
         'method': 'async_set_led_brightness',
         'schema': SERVICE_SCHEMA_LED_BRIGHTNESS},
+    SERVICE_SET_OSCILLATION_ANGLE: {
+        'method': 'async_set_oscillation_angle',
+        'schema': SERVICE_SCHEMA_OSCILLATION_ANGLE},
+    SERVICE_SET_NATURAL_MODE_ON: {'method': 'async_set_natural_mode_on'},
+    SERVICE_SET_NATURAL_MODE_OFF: {'method': 'async_set_natural_mode_off'},
 }
 
 
@@ -339,7 +351,7 @@ class XiaomiGenericDevice(FanEntity):
 
 
 class XiaomiFan(XiaomiGenericDevice):
-    """Representation of a Xiaomi Fan."""
+    """Representation of a Xiaomi Pedestal Fan."""
 
     def __init__(self, name, device, model, unique_id):
         """Initialize the fan entity."""
@@ -350,7 +362,6 @@ class XiaomiFan(XiaomiGenericDevice):
         self._speed_list = list(FAN_SPEED_LIST)
         self._speed = None
         self._oscillate = None
-        self._direction = None
         self._natural_mode = False
 
         self._state_attrs.update(
@@ -376,7 +387,6 @@ class XiaomiFan(XiaomiGenericDevice):
 
             self._available = True
             self._oscillate = state.oscillate
-            self._direction = state.angle
             self._natural_mode = (state.natural_level != 0)
             self._state = state.is_on
             self._state_attrs.update(
@@ -425,7 +435,7 @@ class XiaomiFan(XiaomiGenericDevice):
 
         if speed.isdigit():
             speed = int(speed)
-            if self._oscillate:
+            if self._natural_mode:
                 await self._try_command(
                     "Setting fan speed of the miio device failed.",
                     self._device.set_natural_level, speed)
@@ -434,25 +444,12 @@ class XiaomiFan(XiaomiGenericDevice):
                     "Setting fan speed of the miio device failed.",
                     self._device.set_speed_level, speed)
 
-    @property
-    def current_direction(self) -> str:
-        """Fan direction."""
-        return self._direction
-
     async def async_set_direction(self, direction: str) -> None:
         """Set the direction of the fan."""
         if direction in ['left', 'right']:
             await self._try_command(
                 "Setting move direction of the miio device failed.",
                 self._device.set_move, direction)
-        elif direction in ['30', '60', '90', '120']:
-            await self._try_command(
-                "Setting angle of the miio device failed.",
-                self._device.set_angle, int(direction))
-        elif direction == '0':
-            await self._try_command(
-                "Setting angle of the miio device failed.",
-                self._device.oscillate_off)
 
     @property
     def oscillating(self):
@@ -461,26 +458,23 @@ class XiaomiFan(XiaomiGenericDevice):
 
     async def async_oscillate(self, oscillating: bool) -> None:
         """Set oscillation."""
-        self._oscillate = oscillating
-        self.async_set_speed(self._speed)  # FIMXE: Is this allowed?
+        if oscillating:
+            await self._try_command(
+                "Setting oscillate on of the miio device failed.",
+                self._device.oscillate_on)
+        else:
+            await self._try_command(
+                "Setting oscillate off of the miio device failed.",
+                self._device.oscillate_off)
 
-    async def async_set_led_on(self):
-        """Turn the led on."""
-        if self._device_features & FEATURE_SET_LED == 0:
+    async def async_oscillation_angle(self, angle: int) -> None:
+        """Set oscillation angle."""
+        if self._device_features & FEATURE_SET_OSCILLATION_ANGLE == 0:
             return
 
         await self._try_command(
-            "Turning the led of the miio device off failed.",
-            self._device.set_led_on)
-
-    async def async_set_led_off(self):
-        """Turn the led off."""
-        if self._device_features & FEATURE_SET_LED == 0:
-            return
-
-        await self._try_command(
-            "Turning the led of the miio device off failed.",
-            self._device.set_led_off)
+            "Setting angle of the miio device failed.",
+            self._device.set_angle, angle)
 
     async def async_set_led_brightness(self, brightness: int = 2):
         """Set the led brightness."""
@@ -492,3 +486,19 @@ class XiaomiFan(XiaomiGenericDevice):
         await self._try_command(
             "Setting the led brightness of the miio device failed.",
             self._device.set_led_brightness, LedBrightness(brightness))
+
+    async def async_set_natural_mode_on(self):
+        """Turn the natural mode on."""
+        if self._device_features & FEATURE_SET_NATURAL_MODE == 0:
+            return
+
+        self._natural_mode = True
+        await self.async_set_speed(self._speed)
+
+    async def async_set_natural_mode_off(self):
+        """Turn the natural mode off."""
+        if self._device_features & FEATURE_SET_NATURAL_MODE == 0:
+            return
+
+        self._natural_mode = False
+        await self.async_set_speed(self._speed)
