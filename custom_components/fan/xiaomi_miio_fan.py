@@ -364,6 +364,11 @@ class XiaomiFan(XiaomiGenericDevice):
         self._state_attrs.update(
             {attribute: None for attribute in self._available_attributes})
 
+    @property
+    def supported_features(self) -> int:
+        """Supported features."""
+        return SUPPORT_SET_SPEED | SUPPORT_OSCILLATE | SUPPORT_DIRECTION
+
     async def async_update(self):
         """Fetch state from the device."""
         from miio import DeviceException
@@ -384,6 +389,21 @@ class XiaomiFan(XiaomiGenericDevice):
             self._state_attrs.update(
                 {key: self._extract_value_from_attribute(state, value) for
                  key, value in self._available_attributes.items()})
+
+            if state.oscillate:
+                self._direction = 'forward'
+                for level, range in FAN_SPEED_NATURAL_MODE.items():
+                    if state.natural_level in range:
+                        self._speed = level
+                        break
+
+            else:
+                self._direction = state.angle
+                for level, range in FAN_SPEED_DIRECT_MODE.items():
+                    if state.speed_level in range:
+                        self._speed = level
+                        break
+
 
         except DeviceException as ex:
             self._available = False
@@ -426,6 +446,36 @@ class XiaomiFan(XiaomiGenericDevice):
             await self._try_command(
                 "Setting fan speed of the miio device failed.",
                 self._device.set_speed_level, speed)
+
+    @property
+    def current_direction(self) -> str:
+        """Fan direction."""
+        return self._direction
+
+    async def async_set_direction(self, direction: str) -> None:
+        """Set the direction of the fan."""
+        if direction in ["left", "right"]:
+            await self._try_command(
+                "Setting move direction of the miio device failed.",
+                self._device.set_move, direction)
+        elif direction in ['30', '60', '90', '120']:
+            await self._try_command(
+                "Setting angle of the miio device failed.",
+                self._device.set_angle, int(direction))
+        elif direction == '0':
+            await self._try_command(
+                "Setting angle of the miio device failed.",
+                self._device.oscillate_off)  # FIXME: oscillate != angle enable off
+
+    @property
+    def oscillating(self):
+        """Return the oscillation state."""
+        return self._oscillate
+
+    async def async_oscillate(self, oscillating: bool) -> None:
+        """Set oscillation."""
+        self._oscillate = oscillating
+        self.async_set_speed(self._speed)  # FIMXE: Is this allowed?
 
     async def async_set_led_on(self):
         """Turn the led on."""
