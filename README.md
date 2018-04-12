@@ -61,16 +61,16 @@ Set the fan speed.
 | Service data attribute    | Optional | Description                                                                |
 |---------------------------|----------|----------------------------------------------------------------------------|
 | `entity_id`               |      yes | Only act on a specific fan entity. Else targets all.                       |
-| `speed`                   |       no | Fan speed. Valid values are 'Level 1', 'Level 2', 'Level 3' and 'Level 4'. |
+| `speed`                   |       no | Fan speed. Valid values are `Level 1`, `Level 2`, `Level 3` and `Level 4`. |
 
 #### Service `fan.oscillate`
 
 Oscillates the fan.
 
-| Service data attribute    | Optional | Description                                                          |
-|---------------------------|----------|----------------------------------------------------------------------|
-| `entity_id`               |      yes | Only act on a specific fan entity. Else targets all.                 |
-| `oscillating`             |       no | Flag to turn on/off oscillation. Valid values are True and False.    |
+| Service data attribute    | Optional | Description                                                           |
+|---------------------------|----------|-----------------------------------------------------------------------|
+| `entity_id`               |      yes | Only act on a specific fan entity. Else targets all.                  |
+| `oscillating`             |       no | Flag to turn on/off oscillation. Valid values are `True` and `False`. |
 
 #### Service `fan.set_direction`
 
@@ -79,7 +79,7 @@ Rotates the fan 5 degrees to the left/right.
 | Service data attribute    | Optional | Description                                                          |
 |---------------------------|----------|----------------------------------------------------------------------|
 | `entity_id`               |      yes | Only act on a specific fan entity. Else targets all.                 |
-| `direction`               |       no | Rotate the fan 5 degrees. Valid values are 'left' and 'right.        |
+| `direction`               |       no | Rotate the fan 5 degrees. Valid values are `left` and `right`.       |
 
 #### Service `fan.xiaomi_miio_set_oscillation_angle`
 
@@ -88,7 +88,7 @@ Set the oscillation angle. Supported values are 30, 60, 90 and 120 degrees.
 | Service data attribute    | Optional | Description                                                          |
 |---------------------------|----------|----------------------------------------------------------------------|
 | `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
-| `angle`                   |       no | Angle in degrees. Valid values are 30, 60, 90 and 120.               |
+| `angle`                   |       no | Angle in degrees. Valid values are `30`, `60`, `90` and `120`.       |
 
 #### Service `fan.xiaomi_miio_set_natural_mode_on`
 
