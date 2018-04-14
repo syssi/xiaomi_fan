@@ -429,20 +429,21 @@ class XiaomiFan(XiaomiGenericDevice):
             self.turn_off()
             return
 
+        if speed.isdigit():
+            speed = int(speed)
+
         # Map speed level to speed
         if speed in FAN_SPEED_LIST:
             speed = FAN_SPEED_LIST[speed][int(len(FAN_SPEED_LIST[speed]) / 2)]
 
-        if speed.isdigit():
-            speed = int(speed)
-            if self._natural_mode:
-                await self._try_command(
-                    "Setting fan speed of the miio device failed.",
-                    self._device.set_natural_level, speed)
-            else:
-                await self._try_command(
-                    "Setting fan speed of the miio device failed.",
-                    self._device.set_speed_level, speed)
+        if self._natural_mode:
+            await self._try_command(
+                "Setting fan speed of the miio device failed.",
+                self._device.set_natural_level, speed)
+        else:
+            await self._try_command(
+                "Setting fan speed of the miio device failed.",
+                self._device.set_speed_level, speed)
 
     async def async_set_direction(self, direction: str) -> None:
         """Set the direction of the fan."""
