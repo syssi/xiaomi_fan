@@ -472,7 +472,7 @@ class XiaomiFan(XiaomiGenericDevice):
                 "Setting oscillate off of the miio device failed.",
                 self._device.oscillate_off)
 
-    async def async_oscillation_angle(self, angle: int) -> None:
+    async def async_set_oscillation_angle(self, angle: int) -> None:
         """Set oscillation angle."""
         if self._device_features & FEATURE_SET_OSCILLATION_ANGLE == 0:
             return
