@@ -55,6 +55,7 @@ ATTR_BATTERY = 'battery'
 ATTR_AC_POWER = 'ac_power'
 ATTR_POWER_OFF_TIME = 'poweroff_time'
 ATTR_ANGLE = 'angle'
+ATTR_SPEED_LEVEL = 'speed_level'
 
 AVAILABLE_ATTRIBUTES_FAN = {
     ATTR_TEMPERATURE: 'temperature',
@@ -364,6 +365,7 @@ class XiaomiFan(XiaomiGenericDevice):
         self._oscillate = None
         self._natural_mode = False
 
+        self._state_attrs[ATTR_SPEED_LEVEL] = None
         self._state_attrs.update(
             {attribute: None for attribute in self._available_attributes})
 
@@ -389,9 +391,6 @@ class XiaomiFan(XiaomiGenericDevice):
             self._oscillate = state.oscillate
             self._natural_mode = (state.natural_level != 0)
             self._state = state.is_on
-            self._state_attrs.update(
-                {key: self._extract_value_from_attribute(state, value) for
-                 key, value in self._available_attributes.items()})
 
             if self._natural_mode:
                 for level, range in FAN_SPEED_LIST.items():
@@ -403,6 +402,11 @@ class XiaomiFan(XiaomiGenericDevice):
                     if state.speed_level in range:
                         self._speed = level
                         break
+
+            self._state_attrs[ATTR_SPEED_LEVEL] = self._speed
+            self._state_attrs.update(
+                {key: self._extract_value_from_attribute(state, value) for
+                 key, value in self._available_attributes.items()})
 
         except DeviceException as ex:
             self._available = False
