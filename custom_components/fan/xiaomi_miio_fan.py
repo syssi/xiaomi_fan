@@ -60,6 +60,7 @@ ATTR_ANGLE = 'angle'
 ATTR_DIRECT_SPEED = 'direct_speed'
 ATTR_USE_TIME = 'use_time'
 ATTR_BUTTON_PRESSED = 'button_pressed'
+ATTR_SPEED_LEVEL = 'speed_level'
 
 AVAILABLE_ATTRIBUTES_FAN = {
     ATTR_TEMPERATURE: 'temperature',
