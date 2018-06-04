@@ -79,7 +79,8 @@ AVAILABLE_ATTRIBUTES_FAN = {
     ATTR_LED_BRIGHTNESS: 'led_brightness',
     ATTR_USE_TIME: 'use_time',
     ATTR_BATTERY_CHARGE: 'battery_charge',
-    ATTR_BUTTON_PRESSED: 'button_pressed',
+    # FIXME: Improve python-miio here
+    #ATTR_BUTTON_PRESSED: 'button_pressed',
 
     # Additional properties of version 2
     ATTR_LED: 'led',
