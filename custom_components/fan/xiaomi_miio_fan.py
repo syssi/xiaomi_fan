@@ -100,6 +100,14 @@ FAN_SPEED_LIST = {
     FAN_SPEED_LEVEL4: range(76, 101)
 }
 
+FAN_SPEED_VALUES = {
+    SPEED_OFF: 0,
+    FAN_SPEED_LEVEL1: 1,
+    FAN_SPEED_LEVEL2: 45,
+    FAN_SPEED_LEVEL3: 74,
+    FAN_SPEED_LEVEL4: 100
+}
+
 SUCCESS = ['ok']
 
 FEATURE_SET_BUZZER = 1
@@ -451,8 +459,8 @@ class XiaomiFan(XiaomiGenericDevice):
             speed = int(speed)
 
         # Map speed level to speed
-        if speed in FAN_SPEED_LIST:
-            speed = FAN_SPEED_LIST[speed][int(len(FAN_SPEED_LIST[speed]) / 2)]
+        if speed in FAN_SPEED_VALUES:
+            speed = FAN_SPEED_VALUES[speed]
 
         if self._natural_mode:
             await self._try_command(
