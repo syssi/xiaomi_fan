@@ -49,28 +49,40 @@ ATTR_LED = 'led'
 ATTR_LED_BRIGHTNESS = 'led_brightness'
 ATTR_BUZZER = 'buzzer'
 ATTR_CHILD_LOCK = 'child_lock'
-ATTR_NATURAL_LEVEL = 'natural_level'
+ATTR_NATURAL_SPEED = 'natural_speed'
 ATTR_OSCILLATE = 'oscillate'
 ATTR_BATTERY = 'battery'
+ATTR_BATTERY_CHARGE = 'battery_charge'
+ATTR_BATTERY_STATE = 'battery_state'
 ATTR_AC_POWER = 'ac_power'
-ATTR_POWER_OFF_TIME = 'poweroff_time'
+ATTR_DELAY_OFF_COUNTDOWN = 'delay_off_countdown'
 ATTR_ANGLE = 'angle'
-ATTR_SPEED_LEVEL = 'speed_level'
+ATTR_DIRECT_SPEED = 'direct_speed'
+ATTR_USE_TIME = 'use_time'
+ATTR_BUTTON_PRESSED = 'button_pressed'
 
 AVAILABLE_ATTRIBUTES_FAN = {
     ATTR_TEMPERATURE: 'temperature',
     ATTR_HUMIDITY: 'humidity',
-    ATTR_LED: 'led',
-    ATTR_LED_BRIGHTNESS: 'led_brightness',
-    ATTR_BUZZER: 'buzzer',
-    ATTR_CHILD_LOCK: 'child_lock',
-    ATTR_NATURAL_LEVEL: 'natural_level',
-    ATTR_OSCILLATE: 'oscillate',
-    ATTR_BATTERY: 'battery',
-    ATTR_AC_POWER: 'ac_power',
-    ATTR_POWER_OFF_TIME: 'poweroff_time',
-    ATTR_SPEED: 'speed',
     ATTR_ANGLE: 'angle',
+    ATTR_SPEED: 'speed',
+    ATTR_DELAY_OFF_COUNTDOWN: 'delay_off_countdown',
+
+    ATTR_AC_POWER: 'ac_power',
+    ATTR_BATTERY: 'battery',
+    ATTR_OSCILLATE: 'oscillate',
+    ATTR_DIRECT_SPEED: 'direct_speed',
+    ATTR_NATURAL_SPEED: 'natural_speed',
+    ATTR_CHILD_LOCK: 'child_lock',
+    ATTR_BUZZER: 'buzzer',
+    ATTR_LED_BRIGHTNESS: 'led_brightness',
+    ATTR_USE_TIME: 'use_time',
+    ATTR_BATTERY_CHARGE: 'battery_charge',
+    ATTR_BUTTON_PRESSED: 'button_pressed',
+
+    # Additional properties of version 2
+    ATTR_LED: 'led',
+    ATTR_BATTERY_STATE: 'battery_state',
 }
 
 FAN_SPEED_LEVEL1 = 'Level 1'
@@ -174,7 +186,7 @@ async def async_setup_platform(hass, config, async_add_devices,
 
     if model in [MODEL_FAN_V2, MODEL_FAN_V3]:
         from miio import Fan
-        fan = Fan(host, token)
+        fan = Fan(host, token, model=model)
         device = XiaomiFan(name, fan, model, unique_id)
     else:
         _LOGGER.error(
@@ -389,17 +401,17 @@ class XiaomiFan(XiaomiGenericDevice):
 
             self._available = True
             self._oscillate = state.oscillate
-            self._natural_mode = (state.natural_level != 0)
+            self._natural_mode = (state.natural_speed != 0)
             self._state = state.is_on
 
             if self._natural_mode:
                 for level, range in FAN_SPEED_LIST.items():
-                    if state.natural_level in range:
+                    if state.natural_speed in range:
                         self._speed = level
                         break
             else:
                 for level, range in FAN_SPEED_LIST.items():
-                    if state.speed_level in range:
+                    if state.direct_speed in range:
                         self._speed = level
                         break
 
@@ -443,11 +455,11 @@ class XiaomiFan(XiaomiGenericDevice):
         if self._natural_mode:
             await self._try_command(
                 "Setting fan speed of the miio device failed.",
-                self._device.set_natural_level, speed)
+                self._device.set_natural_speed, speed)
         else:
             await self._try_command(
                 "Setting fan speed of the miio device failed.",
-                self._device.set_speed_level, speed)
+                self._device.set_direct_speed, speed)
 
     async def async_set_direction(self, direction: str) -> None:
         """Set the direction of the fan."""
