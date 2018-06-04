@@ -480,11 +480,11 @@ class XiaomiFan(XiaomiGenericDevice):
         if oscillating:
             await self._try_command(
                 "Setting oscillate on of the miio device failed.",
-                self._device.oscillate_on)
+                self._device.set_oscillate, True)
         else:
             await self._try_command(
                 "Setting oscillate off of the miio device failed.",
-                self._device.oscillate_off)
+                self._device.oscillate, False)
 
     async def async_set_oscillation_angle(self, angle: int) -> None:
         """Set oscillation angle."""
