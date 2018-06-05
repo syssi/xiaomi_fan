@@ -30,9 +30,17 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
   - oscillate
   - battery
   - ac_power
-  - poweroff_time
+  - delay_off_countdown
   - speed
+  - direct_speed
+  - natural_speed
   - angle
+  - use_time
+  - battery_charge
+  - button_pressed (in future)
+  - led (zimi.fan.v2 only)
+  - battery_state (zimi.fan.v2 only)
+
 
 ## Setup
 
@@ -47,9 +55,9 @@ fan:
 ```
 
 Configuration variables:
-- **host** (*Required*): The IP of your light.
-- **token** (*Required*): The API token of your light.
-- **name** (*Optional*): The name of your light.
+- **host** (*Required*): The IP of your fan.
+- **token** (*Required*): The API token of your fan.
+- **name** (*Optional*): The name of your fan.
 - **model** (*Optional*): The model of your device. Valid values are `zhimi.fan.v2` and `zhimi.fan.v3`. This setting can be used to bypass the device model detection and is recommended if your device isn't always available.
 
 ## Platform services
@@ -61,7 +69,7 @@ Set the fan speed.
 | Service data attribute    | Optional | Description                                                                |
 |---------------------------|----------|----------------------------------------------------------------------------|
 | `entity_id`               |      yes | Only act on a specific fan entity. Else targets all.                       |
-| `speed`                   |       no | Fan speed. Valid values are `Level 1`, `Level 2`, `Level 3` and `Level 4`. |
+| `speed`                   |       no | Fan speed. Valid values are `Level 1`, `Level 2`, `Level 3` and `Level 4` as well as a value between 0 and 100. |
 
 #### Service `fan.oscillate`
 
@@ -106,7 +114,7 @@ Turn the natural mode off.
 |---------------------------|----------|----------------------------------------------------------------------|
 | `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
 
-#### Service `fan.xiaomi_miio_set_buzzer_on` (python-miio >0.3.9 required)
+#### Service `fan.xiaomi_miio_set_buzzer_on`
 
 Turn the buzzer on.
 
@@ -114,7 +122,7 @@ Turn the buzzer on.
 |---------------------------|----------|----------------------------------------------------------------------|
 | `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
 
-#### Service `fan.xiaomi_miio_set_buzzer_off` (python-miio >0.3.9 required)
+#### Service `fan.xiaomi_miio_set_buzzer_off`
 
 Turn the buzzer off.
 
@@ -122,7 +130,7 @@ Turn the buzzer off.
 |---------------------------|----------|----------------------------------------------------------------------|
 | `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
 
-#### Service `fan.xiaomi_miio_set_child_lock_on` (python-miio >0.3.9 required)
+#### Service `fan.xiaomi_miio_set_child_lock_on`
 
 Turn the child lock on.
 
@@ -130,7 +138,7 @@ Turn the child lock on.
 |---------------------------|----------|----------------------------------------------------------------------|
 | `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
 
-#### Service `fan.xiaomi_miio_set_child_lock_off` (python-miio >0.3.9 required)
+#### Service `fan.xiaomi_miio_set_child_lock_off`
 
 Turn the child lock off.
 
