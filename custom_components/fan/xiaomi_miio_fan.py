@@ -476,6 +476,11 @@ class XiaomiFan(XiaomiGenericDevice):
         from miio.fan import MoveDirection
 
         if direction in ['left', 'right']:
+            if self._oscillate:
+                await self._try_command(
+                    "Setting oscillate off of the miio device failed.",
+                    self._device.oscillate, False)
+
             await self._try_command(
                 "Setting move direction of the miio device failed.",
                 self._device.set_rotate, MoveDirection(direction))
