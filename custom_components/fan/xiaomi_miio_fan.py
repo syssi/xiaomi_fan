@@ -451,12 +451,12 @@ class XiaomiFan(XiaomiGenericDevice):
 
         _LOGGER.debug("Setting the fan speed to: %s", speed)
 
-        if speed in [SPEED_OFF, '0']:
-            self.turn_off()
-            return
-
         if speed.isdigit():
             speed = int(speed)
+
+        if speed in [SPEED_OFF, 0]:
+            await self.async_turn_off()
+            return
 
         # Map speed level to speed
         if speed in FAN_SPEED_VALUES:
