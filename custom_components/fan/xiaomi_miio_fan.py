@@ -479,7 +479,7 @@ class XiaomiFan(XiaomiGenericDevice):
             if self._oscillate:
                 await self._try_command(
                     "Setting oscillate off of the miio device failed.",
-                    self._device.oscillate, False)
+                    self._device.set_oscillate, False)
 
             await self._try_command(
                 "Setting move direction of the miio device failed.",
