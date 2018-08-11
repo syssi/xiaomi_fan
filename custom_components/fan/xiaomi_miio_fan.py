@@ -80,7 +80,7 @@ AVAILABLE_ATTRIBUTES_FAN = {
     ATTR_LED_BRIGHTNESS: 'led_brightness',
     ATTR_USE_TIME: 'use_time',
     ATTR_BATTERY_CHARGE: 'battery_charge',
-    # FIXME: Improve python-miio here
+    # Will be fixed with the next release of python-miio
     #ATTR_BUTTON_PRESSED: 'button_pressed',
 
     # Additional properties of version 2
@@ -118,7 +118,6 @@ FEATURE_SET_LED_BRIGHTNESS = 8
 FEATURE_SET_OSCILLATION_ANGLE = 16
 FEATURE_SET_NATURAL_MODE = 32
 
-# FIXME: Align buzzer, child lock, led method (set_method(bool) vs. set_method_{on,off})
 FEATURE_FLAGS_GENERIC = (FEATURE_SET_BUZZER |
                          FEATURE_SET_CHILD_LOCK)
 
