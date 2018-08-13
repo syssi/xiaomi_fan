@@ -31,17 +31,18 @@ CONF_MODEL = 'model'
 MODEL_FAN_V2 = 'zhimi.fan.v2'
 MODEL_FAN_V3 = 'zhimi.fan.v3'
 MODEL_FAN_SA1 = 'zhimi.fan.sa1'
+MODEL_FAN_ZA1 = 'zhimi.fan.za1'
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_HOST): cv.string,
     vol.Required(CONF_TOKEN): vol.All(cv.string, vol.Length(min=32, max=32)),
     vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-    vol.Optional(CONF_MODEL): vol.In([MODEL_FAN_V2, MODEL_FAN_V3, MODEL_FAN_SA1]),
+    vol.Optional(CONF_MODEL): vol.In([MODEL_FAN_V2, MODEL_FAN_V3, MODEL_FAN_SA1, MODEL_FAN_ZA1]),
 })
 
 #REQUIREMENTS = ['python-miio>=0.4.1']
 REQUIREMENTS = ['https://github.com/rytilahti/python-miio/archive/'
-                '3578693bc8373e1f57fb7b2c4a1f668f441b0099.zip#'
+                '9d2090259c21746302a5acdea1db57241229c07b.zip#'
                 'python-miio']
 
 ATTR_MODEL = 'model'
@@ -197,7 +198,7 @@ async def async_setup_platform(hass, config, async_add_devices,
         except DeviceException:
             raise PlatformNotReady
 
-    if model in [MODEL_FAN_V2, MODEL_FAN_V3, MODEL_FAN_SA1]:
+    if model in [MODEL_FAN_V2, MODEL_FAN_V3, MODEL_FAN_SA1, MODEL_FAN_ZA1]:
         from miio import Fan
         fan = Fan(host, token, model=model)
         device = XiaomiFan(name, fan, model, unique_id)
