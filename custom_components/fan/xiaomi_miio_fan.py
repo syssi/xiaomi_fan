@@ -68,14 +68,11 @@ ATTR_BUTTON_PRESSED = 'button_pressed'
 ATTR_SPEED_LEVEL = 'speed_level'
 
 AVAILABLE_ATTRIBUTES_FAN = {
-    ATTR_TEMPERATURE: 'temperature',
-    ATTR_HUMIDITY: 'humidity',
     ATTR_ANGLE: 'angle',
     ATTR_SPEED: 'speed',
     ATTR_DELAY_OFF_COUNTDOWN: 'delay_off_countdown',
 
     ATTR_AC_POWER: 'ac_power',
-    ATTR_BATTERY: 'battery',
     ATTR_OSCILLATE: 'oscillate',
     ATTR_DIRECT_SPEED: 'direct_speed',
     ATTR_NATURAL_SPEED: 'natural_speed',
@@ -83,9 +80,13 @@ AVAILABLE_ATTRIBUTES_FAN = {
     ATTR_BUZZER: 'buzzer',
     ATTR_LED_BRIGHTNESS: 'led_brightness',
     ATTR_USE_TIME: 'use_time',
+
+    # Additional properties of version 2 and 3
+    ATTR_TEMPERATURE: 'temperature',
+    ATTR_HUMIDITY: 'humidity',
+    ATTR_BATTERY: 'battery',
     ATTR_BATTERY_CHARGE: 'battery_charge',
-    # Will be fixed with the next release of python-miio
-    #ATTR_BUTTON_PRESSED: 'button_pressed',
+    ATTR_BUTTON_PRESSED: 'button_pressed',
 
     # Additional properties of version 2
     ATTR_LED: 'led',
