@@ -20,24 +20,23 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
 * LED brightness (bright, dim, off)
 * Attributes
   - model
-  - temperature
-  - humidity
-  - led
+  - temperature (zimi.fan.v2 and v3 only)
+  - humidity (zimi.fan.v2 and v3 only)
   - led_brightness
   - buzzer
   - child_lock
   - natural_level
   - oscillate
-  - battery
-  - ac_power
   - delay_off_countdown
   - speed
   - direct_speed
   - natural_speed
   - angle
   - use_time
-  - battery_charge
-  - button_pressed (in future)
+  - ac_power
+  - battery (zimi.fan.v2 and v3 only)
+  - battery_charge (zimi.fan.v2 & v3 only)
+  - button_pressed (zimi.fan.v2 & v3 only)
   - led (zimi.fan.v2 only)
   - battery_state (zimi.fan.v2 only)
 
@@ -58,7 +57,7 @@ Configuration variables:
 - **host** (*Required*): The IP of your fan.
 - **token** (*Required*): The API token of your fan.
 - **name** (*Optional*): The name of your fan.
-- **model** (*Optional*): The model of your device. Valid values are `zhimi.fan.v2` and `zhimi.fan.v3`. This setting can be used to bypass the device model detection and is recommended if your device isn't always available.
+- **model** (*Optional*): The model of your device. Valid values are `zhimi.fan.v2`, `zhimi.fan.v3`, `zhimi.fan.sa1` and `zhimi.fan.za1`. This setting can be used to bypass the device model detection and is recommended if your device isn't always available.
 
 ## Platform services
 
