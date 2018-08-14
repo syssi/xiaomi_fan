@@ -42,7 +42,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 
 #REQUIREMENTS = ['python-miio>=0.4.1']
 REQUIREMENTS = ['https://github.com/rytilahti/python-miio/archive/'
-                '9d2090259c21746302a5acdea1db57241229c07b.zip#'
+                '65ee1858c4876f1efc0f1686e98be48b9f5f21c1.zip#'
                 'python-miio']
 
 ATTR_MODEL = 'model'
