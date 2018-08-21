@@ -20,8 +20,8 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
 * LED brightness (bright, dim, off)
 * Attributes
   - model
-  - temperature (zimi.fan.v2 and v3 only)
-  - humidity (zimi.fan.v2 and v3 only)
+  - temperature (zhimi.fan.v2 and v3 only)
+  - humidity (zhimi.fan.v2 and v3 only)
   - led_brightness
   - buzzer
   - child_lock
@@ -34,11 +34,11 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
   - angle
   - use_time
   - ac_power
-  - battery (zimi.fan.v2 and v3 only)
-  - battery_charge (zimi.fan.v2 & v3 only)
-  - button_pressed (zimi.fan.v2 & v3 only)
-  - led (zimi.fan.v2 only)
-  - battery_state (zimi.fan.v2 only)
+  - battery (zhimi.fan.v2 and v3 only)
+  - battery_charge (zhimi.fan.v2 & v3 only)
+  - button_pressed (zhimi.fan.v2 & v3 only)
+  - led (zhimi.fan.v2 only)
+  - battery_state (zhimi.fan.v2 only)
 
 
 ## Setup
