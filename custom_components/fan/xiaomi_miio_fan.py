@@ -40,10 +40,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_MODEL): vol.In([MODEL_FAN_V2, MODEL_FAN_V3, MODEL_FAN_SA1, MODEL_FAN_ZA1]),
 })
 
-#REQUIREMENTS = ['python-miio>=0.4.1']
-REQUIREMENTS = ['https://github.com/rytilahti/python-miio/archive/'
-                '65ee1858c4876f1efc0f1686e98be48b9f5f21c1.zip#'
-                'python-miio']
+REQUIREMENTS = ['python-miio>=0.4.1']
 
 ATTR_MODEL = 'model'
 ATTR_BRIGHTNESS = 'brightness'
