@@ -24,9 +24,11 @@ import homeassistant.helpers.config_validation as cv
 _LOGGER = logging.getLogger(__name__)
 
 DEFAULT_NAME = 'Xiaomi Miio Fan'
+DEFAULT_MAX_ERROR_TIMES = 20
 DATA_KEY = 'fan.xiaomi_miio_fan'
 
 CONF_MODEL = 'model'
+CONF_RETRY = 'retry'
 
 MODEL_FAN_V2 = 'zhimi.fan.v2'
 MODEL_FAN_V3 = 'zhimi.fan.v3'
@@ -47,6 +49,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
         MODEL_FAN_ZA3,
         MODEL_FAN_ZA4,
     ]),
+    vol.Optional(CONF_RETRY, default=DEFAULT_MAX_ERROR_TIMES): cv.positive_int,
 })
 
 ATTR_MODEL = 'model'
@@ -186,6 +189,7 @@ async def async_setup_platform(hass, config, async_add_devices,
     name = config.get(CONF_NAME)
     token = config.get(CONF_TOKEN)
     model = config.get(CONF_MODEL)
+    max_error_times = config.get(CONF_RETRY)
 
     _LOGGER.info("Initializing with host %s (token %s...)", host, token[:5])
     unique_id = None
@@ -206,11 +210,11 @@ async def async_setup_platform(hass, config, async_add_devices,
     if model in [MODEL_FAN_V2, MODEL_FAN_V3, MODEL_FAN_SA1, MODEL_FAN_ZA1]:
         from miio import Fan
         fan = Fan(host, token, model=model)
-        device = XiaomiFan(name, fan, model, unique_id)
+        device = XiaomiFan(name, fan, model, unique_id, max_error_times)
     elif model in [MODEL_FAN_ZA3, MODEL_FAN_ZA4]:  # FIXME: Can be removed with python-miio 0.4.6
             from miio import Fan
             fan = Fan(host, token, model=MODEL_FAN_ZA1)
-            device = XiaomiFan(name, fan, model, unique_id)
+            device = XiaomiFan(name, fan, model, unique_id, max_error_times)
     else:
         _LOGGER.error(
             'Unsupported device found! Please create an issue at '
@@ -253,12 +257,14 @@ async def async_setup_platform(hass, config, async_add_devices,
 class XiaomiGenericDevice(FanEntity):
     """Representation of a generic Xiaomi device."""
 
-    def __init__(self, name, device, model, unique_id):
+    def __init__(self, name, device, model, unique_id, max_error_times):
         """Initialize the generic Xiaomi device."""
         self._name = name
         self._device = device
         self._model = model
         self._unique_id = unique_id
+        self._error_times = 0
+        self._max_error_times = max_error_times
 
         self._available = False
         self._state = None
@@ -389,9 +395,9 @@ class XiaomiGenericDevice(FanEntity):
 class XiaomiFan(XiaomiGenericDevice):
     """Representation of a Xiaomi Pedestal Fan."""
 
-    def __init__(self, name, device, model, unique_id):
+    def __init__(self, name, device, model, unique_id, max_error_times):
         """Initialize the fan entity."""
-        super().__init__(name, device, model, unique_id)
+        super().__init__(name, device, model, unique_id, max_error_times)
 
         self._device_features = FEATURE_FLAGS_FAN
         self._available_attributes = AVAILABLE_ATTRIBUTES_FAN
@@ -399,7 +405,6 @@ class XiaomiFan(XiaomiGenericDevice):
         self._speed = None
         self._oscillate = None
         self._natural_mode = False
-
         self._state_attrs[ATTR_SPEED_LEVEL] = None
         self._state_attrs.update(
             {attribute: None for attribute in self._available_attributes})
@@ -442,10 +447,15 @@ class XiaomiFan(XiaomiGenericDevice):
             self._state_attrs.update(
                 {key: self._extract_value_from_attribute(state, value) for
                  key, value in self._available_attributes.items()})
+            self._error_times = 0
 
         except DeviceException as ex:
-            self._available = False
-            _LOGGER.error("Got exception while fetching the state: %s", ex)
+            self._error_times = self._error_times + 1
+            if self._error_times < self._max_error_times:
+                _LOGGER.warning("Got exception while fetching the state: %s , error_times=%s", ex, self._error_times)
+            else:
+                self._available = False
+                _LOGGER.error("Got exception while fetching the state: %s , error_times=%s", ex, self._error_times)
 
     @property
     def speed_list(self) -> list:
