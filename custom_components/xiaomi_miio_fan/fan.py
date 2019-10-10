@@ -34,6 +34,7 @@ MODEL_FAN_SA1 = 'zhimi.fan.sa1'
 MODEL_FAN_ZA1 = 'zhimi.fan.za1'
 MODEL_FAN_ZA3 = 'zhimi.fan.za3'
 MODEL_FAN_ZA4 = 'zhimi.fan.za4'
+MODEL_FAN_P5 = 'dmaker.fan.p5'
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_HOST): cv.string,
@@ -46,6 +47,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
         MODEL_FAN_ZA1,
         MODEL_FAN_ZA3,
         MODEL_FAN_ZA4,
+        MODEL_FAN_P5,
     ]),
 })
 
@@ -203,14 +205,11 @@ async def async_setup_platform(hass, config, async_add_devices,
         except DeviceException:
             raise PlatformNotReady
 
-    if model in [MODEL_FAN_V2, MODEL_FAN_V3, MODEL_FAN_SA1, MODEL_FAN_ZA1]:
+    if model in [MODEL_FAN_V2, MODEL_FAN_V3, MODEL_FAN_SA1, MODEL_FAN_ZA1,
+                 MODEL_FAN_ZA3, MODEL_FAN_ZA4, MODEL_FAN_P5]:
         from miio import Fan
         fan = Fan(host, token, model=model)
         device = XiaomiFan(name, fan, model, unique_id)
-    elif model in [MODEL_FAN_ZA3, MODEL_FAN_ZA4]:  # FIXME: Can be removed with python-miio 0.4.6
-            from miio import Fan
-            fan = Fan(host, token, model=MODEL_FAN_ZA1)
-            device = XiaomiFan(name, fan, model, unique_id)
     else:
         _LOGGER.error(
             'Unsupported device found! Please create an issue at '
