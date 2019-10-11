@@ -231,7 +231,7 @@ async def async_setup_platform(hass, config, async_add_devices,
     elif model == MODEL_FAN_P5:
         from miio import FanP5
         fan = FanP5(host, token, model=model)
-        device = XiaomiFan(name, fan, model, unique_id)
+        device = XiaomiFanP5(name, fan, model, unique_id)
     else:
         _LOGGER.error(
             'Unsupported device found! Please create an issue at '
