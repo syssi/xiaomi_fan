@@ -103,7 +103,7 @@ AVAILABLE_ATTRIBUTES_FAN = {
 
 AVAILABLE_ATTRIBUTES_FAN_P5 = {
     ATTR_MODE: 'mode',
-    ATTR_SPEED: 'speed',
+    ATTR_RAW_SPEED: 'speed',
     ATTR_OSCILLATE: 'oscillate',
     ATTR_ANGLE: 'angle',
     ATTR_DELAY_OFF_COUNTDOWN: 'delay_off_countdown',
@@ -606,16 +606,9 @@ class XiaomiFanP5(XiaomiFan):
             self._natural_mode = (state.mode == OperationMode.Nature)
             self._state = state.is_on
 
-            if self._natural_mode:
-                for level, range in FAN_SPEED_LIST.items():
-                    if state.natural_speed in range:
-                        self._speed = level
-                        break
-            else:
-                for level, range in FAN_SPEED_LIST.items():
-                    if state.direct_speed in range:
-                        self._speed = level
-                        break
+            for level, range in FAN_SPEED_LIST.items():
+                if state.speed in range:
+                    self._speed = level
 
             self._state_attrs[ATTR_SPEED_LEVEL] = self._speed
             self._state_attrs.update(
