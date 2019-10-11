@@ -131,6 +131,14 @@ FAN_SPEED_VALUES = {
     FAN_SPEED_LEVEL4: 100
 }
 
+FAN_SPEED_VALUES_P5 = {
+    SPEED_OFF: 0,
+    FAN_SPEED_LEVEL1: 1,
+    FAN_SPEED_LEVEL2: 35,
+    FAN_SPEED_LEVEL3: 70,
+    FAN_SPEED_LEVEL4: 100
+}
+
 SUCCESS = ['ok']
 
 FEATURE_SET_BUZZER = 1
@@ -634,8 +642,8 @@ class XiaomiFanP5(XiaomiFan):
             return
 
         # Map speed level to speed
-        if speed in FAN_SPEED_VALUES:
-            speed = FAN_SPEED_VALUES[speed]
+        if speed in FAN_SPEED_VALUES_P5:
+            speed = FAN_SPEED_VALUES_P5[speed]
 
         await self._try_command(
             "Setting fan speed of the miio device failed.",
