@@ -72,7 +72,6 @@ ATTR_DIRECT_SPEED = 'direct_speed'
 ATTR_USE_TIME = 'use_time'
 ATTR_BUTTON_PRESSED = 'button_pressed'
 ATTR_RAW_SPEED = 'raw_speed'
-ATTR_SPEED_LEVEL = 'speed_level'
 ATTR_MODE = 'mode'
 
 AVAILABLE_ATTRIBUTES_FAN = {
@@ -103,7 +102,6 @@ AVAILABLE_ATTRIBUTES_FAN = {
 
 AVAILABLE_ATTRIBUTES_FAN_P5 = {
     ATTR_MODE: 'mode',
-    ATTR_RAW_SPEED: 'speed',
     ATTR_OSCILLATE: 'oscillate',
     ATTR_ANGLE: 'angle',
     ATTR_DELAY_OFF_COUNTDOWN: 'delay_off_countdown',
@@ -449,14 +447,15 @@ class XiaomiFan(XiaomiGenericDevice):
                 for level, range in FAN_SPEED_LIST.items():
                     if state.natural_speed in range:
                         self._speed = level
+                        self._state_attrs[ATTR_SPEED] = level
                         break
             else:
                 for level, range in FAN_SPEED_LIST.items():
                     if state.direct_speed in range:
                         self._speed = level
+                        self._state_attrs[ATTR_SPEED] = level
                         break
 
-            self._state_attrs[ATTR_SPEED] = self._speed
             self._state_attrs.update(
                 {key: self._extract_value_from_attribute(state, value) for
                  key, value in self._available_attributes.items()})
@@ -583,7 +582,7 @@ class XiaomiFanP5(XiaomiFan):
         self._oscillate = None
         self._natural_mode = False
 
-        self._state_attrs[ATTR_SPEED_LEVEL] = None
+        self._state_attrs[ATTR_SPEED] = None
         self._state_attrs.update(
             {attribute: None for attribute in self._available_attributes})
 
@@ -609,8 +608,9 @@ class XiaomiFanP5(XiaomiFan):
             for level, range in FAN_SPEED_LIST.items():
                 if state.speed in range:
                     self._speed = level
+                    self._state_attrs[ATTR_SPEED] = level
+                    break
 
-            self._state_attrs[ATTR_SPEED_LEVEL] = self._speed
             self._state_attrs.update(
                 {key: self._extract_value_from_attribute(state, value) for
                  key, value in self._available_attributes.items()})
