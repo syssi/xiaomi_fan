@@ -71,12 +71,13 @@ ATTR_ANGLE = 'angle'
 ATTR_DIRECT_SPEED = 'direct_speed'
 ATTR_USE_TIME = 'use_time'
 ATTR_BUTTON_PRESSED = 'button_pressed'
+ATTR_RAW_SPEED = 'raw_speed'
 ATTR_SPEED_LEVEL = 'speed_level'
 ATTR_MODE = 'mode'
 
 AVAILABLE_ATTRIBUTES_FAN = {
     ATTR_ANGLE: 'angle',
-    ATTR_SPEED: 'speed',
+    ATTR_RAW_SPEED: 'speed',
     ATTR_DELAY_OFF_COUNTDOWN: 'delay_off_countdown',
 
     ATTR_AC_POWER: 'ac_power',
@@ -349,12 +350,9 @@ class XiaomiGenericDevice(FanEntity):
     async def async_turn_on(self, speed: str = None,
                             **kwargs) -> None:
         """Turn the device on."""
+        result = await self._try_command("Turning the miio device on failed.", self._device.on)
         if speed:
-            # If operation mode was set the device must not be turned on.
-            result = await self.async_set_speed(speed)
-        else:
-            result = await self._try_command(
-                "Turning the miio device on failed.", self._device.on)
+            result = await self.async_set_speed(speed)        
 
         if result:
             self._state = True
@@ -420,7 +418,7 @@ class XiaomiFan(XiaomiGenericDevice):
         self._oscillate = None
         self._natural_mode = False
 
-        self._state_attrs[ATTR_SPEED_LEVEL] = None
+        self._state_attrs[ATTR_SPEED] = None
         self._state_attrs.update(
             {attribute: None for attribute in self._available_attributes})
 
@@ -458,7 +456,7 @@ class XiaomiFan(XiaomiGenericDevice):
                         self._speed = level
                         break
 
-            self._state_attrs[ATTR_SPEED_LEVEL] = self._speed
+            self._state_attrs[ATTR_SPEED] = self._speed
             self._state_attrs.update(
                 {key: self._extract_value_from_attribute(state, value) for
                  key, value in self._available_attributes.items()})
