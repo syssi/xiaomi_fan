@@ -57,7 +57,7 @@ Configuration variables:
 - **host** (*Required*): The IP of your fan.
 - **token** (*Required*): The API token of your fan.
 - **name** (*Optional*): The name of your fan.
-- **model** (*Optional*): The model of your device. Valid values are `zhimi.fan.v2`, `zhimi.fan.v3`, `zhimi.fan.sa1` and `zhimi.fan.za1`. This setting can be used to bypass the device model detection and is recommended if your device isn't always available.
+- **model** (*Optional*): The model of your device. Valid values are `zhimi.fan.v2`, `zhimi.fan.v3`, `zhimi.fan.sa1`, `zhimi.fan.za1`, `zhimi.fan.za3`, `zhimi.fan.za4` and `dmaker.fan.p5`. This setting can be used to bypass the device model detection and is recommended if your device isn't always available.
 
 ## Platform services
 
