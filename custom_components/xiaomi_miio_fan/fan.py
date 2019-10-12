@@ -36,6 +36,7 @@ MODEL_FAN_SA1 = 'zhimi.fan.sa1'
 MODEL_FAN_ZA1 = 'zhimi.fan.za1'
 MODEL_FAN_ZA3 = 'zhimi.fan.za3'
 MODEL_FAN_ZA4 = 'zhimi.fan.za4'
+MODEL_FAN_P5 = 'dmaker.fan.p5'
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_HOST): cv.string,
@@ -48,6 +49,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
         MODEL_FAN_ZA1,
         MODEL_FAN_ZA3,
         MODEL_FAN_ZA4,
+        MODEL_FAN_P5,
     ]),
     vol.Optional(CONF_RETRIES, default=DEFAULT_RETRIES): cv.positive_int,
 })
@@ -72,11 +74,12 @@ ATTR_ANGLE = 'angle'
 ATTR_DIRECT_SPEED = 'direct_speed'
 ATTR_USE_TIME = 'use_time'
 ATTR_BUTTON_PRESSED = 'button_pressed'
-ATTR_SPEED_LEVEL = 'speed_level'
+ATTR_RAW_SPEED = 'raw_speed'
+ATTR_MODE = 'mode'
 
 AVAILABLE_ATTRIBUTES_FAN = {
     ATTR_ANGLE: 'angle',
-    ATTR_SPEED: 'speed',
+    ATTR_RAW_SPEED: 'speed',
     ATTR_DELAY_OFF_COUNTDOWN: 'delay_off_countdown',
 
     ATTR_AC_POWER: 'ac_power',
@@ -100,6 +103,16 @@ AVAILABLE_ATTRIBUTES_FAN = {
     ATTR_BATTERY_STATE: 'battery_state',
 }
 
+AVAILABLE_ATTRIBUTES_FAN_P5 = {
+    ATTR_MODE: 'mode',
+    ATTR_OSCILLATE: 'oscillate',
+    ATTR_ANGLE: 'angle',
+    ATTR_DELAY_OFF_COUNTDOWN: 'delay_off_countdown',
+    ATTR_LED: 'led',
+    ATTR_BUZZER: 'buzzer',
+    ATTR_CHILD_LOCK: 'child_lock',
+}
+
 FAN_SPEED_LEVEL1 = 'Level 1'
 FAN_SPEED_LEVEL2 = 'Level 2'
 FAN_SPEED_LEVEL3 = 'Level 3'
@@ -121,6 +134,14 @@ FAN_SPEED_VALUES = {
     FAN_SPEED_LEVEL4: 100
 }
 
+FAN_SPEED_VALUES_P5 = {
+    SPEED_OFF: 0,
+    FAN_SPEED_LEVEL1: 1,
+    FAN_SPEED_LEVEL2: 35,
+    FAN_SPEED_LEVEL3: 70,
+    FAN_SPEED_LEVEL4: 100
+}
+
 SUCCESS = ['ok']
 
 FEATURE_SET_BUZZER = 1
@@ -137,6 +158,11 @@ FEATURE_FLAGS_FAN = (FEATURE_FLAGS_GENERIC |
                      FEATURE_SET_LED_BRIGHTNESS |
                      FEATURE_SET_OSCILLATION_ANGLE |
                      FEATURE_SET_NATURAL_MODE)
+
+FEATURE_FLAGS_FAN_P5 = (FEATURE_FLAGS_GENERIC |
+                        FEATURE_SET_NATURAL_MODE |
+                        FEATURE_SET_OSCILLATION_ANGLE |
+                        FEATURE_SET_LED)
 
 SERVICE_SET_BUZZER_ON = 'xiaomi_miio_set_buzzer_on'
 SERVICE_SET_BUZZER_OFF = 'xiaomi_miio_set_buzzer_off'
@@ -207,14 +233,15 @@ async def async_setup_platform(hass, config, async_add_devices,
         except DeviceException:
             raise PlatformNotReady
 
-    if model in [MODEL_FAN_V2, MODEL_FAN_V3, MODEL_FAN_SA1, MODEL_FAN_ZA1]:
+    if model in [MODEL_FAN_V2, MODEL_FAN_V3, MODEL_FAN_SA1, MODEL_FAN_ZA1,
+                 MODEL_FAN_ZA3, MODEL_FAN_ZA4]:
         from miio import Fan
         fan = Fan(host, token, model=model)
-        device = XiaomiFan(name, fan, model, unique_id, retries)
-    elif model in [MODEL_FAN_ZA3, MODEL_FAN_ZA4]:  # FIXME: Can be removed with python-miio 0.4.6
-            from miio import Fan
-            fan = Fan(host, token, model=MODEL_FAN_ZA1)
-            device = XiaomiFan(name, fan, model, unique_id, retries)
+        device = XiaomiFan(name, fan, model, unique_id)
+    elif model == MODEL_FAN_P5:
+        from miio import FanP5
+        fan = FanP5(host, token, model=model)
+        device = XiaomiFanP5(name, fan, model, unique_id)
     else:
         _LOGGER.error(
             'Unsupported device found! Please create an issue at '
@@ -335,12 +362,9 @@ class XiaomiGenericDevice(FanEntity):
     async def async_turn_on(self, speed: str = None,
                             **kwargs) -> None:
         """Turn the device on."""
+        result = await self._try_command("Turning the miio device on failed.", self._device.on)
         if speed:
-            # If operation mode was set the device must not be turned on.
-            result = await self.async_set_speed(speed)
-        else:
-            result = await self._try_command(
-                "Turning the miio device on failed.", self._device.on)
+            result = await self.async_set_speed(speed)        
 
         if result:
             self._state = True
@@ -405,7 +429,8 @@ class XiaomiFan(XiaomiGenericDevice):
         self._speed = None
         self._oscillate = None
         self._natural_mode = False
-        self._state_attrs[ATTR_SPEED_LEVEL] = None
+        
+        self._state_attrs[ATTR_SPEED] = None
         self._state_attrs.update(
             {attribute: None for attribute in self._available_attributes})
 
@@ -436,14 +461,15 @@ class XiaomiFan(XiaomiGenericDevice):
                 for level, range in FAN_SPEED_LIST.items():
                     if state.natural_speed in range:
                         self._speed = level
+                        self._state_attrs[ATTR_SPEED] = level
                         break
             else:
                 for level, range in FAN_SPEED_LIST.items():
                     if state.direct_speed in range:
                         self._speed = level
+                        self._state_attrs[ATTR_SPEED] = level
                         break
 
-            self._state_attrs[ATTR_SPEED_LEVEL] = self._speed
             self._state_attrs.update(
                 {key: self._extract_value_from_attribute(state, value) for
                  key, value in self._available_attributes.items()})
@@ -452,7 +478,7 @@ class XiaomiFan(XiaomiGenericDevice):
         except DeviceException as ex:
             self._retry = self._retry + 1
             if self._retry < self._retries:
-                _LOGGER.warning("Got exception while fetching the state: %s , _retry=%s", ex, self._retry)
+                _LOGGER.info("Got exception while fetching the state: %s , _retry=%s", ex, self._retry)
             else:
                 self._available = False
                 _LOGGER.error("Got exception while fetching the state: %s , _retry=%s", ex, self._retry)
@@ -559,3 +585,105 @@ class XiaomiFan(XiaomiGenericDevice):
 
         self._natural_mode = False
         await self.async_set_speed(self._speed)
+
+
+class XiaomiFanP5(XiaomiFan):
+    """Representation of a Xiaomi Pedestal Fan P5."""
+
+    def __init__(self, name, device, model, unique_id):
+        """Initialize the fan entity."""
+        super().__init__(name, device, model, unique_id)
+
+        self._device_features = FEATURE_FLAGS_FAN
+        self._available_attributes = AVAILABLE_ATTRIBUTES_FAN_P5
+        self._speed_list = list(FAN_SPEED_LIST)
+        self._speed = None
+        self._oscillate = None
+        self._natural_mode = False
+
+        self._state_attrs[ATTR_SPEED] = None
+        self._state_attrs.update(
+            {attribute: None for attribute in self._available_attributes})
+
+    async def async_update(self):
+        """Fetch state from the device."""
+        from miio import DeviceException
+        from miio.fan import OperationMode
+
+        # On state change the device doesn't provide the new state immediately.
+        if self._skip_update:
+            self._skip_update = False
+            return
+
+        try:
+            state = await self.hass.async_add_job(self._device.status)
+            _LOGGER.debug("Got new state: %s", state)
+
+            self._available = True
+            self._oscillate = state.oscillate
+            self._natural_mode = (state.mode == OperationMode.Nature)
+            self._state = state.is_on
+
+            for level, range in FAN_SPEED_LIST.items():
+                if state.speed in range:
+                    self._speed = level
+                    self._state_attrs[ATTR_SPEED] = level
+                    break
+
+            self._state_attrs.update(
+                {key: self._extract_value_from_attribute(state, value) for
+                 key, value in self._available_attributes.items()})
+
+        except DeviceException as ex:
+            self._available = False
+            _LOGGER.error("Got exception while fetching the state: %s", ex)
+
+    async def async_set_speed(self, speed: str) -> None:
+        """Set the speed of the fan."""
+        if self.supported_features & SUPPORT_SET_SPEED == 0:
+            return
+
+        _LOGGER.debug("Setting the fan speed to: %s", speed)
+
+        if speed.isdigit():
+            speed = int(speed)
+
+        if speed in [SPEED_OFF, 0]:
+            await self.async_turn_off()
+            return
+
+        # Map speed level to speed
+        if speed in FAN_SPEED_VALUES_P5:
+            speed = FAN_SPEED_VALUES_P5[speed]
+
+        await self._try_command(
+            "Setting fan speed of the miio device failed.",
+            self._device.set_speed,
+            speed
+        )
+
+    async def async_set_natural_mode_on(self):
+        """Turn the natural mode on."""
+        from miio.fan import OperationMode
+
+        if self._device_features & FEATURE_SET_NATURAL_MODE == 0:
+            return
+
+        await self._try_command(
+            "Turning on natural mode of the miio device failed.",
+            self._device.set_mode,
+            OperationMode.Nature
+        )
+
+    async def async_set_natural_mode_off(self):
+        """Turn the natural mode off."""
+        from miio.fan import OperationMode
+
+        if self._device_features & FEATURE_SET_NATURAL_MODE == 0:
+            return
+
+        await self._try_command(
+            "Turning on natural mode of the miio device failed.",
+            self._device.set_mode,
+            OperationMode.Normal
+        )
