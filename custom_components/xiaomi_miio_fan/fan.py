@@ -429,7 +429,7 @@ class XiaomiFan(XiaomiGenericDevice):
         self._speed = None
         self._oscillate = None
         self._natural_mode = False
-        
+
         self._state_attrs[ATTR_SPEED] = None
         self._state_attrs.update(
             {attribute: None for attribute in self._available_attributes})
@@ -634,9 +634,15 @@ class XiaomiFanP5(XiaomiFan):
                 {key: self._extract_value_from_attribute(state, value) for
                  key, value in self._available_attributes.items()})
 
+            self._retry = 0
+
         except DeviceException as ex:
-            self._available = False
-            _LOGGER.error("Got exception while fetching the state: %s", ex)
+            self._retry = self._retry + 1
+            if self._retry < self._retries:
+                _LOGGER.info("Got exception while fetching the state: %s , _retry=%s", ex, self._retry)
+            else:
+                self._available = False
+                _LOGGER.error("Got exception while fetching the state: %s , _retry=%s", ex, self._retry)
 
     async def async_set_speed(self, speed: str) -> None:
         """Set the speed of the fan."""
