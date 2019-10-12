@@ -452,11 +452,18 @@ class XiaomiFan(XiaomiGenericDevice):
             self._state = state.is_on
 
             if self._natural_mode:
-                self._speed = list(FAN_SPEED_LIST)[state.natural_speed]
+                for level, range in FAN_SPEED_LIST.items():
+                    if state.natural_speed in range:
+                        self._speed = level
+                        self._state_attrs[ATTR_SPEED] = level
+                        break
             else:
-                self._speed = list(FAN_SPEED_LIST)[state.direct_speed]
+                for level, range in FAN_SPEED_LIST.items():
+                    if state.direct_speed in range:
+                        self._speed = level
+                        self._state_attrs[ATTR_SPEED] = level
+                        break
 
-            self._state_attrs[ATTR_SPEED] = self._speed
             self._state_attrs.update(
                 {key: self._extract_value_from_attribute(state, value) for
                  key, value in self._available_attributes.items()})
