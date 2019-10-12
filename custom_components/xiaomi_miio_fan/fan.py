@@ -24,9 +24,11 @@ import homeassistant.helpers.config_validation as cv
 _LOGGER = logging.getLogger(__name__)
 
 DEFAULT_NAME = 'Xiaomi Miio Fan'
+DEFAULT_RETRIES = 20
 DATA_KEY = 'fan.xiaomi_miio_fan'
 
 CONF_MODEL = 'model'
+CONF_RETRIES = 'retries'
 
 MODEL_FAN_V2 = 'zhimi.fan.v2'
 MODEL_FAN_V3 = 'zhimi.fan.v3'
@@ -49,6 +51,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
         MODEL_FAN_ZA4,
         MODEL_FAN_P5,
     ]),
+    vol.Optional(CONF_RETRIES, default=DEFAULT_RETRIES): cv.positive_int,
 })
 
 ATTR_MODEL = 'model'
@@ -212,6 +215,7 @@ async def async_setup_platform(hass, config, async_add_devices,
     name = config.get(CONF_NAME)
     token = config.get(CONF_TOKEN)
     model = config.get(CONF_MODEL)
+    retries = config.get(CONF_RETRIES)
 
     _LOGGER.info("Initializing with host %s (token %s...)", host, token[:5])
     unique_id = None
@@ -280,12 +284,14 @@ async def async_setup_platform(hass, config, async_add_devices,
 class XiaomiGenericDevice(FanEntity):
     """Representation of a generic Xiaomi device."""
 
-    def __init__(self, name, device, model, unique_id):
+    def __init__(self, name, device, model, unique_id, retries):
         """Initialize the generic Xiaomi device."""
         self._name = name
         self._device = device
         self._model = model
         self._unique_id = unique_id
+        self._retry = 0
+        self._retries = retries
 
         self._available = False
         self._state = None
@@ -413,9 +419,9 @@ class XiaomiGenericDevice(FanEntity):
 class XiaomiFan(XiaomiGenericDevice):
     """Representation of a Xiaomi Pedestal Fan."""
 
-    def __init__(self, name, device, model, unique_id):
+    def __init__(self, name, device, model, unique_id, retries):
         """Initialize the fan entity."""
-        super().__init__(name, device, model, unique_id)
+        super().__init__(name, device, model, unique_id, retries)
 
         self._device_features = FEATURE_FLAGS_FAN
         self._available_attributes = AVAILABLE_ATTRIBUTES_FAN
@@ -423,7 +429,7 @@ class XiaomiFan(XiaomiGenericDevice):
         self._speed = None
         self._oscillate = None
         self._natural_mode = False
-
+        
         self._state_attrs[ATTR_SPEED] = None
         self._state_attrs.update(
             {attribute: None for attribute in self._available_attributes})
@@ -467,10 +473,15 @@ class XiaomiFan(XiaomiGenericDevice):
             self._state_attrs.update(
                 {key: self._extract_value_from_attribute(state, value) for
                  key, value in self._available_attributes.items()})
+            self._retry = 0
 
         except DeviceException as ex:
-            self._available = False
-            _LOGGER.error("Got exception while fetching the state: %s", ex)
+            self._retry = self._retry + 1
+            if self._retry < self._retries:
+                _LOGGER.info("Got exception while fetching the state: %s , _retry=%s", ex, self._retry)
+            else:
+                self._available = False
+                _LOGGER.error("Got exception while fetching the state: %s , _retry=%s", ex, self._retry)
 
     @property
     def speed_list(self) -> list:
