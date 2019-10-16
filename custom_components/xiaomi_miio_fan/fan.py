@@ -255,12 +255,12 @@ async def async_setup_platform(hass, config, async_add_devices, discovery_info=N
         from miio import Fan
 
         fan = Fan(host, token, model=model)
-        device = XiaomiFan(name, fan, model, unique_id)
+        device = XiaomiFan(name, fan, model, unique_id, retries)
     elif model == MODEL_FAN_P5:
         from miio import FanP5
 
         fan = FanP5(host, token, model=model)
-        device = XiaomiFanP5(name, fan, model, unique_id)
+        device = XiaomiFanP5(name, fan, model, unique_id, retries)
     else:
         _LOGGER.error(
             "Unsupported device found! Please create an issue at "
@@ -651,9 +651,9 @@ class XiaomiFan(XiaomiGenericDevice):
 class XiaomiFanP5(XiaomiFan):
     """Representation of a Xiaomi Pedestal Fan P5."""
 
-    def __init__(self, name, device, model, unique_id):
+    def __init__(self, name, device, model, unique_id, retries):
         """Initialize the fan entity."""
-        super().__init__(name, device, model, unique_id)
+        super().__init__(name, device, model, unique_id, retries)
 
         self._device_features = FEATURE_FLAGS_FAN
         self._available_attributes = AVAILABLE_ATTRIBUTES_FAN_P5
