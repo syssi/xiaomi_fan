@@ -1,5 +1,5 @@
 {
-  "name": "Xiaomi Mi Smart Fan integration for Home Assistant",
+  "name": "Xiaomi Mi Smart Fan integration",
   "content_in_root": false,
   "render_readme": true,
   "iot_class": "local_polling"
