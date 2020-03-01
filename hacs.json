@@ -1,5 +1,5 @@
 {
-  "name": "Xiaomi Mi Smart Fan integration",
+  "name": "Xiaomi Mi Smart Pedestal Fan Integration",
   "content_in_root": false,
   "render_readme": true,
   "iot_class": "local_polling"
