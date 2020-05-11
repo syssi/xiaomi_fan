@@ -618,6 +618,13 @@ class XiaomiFan(XiaomiGenericDevice):
             "Setting angle of the miio device failed.", self._device.set_angle, angle
         )
 
+    async def async_set_delay_off(self, seconds: int) -> None:
+        """Set delay off seconds."""
+
+        await self._try_command(
+            "Setting delay off miio device failed.", self._device.delay_off, seconds
+        )
+        
     async def async_set_led_brightness(self, brightness: int = 2):
         """Set the led brightness."""
         if self._device_features & FEATURE_SET_LED_BRIGHTNESS == 0:
