@@ -102,6 +102,16 @@ Set the oscillation angle. Supported values are 30, 60, 90 and 120 degrees.
 | `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
 | `angle`                   |       no | Angle in degrees. Valid values are `30`, `60`, `90` and `120`.       |
 
+#### Service `fan.xiaomi_miio_set_delay_off`
+
+Set the scheduled turn off time. Supported values are 60, 120, 180, 240, 300, 360, 420, 480 minutes for dmaker.fan.p5, and 60*60, 120*60, 180*60, 240*60, 300*60, 360*60, 420*60, 480*60 seconds for zhimi.fan.za4 and all others.
+
+
+| Service data attribute    | Optional | Description                                                          |
+|---------------------------|----------|----------------------------------------------------------------------|
+| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
+| `delay_off_countdown`     |       no | Time in minutes/seconds. It depends on the type of fan. Valid values are `60`, `120`, `180`, `240`, `300`, `240`, `300`, `360`, `420`, `480` minutes for p5. `3600`, `7200`, `10800`, `14400`, `18000`, `21600`, `25200`, `28800` seconds for zhimi.fan.za4|
+
 #### Service `fan.xiaomi_miio_set_natural_mode_on`
 
 Turn the natural mode on.
