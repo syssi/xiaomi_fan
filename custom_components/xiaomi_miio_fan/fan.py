@@ -196,7 +196,9 @@ SERVICE_SCHEMA_OSCILLATION_ANGLE = AIRPURIFIER_SERVICE_SCHEMA.extend(
 )
 
 SERVICE_SCHEMA_DELAY_OFF = AIRPURIFIER_SERVICE_SCHEMA.extend(
-    {vol.Required(ATTR_DELAY_OFF_COUNTDOWN): vol.All(vol.Coerce(int), vol.In([60, 120]))}
+    {vol.Required(ATTR_DELAY_OFF_COUNTDOWN): 
+     vol.All(vol.Coerce(int), vol.In([60, 120, 180, 240, 300, 360, 420, 480, 
+                                      60*60, 120*60, 180*60, 240*60, 300*60, 360*60, 420*60, 480*60]))}
 )
 
 SERVICE_TO_METHOD = {
@@ -627,9 +629,11 @@ class XiaomiFan(XiaomiGenericDevice):
             "Setting angle of the miio device failed.", self._device.set_angle, angle
         )
 
-    async def async_set_delay_off(self, seconds: int) -> None:
-        """Set delay off seconds."""
-
+    async def async_set_delay_off(self, delay_off_countdown: int) -> None:
+        """Set scheduled off timer in seconds."""
+        
+        seconds = delay_off_countdown
+        
         await self._try_command(
             "Setting delay off miio device failed.", self._device.delay_off, seconds
         )
@@ -781,4 +785,13 @@ class XiaomiFanP5(XiaomiFan):
             "Turning on natural mode of the miio device failed.",
             self._device.set_mode,
             OperationMode.Normal,
+        )
+    
+    async def async_set_delay_off(self, delay_off_countdown: int) -> None:
+        """Set scheduled off timer in minutes."""
+        
+        minutes = delay_off_countdown
+        
+        await self._try_command(
+            "Setting delay off miio device failed.", self._device.delay_off, minutes
         )
