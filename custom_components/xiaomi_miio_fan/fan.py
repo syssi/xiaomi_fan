@@ -181,6 +181,7 @@ SERVICE_SET_CHILD_LOCK_ON = "xiaomi_miio_set_child_lock_on"
 SERVICE_SET_CHILD_LOCK_OFF = "xiaomi_miio_set_child_lock_off"
 SERVICE_SET_LED_BRIGHTNESS = "xiaomi_miio_set_led_brightness"
 SERVICE_SET_OSCILLATION_ANGLE = "xiaomi_miio_set_oscillation_angle"
+SERVICE_SET_DELAY_OFF = "xiaomi_miio_set_delay_off"
 SERVICE_SET_NATURAL_MODE_ON = "xiaomi_miio_set_natural_mode_on"
 SERVICE_SET_NATURAL_MODE_OFF = "xiaomi_miio_set_natural_mode_off"
 
@@ -192,6 +193,10 @@ SERVICE_SCHEMA_LED_BRIGHTNESS = AIRPURIFIER_SERVICE_SCHEMA.extend(
 
 SERVICE_SCHEMA_OSCILLATION_ANGLE = AIRPURIFIER_SERVICE_SCHEMA.extend(
     {vol.Required(ATTR_ANGLE): vol.All(vol.Coerce(int), vol.In([30, 60, 90, 120]))}
+)
+
+SERVICE_SCHEMA_DELAY_OFF = AIRPURIFIER_SERVICE_SCHEMA.extend(
+    {vol.Required(ATTR_DELAY_OFF_COUNTDOWN): vol.All(vol.Coerce(int), vol.In([60, 120, 180, 240, 300, 360, 420, 480]))}
 )
 
 SERVICE_TO_METHOD = {
@@ -206,6 +211,10 @@ SERVICE_TO_METHOD = {
     SERVICE_SET_OSCILLATION_ANGLE: {
         "method": "async_set_oscillation_angle",
         "schema": SERVICE_SCHEMA_OSCILLATION_ANGLE,
+    },
+    SERVICE_SET_DELAY_OFF: {
+        "method": "async_set_delay_off",
+        "schema": SERVICE_SCHEMA_DELAY_OFF,
     },
     SERVICE_SET_NATURAL_MODE_ON: {"method": "async_set_natural_mode_on"},
     SERVICE_SET_NATURAL_MODE_OFF: {"method": "async_set_natural_mode_off"},
@@ -618,6 +627,14 @@ class XiaomiFan(XiaomiGenericDevice):
             "Setting angle of the miio device failed.", self._device.set_angle, angle
         )
 
+    async def async_set_delay_off(self, delay_off_countdown: int) -> None:
+        """Set scheduled off timer in seconds"""
+        
+        await self._try_command(
+            "Setting delay off miio device failed.", self._device.delay_off, 
+            delay_off_countdown * 60
+        )
+        
     async def async_set_led_brightness(self, brightness: int = 2):
         """Set the led brightness."""
         if self._device_features & FEATURE_SET_LED_BRIGHTNESS == 0:
@@ -766,3 +783,12 @@ class XiaomiFanP5(XiaomiFan):
             self._device.set_mode,
             OperationMode.Normal,
         )
+
+    async def async_set_delay_off(self, delay_off_countdown: int) -> None:
+        """Set scheduled off timer in minutes"""
+        
+        await self._try_command(
+            "Setting delay off miio device failed.", self._device.delay_off, 
+            delay_off_countdown
+        )
+    
