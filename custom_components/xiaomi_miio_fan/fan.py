@@ -628,7 +628,7 @@ class XiaomiFan(XiaomiGenericDevice):
         )
 
     async def async_set_delay_off(self, delay_off_countdown: int) -> None:
-        """Set scheduled off timer in seconds"""
+        """Set scheduled off timer in minutes"""
         
         await self._try_command(
             "Setting delay off miio device failed.", self._device.delay_off, 
