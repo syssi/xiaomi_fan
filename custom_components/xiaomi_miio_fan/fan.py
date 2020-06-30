@@ -119,6 +119,7 @@ AVAILABLE_ATTRIBUTES_FAN_P5 = {
     ATTR_LED: "led",
     ATTR_BUZZER: "buzzer",
     ATTR_CHILD_LOCK: "child_lock",
+    ATTR_RAW_SPEED: "speed",
 }
 
 FAN_SPEED_LEVEL1 = "Level 1"
@@ -672,7 +673,7 @@ class XiaomiFanP5(XiaomiFan):
         """Initialize the fan entity."""
         super().__init__(name, device, model, unique_id, retries)
 
-        self._device_features = FEATURE_FLAGS_FAN
+        self._device_features = FEATURE_FLAGS_FAN_P5
         self._available_attributes = AVAILABLE_ATTRIBUTES_FAN_P5
         self._speed_list = list(FAN_SPEED_LIST)
         self._speed = None
