@@ -104,13 +104,13 @@ Set the oscillation angle. Supported values are 30, 60, 90 and 120 degrees.
 
 #### Service `fan.xiaomi_miio_set_delay_off`
 
-Set the scheduled turn off time. Supported values are 60, 120, 180, 240, 300, 360, 420, 480 minutes.
+Set the scheduled turn off time. Supported values are 0, 60, 120, 180, 240, 300, 360, 420, 480 minutes. When 0 is passed, delay_off is disabled.
 
 
 | Service data attribute    | Optional | Description                                                          |
 |---------------------------|----------|----------------------------------------------------------------------|
 | `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
-| `delay_off_countdown`     |       no | Time in minutes. Valid values are `60`, `120`, `180`, `240`, `300`, `240`, `300`, `360`, `420`, `480` minutes. |
+| `delay_off_countdown`     |       no | Time in minutes. Valid values are `0`, `60`, `120`, `180`, `240`, `300`, `240`, `300`, `360`, `420`, `480` minutes. |
 
 #### Service `fan.xiaomi_miio_set_natural_mode_on`
 
