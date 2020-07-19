@@ -622,8 +622,6 @@ class XiaomiFan(XiaomiGenericDevice):
         """Set oscillation angle."""
         if self._device_features & FEATURE_SET_OSCILLATION_ANGLE == 0:
             return
-        if angle == 140:
-            return
 
         await self._try_command(
             "Setting angle of the miio device failed.", self._device.set_angle, angle
@@ -784,15 +782,6 @@ class XiaomiFanP5(XiaomiFan):
             "Turning on natural mode of the miio device failed.",
             self._device.set_mode,
             OperationMode.Normal,
-        )
-
-    async def async_set_oscillation_angle(self, angle: int) -> None:
-        """Set oscillation angle."""
-        if self._device_features & FEATURE_SET_OSCILLATION_ANGLE == 0:
-            return
-
-        await self._try_command(
-            "Setting angle of the miio device failed.", self._device.set_angle, angle
         )
 
     async def async_set_delay_off(self, delay_off_countdown: int) -> None:
