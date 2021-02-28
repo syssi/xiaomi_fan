@@ -119,6 +119,7 @@ AVAILABLE_ATTRIBUTES_FAN_P5 = {
     ATTR_LED: "led",
     ATTR_BUZZER: "buzzer",
     ATTR_CHILD_LOCK: "child_lock",
+    ATTR_RAW_SPEED: "speed",
 }
 
 FAN_SPEED_LEVEL1 = "Level 1"
@@ -192,11 +193,11 @@ SERVICE_SCHEMA_LED_BRIGHTNESS = AIRPURIFIER_SERVICE_SCHEMA.extend(
 )
 
 SERVICE_SCHEMA_OSCILLATION_ANGLE = AIRPURIFIER_SERVICE_SCHEMA.extend(
-    {vol.Required(ATTR_ANGLE): vol.All(vol.Coerce(int), vol.In([30, 60, 90, 120]))}
+    {vol.Required(ATTR_ANGLE): vol.All(vol.Coerce(int), vol.In([30, 60, 90, 120, 140]))}
 )
 
 SERVICE_SCHEMA_DELAY_OFF = AIRPURIFIER_SERVICE_SCHEMA.extend(
-    {vol.Required(ATTR_DELAY_OFF_COUNTDOWN): vol.All(vol.Coerce(int), vol.In([60, 120, 180, 240, 300, 360, 420, 480]))}
+    {vol.Required(ATTR_DELAY_OFF_COUNTDOWN): vol.All(vol.Coerce(int), vol.In([0, 60, 120, 180, 240, 300, 360, 420, 480]))}
 )
 
 SERVICE_TO_METHOD = {
@@ -672,7 +673,7 @@ class XiaomiFanP5(XiaomiFan):
         """Initialize the fan entity."""
         super().__init__(name, device, model, unique_id, retries)
 
-        self._device_features = FEATURE_FLAGS_FAN
+        self._device_features = FEATURE_FLAGS_FAN_P5
         self._available_attributes = AVAILABLE_ATTRIBUTES_FAN_P5
         self._speed_list = list(FAN_SPEED_LIST)
         self._speed = None
