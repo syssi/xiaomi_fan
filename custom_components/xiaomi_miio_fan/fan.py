@@ -14,8 +14,10 @@ from miio import (  # pylint: disable=import-error
     DeviceException,
     Fan,
     FanLeshow,
-    FanMiot,
     FanP5,
+    FanP9,
+    FanP10,
+    FanP11,
 )
 from miio.fan import (  # pylint: disable=import-error, import-error
     LedBrightness as FanLedBrightness,
@@ -310,8 +312,14 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     elif model == MODEL_FAN_P5:
         fan = FanP5(host, token, model=model)
         device = XiaomiFanP5(name, fan, model, unique_id, retries)
-    elif model in [MODEL_FAN_P9, MODEL_FAN_P10, MODEL_FAN_P11]:
-        fan = FanMiot(host, token, model=model)
+    elif model == MODEL_FAN_P9:
+        fan = FanP9(host, token, model=model)
+        device = XiaomiFanMiot(name, fan, model, unique_id, retries)
+    elif model == MODEL_FAN_P10:
+        fan = FanP10(host, token, model=model)
+        device = XiaomiFanMiot(name, fan, model, unique_id, retries)
+    elif model == MODEL_FAN_P11:
+        fan = FanP11(host, token, model=model)
         device = XiaomiFanMiot(name, fan, model, unique_id, retries)
     elif model == MODEL_FAN_LESHOW_SS4:
         fan = FanLeshow(host, token, model=model)
