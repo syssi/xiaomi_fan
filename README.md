@@ -6,6 +6,23 @@ Please follow the instructions on [Retrieving the Access Token](https://www.home
 
 Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all the work.
 
+## Supported devices
+
+| Name                    | Model                  | Model no. | Specs |
+| ----------------------- | ---------------------- | --------- | ----- |
+| Pedestal Fan Fan V2     | zhimi.fan.v2           | | |
+| Pedestal Fan Fan V3     | zhimi.fan.v3           | | |
+| Pedestal Fan Fan SA1    | zhimi.fan.sa1          | | |
+| Pedestal Fan Fan ZA1    | zhimi.fan.za1          | | |
+| Pedestal Fan Fan ZA3    | zhimi.fan.za3          | | |
+| Pedestal Fan Fan ZA4    | zhimi.fan.za4          | | |
+| Pedestal Fan Fan P5     | dmaker.fan.p5          | | |
+| Pedestal Fan Fan P9     | dmaker.fan.p9          | | |
+| Pedestal Fan Fan P10    | dmaker.fan.p10         | | |
+| Mijia Pedestal Fan      | dmaker.fan.p11         | BPLDS03DM  | 2800mAh, 24W, <=58dB  |
+| Rosou SS4 Ventilator    | leshow.fan.ss4         | | |
+
+
 ## Features
 
 ### Pedestal Fan
@@ -83,7 +100,7 @@ Configuration variables:
 - **host** (*Required*): The IP of your fan.
 - **token** (*Required*): The API token of your fan.
 - **name** (*Optional*): The name of your fan.
-- **model** (*Optional*): The model of your device. Valid values are `zhimi.fan.v2`, `zhimi.fan.v3`, `zhimi.fan.sa1`, `zhimi.fan.za1`, `zhimi.fan.za3`, `zhimi.fan.za4` and `dmaker.fan.p5`. This setting can be used to bypass the device model detection and is recommended if your device isn't always available.
+- **model** (*Optional*): The model of your device. This setting can be used to bypass the device model detection and is recommended if your device isn't always available.
 
 ## Platform services
 
