@@ -11,9 +11,10 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
 ### Pedestal Fan
 
 * Power (on, off)
-* Speed levels (Level 1, Level 2, Level 3, Level 4)
+* Preset modes (Level 1, Level 2, Level 3, Level 4)
+* Speed percentage (0...100)
 * Oscillate (on, off)
-* Oscillation angle (30, 60, 90, 120)
+* Oscillation angle (30, 60, 90, 120, 140, 150)
 * Natural mode (on, off)
 * Rotate by 5 degrees (left, right)
 * Child lock (on, off)
@@ -41,6 +42,26 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
   - battery_state (zhimi.fan.v2 only)
 
 
+### Rosou SS4 Ventilator (leshow.fan.ss4)
+
+* Power (on, off)
+* Operation modes (manual, sleep, strong, natural)
+* Preset modes (Level 1, Level 2, Level 3, Level 4)
+* Speed percentage (0...100)
+* Oscillate (on, off)
+* Buzzer (on, off)
+* Delayed turn off (minutes)
+
+* Attributes
+  - `model`
+  - `mode`
+  - `speed`
+  - `buzzer`
+  - `oscillate`
+  - `delay_off_countdown`
+  - `error_detected`
+
+
 ## Install
 
 You can install this custom component by adding this repository ([https://github.com/syssi/xiaomi_fan](https://github.com/syssi/xiaomi_fan/)) to [HACS](https://hacs.xyz/) in the settings menu of HACS first. You will find the custom component in the integration menu afterwards, look for 'Xiaomi Mi Smart Pedestal Fan Integration'. Alternatively, you can install it manually by copying the custom_component folder to your Home Assistant configuration folder.
@@ -66,14 +87,23 @@ Configuration variables:
 
 ## Platform services
 
-#### Service `fan.set_speed`
+#### Service `fan.set_percentage`
 
-Set the fan speed.
+Set the fan speed percentage.
 
 | Service data attribute    | Optional | Description                                                                |
 |---------------------------|----------|----------------------------------------------------------------------------|
 | `entity_id`               |      yes | Only act on a specific fan entity. Else targets all.                       |
-| `speed`                   |       no | Fan speed. Valid values are `Level 1`, `Level 2`, `Level 3` and `Level 4` as well as a value between 0 and 100. |
+| `percentage`              |       no | Percentage speed setting. Valid values are between 0 and 100.              |
+
+#### Service `fan.set_preset_mode`
+
+Set a preset mode.
+
+| Service data attribute    | Optional | Description                                                                  |
+|---------------------------|----------|------------------------------------------------------------------------------|
+| `entity_id`               |      yes | Only act on a specific fan entity. Else targets all.                         |
+| `preset_mode`             |       no | Preset mode. Valid values are `Level 1`, `Level 2`, `Level 3` and `Level 4`. |
 
 #### Service `fan.oscillate`
 
