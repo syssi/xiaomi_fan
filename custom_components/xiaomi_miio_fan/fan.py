@@ -820,6 +820,20 @@ class XiaomiFanP5(XiaomiFan):
                 FAN_PRESET_MODE_VALUES_P5[preset_mode],
             )
 
+    async def async_set_percentage(self, percentage: int) -> None:
+        """Set the speed percentage of the fan."""
+        _LOGGER.debug("Setting the fan speed percentage to: %s", percentage)
+
+        if percentage == 0:
+            await self.async_turn_off()
+            return
+
+        await self._try_command(
+            "Setting fan speed percentage of the miio device failed.",
+            self._device.set_speed,
+            percentage,
+        )
+
     async def async_set_natural_mode_on(self):
         """Turn the natural mode on."""
         if self._device_features & FEATURE_SET_NATURAL_MODE == 0:
