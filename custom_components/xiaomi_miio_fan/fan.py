@@ -807,18 +807,11 @@ class XiaomiFanP5(XiaomiFan):
             await self.async_turn_off()
             return
 
-        if self._natural_mode:
-            await self._try_command(
-                "Setting fan speed of the miio device failed.",
-                self._device.set_natural_speed,
-                FAN_PRESET_MODE_VALUES_P5[preset_mode],
-            )
-        else:
-            await self._try_command(
-                "Setting fan speed of the miio device failed.",
-                self._device.set_direct_speed,
-                FAN_PRESET_MODE_VALUES_P5[preset_mode],
-            )
+        await self._try_command(
+            "Setting fan speed of the miio device failed.",
+            self._device.set_speed,
+            FAN_PRESET_MODE_VALUES_P5[preset_mode],
+        )
 
     async def async_set_percentage(self, percentage: int) -> None:
         """Set the speed percentage of the fan."""
