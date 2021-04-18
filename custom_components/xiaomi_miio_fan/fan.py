@@ -14,8 +14,10 @@ from miio import (  # pylint: disable=import-error
     DeviceException,
     Fan,
     FanLeshow,
-    FanMiot,
     FanP5,
+    FanP9,
+    FanP10,
+    FanP11,
 )
 from miio.fan import (  # pylint: disable=import-error, import-error
     LedBrightness as FanLedBrightness,
@@ -310,8 +312,14 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     elif model == MODEL_FAN_P5:
         fan = FanP5(host, token, model=model)
         device = XiaomiFanP5(name, fan, model, unique_id, retries)
-    elif model in [MODEL_FAN_P9, MODEL_FAN_P10, MODEL_FAN_P11]:
-        fan = FanMiot(host, token, model=model)
+    elif model == MODEL_FAN_P9:
+        fan = FanP9(host, token, model=model)
+        device = XiaomiFanMiot(name, fan, model, unique_id, retries)
+    elif model == MODEL_FAN_P10:
+        fan = FanP10(host, token, model=model)
+        device = XiaomiFanMiot(name, fan, model, unique_id, retries)
+    elif model == MODEL_FAN_P11:
+        fan = FanP11(host, token, model=model)
         device = XiaomiFanMiot(name, fan, model, unique_id, retries)
     elif model == MODEL_FAN_LESHOW_SS4:
         fan = FanLeshow(host, token, model=model)
@@ -811,6 +819,20 @@ class XiaomiFanP5(XiaomiFan):
                 self._device.set_direct_speed,
                 FAN_PRESET_MODE_VALUES_P5[preset_mode],
             )
+
+    async def async_set_percentage(self, percentage: int) -> None:
+        """Set the speed percentage of the fan."""
+        _LOGGER.debug("Setting the fan speed percentage to: %s", percentage)
+
+        if percentage == 0:
+            await self.async_turn_off()
+            return
+
+        await self._try_command(
+            "Setting fan speed percentage of the miio device failed.",
+            self._device.set_speed,
+            percentage,
+        )
 
     async def async_set_natural_mode_on(self):
         """Turn the natural mode on."""
