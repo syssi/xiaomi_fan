@@ -16,6 +16,7 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
 | Pedestal Fan Fan ZA1    | zhimi.fan.za1          | | |
 | Pedestal Fan Fan ZA3    | zhimi.fan.za3          | | |
 | Pedestal Fan Fan ZA4    | zhimi.fan.za4          | | |
+| Pedestal Fan Fan 1C     | dmaker.fan.1c          | | |
 | Pedestal Fan Fan P5     | dmaker.fan.p5          | | |
 | Pedestal Fan Fan P9     | dmaker.fan.p9          | | |
 | Pedestal Fan Fan P10    | dmaker.fan.p10         | | |
