@@ -70,6 +70,7 @@ MODEL_FAN_ZA1 = "zhimi.fan.za1"
 MODEL_FAN_ZA3 = "zhimi.fan.za3"
 MODEL_FAN_ZA4 = "zhimi.fan.za4"
 MODEL_FAN_P5 = "dmaker.fan.p5"
+MODEL_FAN_P8 = "dmaker.fan.p8"
 MODEL_FAN_P9 = "dmaker.fan.p9"
 MODEL_FAN_P10 = "dmaker.fan.p10"
 MODEL_FAN_P11 = "dmaker.fan.p11"
@@ -90,6 +91,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
                 MODEL_FAN_ZA3,
                 MODEL_FAN_ZA4,
                 MODEL_FAN_P5,
+                MODEL_FAN_P8,
                 MODEL_FAN_P9,
                 MODEL_FAN_P10,
                 MODEL_FAN_P11,
@@ -348,7 +350,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     elif model == MODEL_FAN_LESHOW_SS4:
         fan = FanLeshow(host, token, model=model)
         device = XiaomiFanLeshow(name, fan, model, unique_id, retries)
-    elif model == MODEL_FAN_1C:
+    elif model in [MODEL_FAN_1C, MODEL_FAN_P8]:
         fan = FanC1(host, token, model=model)
         device = XiaomiFan1C(name, fan, model, unique_id, retries)
     else:
