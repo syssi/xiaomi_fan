@@ -15,7 +15,7 @@ from miio import (  # pylint: disable=import-error
     Fan,
     FanLeshow,
     FanP5,
-    FanC1,
+    Fan1C,
     FanP9,
     FanP10,
     FanP11,
@@ -351,7 +351,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         fan = FanLeshow(host, token, model=model)
         device = XiaomiFanLeshow(name, fan, model, unique_id, retries)
     elif model in [MODEL_FAN_1C, MODEL_FAN_P8]:
-        fan = FanC1(host, token, model=model)
+        fan = Fan1C(host, token, model=model)
         device = XiaomiFan1C(name, fan, model, unique_id, retries)
     else:
         _LOGGER.error(
