@@ -333,7 +333,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     name = config[CONF_NAME]
     model = config.get(CONF_MODEL)
     retries = config[CONF_RETRIES]
-    preset_modes_override = config[CONF_PRESET_MODES_OVERRIDE]
+    preset_modes_override = config.get(CONF_PRESET_MODES_OVERRIDE)
 
     _LOGGER.info("Initializing with host %s (token %s...)", host, token[:5])
     unique_id = None
