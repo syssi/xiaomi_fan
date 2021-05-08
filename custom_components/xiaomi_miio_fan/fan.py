@@ -95,6 +95,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
                 MODEL_FAN_ZA1,
                 MODEL_FAN_ZA3,
                 MODEL_FAN_ZA4,
+                MODEL_FAN_ZA5,
                 MODEL_FAN_P5,
                 MODEL_FAN_P8,
                 MODEL_FAN_P9,
