@@ -65,6 +65,7 @@ DOMAIN = "xiaomi_miio_fan"
 
 CONF_MODEL = "model"
 CONF_RETRIES = "retries"
+CONF_OVERRIDE_PRESET_MODES = "override_preset_modes"
 
 MODEL_FAN_V2 = "zhimi.fan.v2"
 MODEL_FAN_V3 = "zhimi.fan.v3"
@@ -107,6 +108,9 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
             ]
         ),
         vol.Optional(CONF_RETRIES, default=DEFAULT_RETRIES): cv.positive_int,
+        vol.Optional(CONF_OVERRIDE_PRESET_MODES, default=None):  vol.All(
+            cv.ensure_list, [cv.string]
+        ),
     }
 )
 
@@ -329,6 +333,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     name = config[CONF_NAME]
     model = config.get(CONF_MODEL)
     retries = config[CONF_RETRIES]
+    override_preset_modes = config[CONF_OVERRIDE_PRESET_MODES]
 
     _LOGGER.info("Initializing with host %s (token %s...)", host, token[:5])
     unique_id = None
@@ -357,28 +362,28 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         MODEL_FAN_ZA4,
     ]:
         fan = Fan(host, token, model=model)
-        device = XiaomiFan(name, fan, model, unique_id, retries)
+        device = XiaomiFan(name, fan, model, unique_id, retries, override_preset_modes)
     elif model == MODEL_FAN_P5:
         fan = FanP5(host, token, model=model)
-        device = XiaomiFanP5(name, fan, model, unique_id, retries)
+        device = XiaomiFanP5(name, fan, model, unique_id, retries, override_preset_modes)
     elif model == MODEL_FAN_P9:
         fan = FanP9(host, token, model=model)
-        device = XiaomiFanMiot(name, fan, model, unique_id, retries)
+        device = XiaomiFanMiot(name, fan, model, unique_id, retries, override_preset_modes)
     elif model == MODEL_FAN_P10:
         fan = FanP10(host, token, model=model)
-        device = XiaomiFanMiot(name, fan, model, unique_id, retries)
+        device = XiaomiFanMiot(name, fan, model, unique_id, retries, override_preset_modes)
     elif model in [MODEL_FAN_P11, MODEL_FAN_P15]:
         fan = FanP11(host, token, model=model)
-        device = XiaomiFanMiot(name, fan, model, unique_id, retries)
+        device = XiaomiFanMiot(name, fan, model, unique_id, retries, override_preset_modes)
     elif model == MODEL_FAN_LESHOW_SS4:
         fan = FanLeshow(host, token, model=model)
-        device = XiaomiFanLeshow(name, fan, model, unique_id, retries)
+        device = XiaomiFanLeshow(name, fan, model, unique_id, retries, override_preset_modes)
     elif model in [MODEL_FAN_1C, MODEL_FAN_P8]:
         fan = Fan1C(host, token, model=model)
-        device = XiaomiFan1C(name, fan, model, unique_id, retries)
+        device = XiaomiFan1C(name, fan, model, unique_id, retries, override_preset_modes)
     elif model == MODEL_FAN_ZA5:
         fan = Fan1C(host, token, model=model)
-        device = XiaomiFanZA5(name, fan, model, unique_id, retries)
+        device = XiaomiFanZA5(name, fan, model, unique_id, retries, override_preset_modes)
     else:
         _LOGGER.error(
             "Unsupported device found! Please create an issue at "
@@ -429,7 +434,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
 class XiaomiGenericDevice(FanEntity):
     """Representation of a generic Xiaomi device."""
 
-    def __init__(self, name, device, model, unique_id, retries):
+    def __init__(self, name, device, model, unique_id, retries, override_preset_modes):
         """Initialize the generic Xiaomi device."""
         self._name = name
         self._device = device
@@ -437,6 +442,7 @@ class XiaomiGenericDevice(FanEntity):
         self._unique_id = unique_id
         self._retry = 0
         self._retries = retries
+        self._override_preset_modes = override_preset_modes
 
         self._available = False
         self._state = None
@@ -447,7 +453,7 @@ class XiaomiGenericDevice(FanEntity):
     @property
     def supported_features(self):
         """Flag supported features."""
-        return SUPPORT_PRESET_MODE
+        return 0
 
     @property
     def should_poll(self):
@@ -570,14 +576,14 @@ class XiaomiGenericDevice(FanEntity):
 class XiaomiFan(XiaomiGenericDevice):
     """Representation of a Xiaomi Pedestal Fan."""
 
-    def __init__(self, name, device, model, unique_id, retries):
+    def __init__(self, name, device, model, unique_id, retries, override_preset_modes):
         """Initialize the fan entity."""
-        super().__init__(name, device, model, unique_id, retries)
+        super().__init__(name, device, model, unique_id, retries, override_preset_modes)
 
         self._device_features = FEATURE_FLAGS_FAN
         self._available_attributes = AVAILABLE_ATTRIBUTES_FAN
         self._percentage = None
-        self._preset_modes = list(FAN_PRESET_MODES)
+        self._preset_modes = override_preset_modes or list(FAN_PRESET_MODES)
         self._preset_mode = None
         self._oscillate = None
         self._natural_mode = False
@@ -796,14 +802,14 @@ class XiaomiFan(XiaomiGenericDevice):
 class XiaomiFanP5(XiaomiFan):
     """Representation of a Xiaomi Pedestal Fan P5."""
 
-    def __init__(self, name, device, model, unique_id, retries):
+    def __init__(self, name, device, model, unique_id, retries, override_preset_modes):
         """Initialize the fan entity."""
-        super().__init__(name, device, model, unique_id, retries)
+        super().__init__(name, device, model, unique_id, retries, override_preset_modes)
 
         self._device_features = FEATURE_FLAGS_FAN_P5
         self._available_attributes = AVAILABLE_ATTRIBUTES_FAN_P5
         self._percentage = None
-        self._preset_modes = list(FAN_PRESET_MODES)
+        self._preset_modes = override_preset_modes or list(FAN_PRESET_MODES)
         self._preset_mode = None
         self._oscillate = None
         self._natural_mode = False
@@ -926,14 +932,14 @@ class XiaomiFanMiot(XiaomiFanP5):
 class XiaomiFanLeshow(XiaomiGenericDevice):
     """Representation of a Xiaomi Fan Leshow SS4."""
 
-    def __init__(self, name, device, model, unique_id, retries):
+    def __init__(self, name, device, model, unique_id, retries, override_preset_modes):
         """Initialize the fan entity."""
-        super().__init__(name, device, model, unique_id, retries)
+        super().__init__(name, device, model, unique_id, retries, override_preset_modes)
 
         self._device_features = FEATURE_FLAGS_FAN_LESHOW_SS4
         self._available_attributes = AVAILABLE_ATTRIBUTES_FAN_LESHOW_SS4
         self._percentage = None
-        self._preset_modes = [mode.name for mode in FanLeshowOperationMode]
+        self._preset_modes = override_preset_modes or [mode.name for mode in FanLeshowOperationMode]
         self._oscillate = None
 
         self._state_attrs.update(
@@ -1060,13 +1066,13 @@ class XiaomiFanLeshow(XiaomiGenericDevice):
 class XiaomiFan1C(XiaomiFan):
     """Representation of a Xiaomi Fan 1C."""
 
-    def __init__(self, name, device, model, unique_id, retries):
+    def __init__(self, name, device, model, unique_id, retries, override_preset_modes):
         """Initialize the fan entity."""
-        super().__init__(name, device, model, unique_id, retries)
+        super().__init__(name, device, model, unique_id, retries, override_preset_modes)
 
         self._device_features = FEATURE_FLAGS_FAN_1C
         self._available_attributes = AVAILABLE_ATTRIBUTES_FAN_1C
-        self._preset_modes = list(FAN_PRESET_MODES_1C)
+        self._preset_modes = override_preset_modes or list(FAN_PRESET_MODES_1C)
         self._oscillate = None
 
         self._state_attrs.update(
@@ -1233,13 +1239,13 @@ class XiaomiFan1C(XiaomiFan):
 class XiaomiFanZA5(XiaomiFan1C):
     """Representation of a Xiaomi Fan ZA5."""
 
-    def __init__(self, name, device, model, unique_id, retries):
+    def __init__(self, name, device, model, unique_id, retries, override_preset_modes):
         """Initialize the fan entity."""
-        super().__init__(name, device, model, unique_id, retries)
+        super().__init__(name, device, model, unique_id, retries, override_preset_modes)
 
         self._device_features = FEATURE_FLAGS_FAN_ZA5
         self._available_attributes = AVAILABLE_ATTRIBUTES_FAN_ZA5
-        self._preset_modes = list(FAN_PRESET_MODES_ZA5)
+        self._preset_modes = override_preset_modes or list(FAN_PRESET_MODES_ZA5)
         self._oscillate = None
 
         self._state_attrs.update(
