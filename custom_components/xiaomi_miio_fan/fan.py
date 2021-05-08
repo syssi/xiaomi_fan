@@ -1128,6 +1128,10 @@ class XiaomiFan1C(XiaomiFan):
         """Set the preset mode of the fan."""
         _LOGGER.debug("Setting the preset mode to: %s", preset_mode)
 
+        if not self._state:
+            await self._try_command(
+                "Turning the miio device on failed.", self._device.on
+            )
         await self._try_command(
             "Setting preset mode of the miio device failed.",
             self._device.set_speed,
@@ -1142,6 +1146,10 @@ class XiaomiFan1C(XiaomiFan):
             await self.async_turn_off()
             return
 
+        if not self._state:
+            await self._try_command(
+                "Turning the miio device on failed.", self._device.on
+            )
         await self._try_command(
             "Setting preset mode of the miio device failed.",
             self._device.set_speed,
