@@ -105,6 +105,7 @@ Configuration variables:
 - **token** (*Required*): The API token of your fan.
 - **name** (*Optional*): The name of your fan.
 - **model** (*Optional*): The model of your device. This setting can be used to bypass the device model detection and is recommended if your device isn't always available.
+- **preset_modes_override** (*Optional*): Overrides the list of preset modes. Can be used to suppress the preset mode switches at homekit by passing an empty list (`preset_modes_override: []`).
 
 ## Platform services
 
