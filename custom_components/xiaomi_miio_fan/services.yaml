@@ -1,0 +1,71 @@
+fan_set_buzzer_on:
+  description: Turn the buzzer on.
+  fields:
+    entity_id:
+      description: Name of the xiaomi miio entity.
+      example: "xiaomi_miio_fan.xiaomi_miio_device"
+
+fan_set_buzzer_off:
+  description: Turn the buzzer off.
+  fields:
+    entity_id:
+      description: Name of the xiaomi miio entity.
+      example: "xiaomi_miio_fan.xiaomi_miio_device"
+
+fan_set_child_lock_on:
+  description: Turn the child lock on.
+  fields:
+    entity_id:
+      description: Name of the xiaomi miio entity.
+      example: "xiaomi_miio_fan.xiaomi_miio_device"
+
+fan_set_child_lock_off:
+  description: Turn the child lock off.
+  fields:
+    entity_id:
+      description: Name of the xiaomi miio entity.
+      example: "xiaomi_miio_fan.xiaomi_miio_device"
+
+fan_set_led_brightness:
+  description: Set the led brightness.
+  fields:
+    entity_id:
+      description: Name of the xiaomi miio entity.
+      example: "xiaomi_miio_fan.xiaomi_miio_device"
+    brightness:
+      description: Brightness (0 = Bright, 1 = Dim, 2 = Off)
+      example: 1
+
+fan_set_natural_mode_on:
+  description: Turn the natural mode on.
+  fields:
+    entity_id:
+      description: Name of the xiaomi miio entity.
+      example: "xiaomi_miio_fan.xiaomi_miio_device"
+
+fan_set_natural_mode_off:
+  description: Turn the natural mode off.
+  fields:
+    entity_id:
+      description: Name of the xiaomi miio entity.
+      example: "xiaomi_miio_fan.xiaomi_miio_device"
+
+fan_set_oscillation_angle:
+  description: Set the oscillation angle.
+  fields:
+    entity_id:
+      description: Name of the xiaomi miio entity.
+      example: "xiaomi_miio_fan.xiaomi_miio_device"
+    angle:
+      description: Supported values are 30, 60, 90, 120, 140 or 150 degrees.
+      example: 30
+
+fan_set_delay_off:
+  description: Set the scheduled turn off time.
+  fields:
+    entity_id:
+      description: Name of the xiaomi miio entity.
+      example: "xiaomi_miio_fan.xiaomi_miio_device"
+    delay_off_countdown:
+      description: Time in minutes. Valid values are 0, 60, 120, 180, 240, 300, 240, 300, 360, 420, 480 minutes.
+      example: 60
