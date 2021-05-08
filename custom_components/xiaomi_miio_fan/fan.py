@@ -72,6 +72,7 @@ MODEL_FAN_SA1 = "zhimi.fan.sa1"
 MODEL_FAN_ZA1 = "zhimi.fan.za1"
 MODEL_FAN_ZA3 = "zhimi.fan.za3"
 MODEL_FAN_ZA4 = "zhimi.fan.za4"
+MODEL_FAN_ZA5 = "zhimi.fan.za5"
 MODEL_FAN_P5 = "dmaker.fan.p5"
 MODEL_FAN_P8 = "dmaker.fan.p8"
 MODEL_FAN_P9 = "dmaker.fan.p9"
@@ -184,6 +185,8 @@ AVAILABLE_ATTRIBUTES_FAN_1C = {
     ATTR_CHILD_LOCK: "child_lock",
 }
 
+AVAILABLE_ATTRIBUTES_FAN_ZA5 = AVAILABLE_ATTRIBUTES_FAN_1C
+
 FAN_SPEED_LEVEL1 = "Level 1"
 FAN_SPEED_LEVEL2 = "Level 2"
 FAN_SPEED_LEVEL3 = "Level 3"
@@ -223,6 +226,10 @@ FAN_PRESET_MODES_1C = {
 FAN_SPEEDS_1C = list(FAN_PRESET_MODES_1C)
 FAN_SPEEDS_1C.remove(SPEED_OFF)
 
+# FIXME: Add speed level 4
+FAN_PRESET_MODES_ZA5 = FAN_PRESET_MODES_1C
+FAN_SPEEDS_ZA5 = FAN_SPEEDS_1C
+
 SUCCESS = ["ok"]
 
 FEATURE_SET_BUZZER = 1
@@ -250,6 +257,13 @@ FEATURE_FLAGS_FAN_P5 = (
 
 FEATURE_FLAGS_FAN_LESHOW_SS4 = FEATURE_SET_BUZZER
 FEATURE_FLAGS_FAN_1C = FEATURE_FLAGS_FAN
+
+# FIXME: Implement FEATURE_SET_OSCILLATION_ANGLE
+FEATURE_FLAGS_FAN_ZA5 = (
+    FEATURE_SET_BUZZER
+    | FEATURE_SET_CHILD_LOCK
+    | FEATURE_SET_NATURAL_MODE
+)
 
 SERVICE_SET_BUZZER_ON = "fan_set_buzzer_on"
 SERVICE_SET_BUZZER_OFF = "fan_set_buzzer_off"
@@ -359,6 +373,9 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     elif model in [MODEL_FAN_1C, MODEL_FAN_P8]:
         fan = Fan1C(host, token, model=model)
         device = XiaomiFan1C(name, fan, model, unique_id, retries)
+    elif model == MODEL_FAN_ZA5:
+        fan = Fan1C(host, token, model=model)
+        device = XiaomiFanZA5(name, fan, model, unique_id, retries)
     else:
         _LOGGER.error(
             "Unsupported device found! Please create an issue at "
@@ -1207,4 +1224,21 @@ class XiaomiFan1C(XiaomiFan):
             "Setting fan natural mode of the miio device failed.",
             self._device.set_mode,
             FanOperationModeMiot.Normal,
+        )
+
+
+class XiaomiFanZA5(XiaomiFan1C):
+    """Representation of a Xiaomi Fan ZA5."""
+
+    def __init__(self, name, device, model, unique_id, retries):
+        """Initialize the fan entity."""
+        super().__init__(name, device, model, unique_id, retries)
+
+        self._device_features = FEATURE_FLAGS_FAN_ZA5
+        self._available_attributes = AVAILABLE_ATTRIBUTES_FAN_ZA5
+        self._preset_modes = list(FAN_PRESET_MODES_ZA5)
+        self._oscillate = None
+
+        self._state_attrs.update(
+            {attribute: None for attribute in self._available_attributes}
         )
