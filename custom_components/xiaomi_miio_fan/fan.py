@@ -108,9 +108,8 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
             ]
         ),
         vol.Optional(CONF_RETRIES, default=DEFAULT_RETRIES): cv.positive_int,
-        vol.Optional(CONF_PRESET_MODES_OVERRIDE, default=None):  vol.All(
-            cv.ensure_list, [cv.string]
-        ),
+        vol.Optional(CONF_PRESET_MODES_OVERRIDE, default=None):
+            vol.Any(None, [cv.string]),
     }
 )
 
