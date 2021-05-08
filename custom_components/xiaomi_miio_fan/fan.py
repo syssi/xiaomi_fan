@@ -7,6 +7,7 @@ https://home-assistant.io/components/fan.xiaomi_miio/
 import asyncio
 from enum import Enum
 from functools import partial
+from typing import Optional
 import logging
 
 from miio import (  # pylint: disable=import-error
@@ -51,7 +52,9 @@ from homeassistant.const import (
     CONF_TOKEN,
 )
 from homeassistant.exceptions import PlatformNotReady
+from homeassistant.util.percentage import ordered_list_item_to_percentage, percentage_to_ordered_list_item
 import homeassistant.helpers.config_validation as cv
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -69,11 +72,13 @@ MODEL_FAN_SA1 = "zhimi.fan.sa1"
 MODEL_FAN_ZA1 = "zhimi.fan.za1"
 MODEL_FAN_ZA3 = "zhimi.fan.za3"
 MODEL_FAN_ZA4 = "zhimi.fan.za4"
+MODEL_FAN_ZA5 = "zhimi.fan.za5"
 MODEL_FAN_P5 = "dmaker.fan.p5"
 MODEL_FAN_P8 = "dmaker.fan.p8"
 MODEL_FAN_P9 = "dmaker.fan.p9"
 MODEL_FAN_P10 = "dmaker.fan.p10"
 MODEL_FAN_P11 = "dmaker.fan.p11"
+MODEL_FAN_P15 = "dmaker.fan.p15"
 MODEL_FAN_LESHOW_SS4 = "leshow.fan.ss4"
 MODEL_FAN_1C = "dmaker.fan.1c"
 
@@ -95,6 +100,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
                 MODEL_FAN_P9,
                 MODEL_FAN_P10,
                 MODEL_FAN_P11,
+                MODEL_FAN_P15,
                 MODEL_FAN_LESHOW_SS4,
                 MODEL_FAN_1C,
             ]
@@ -181,6 +187,8 @@ AVAILABLE_ATTRIBUTES_FAN_1C = {
     ATTR_CHILD_LOCK: "child_lock",
 }
 
+AVAILABLE_ATTRIBUTES_FAN_ZA5 = AVAILABLE_ATTRIBUTES_FAN_1C
+
 FAN_SPEED_LEVEL1 = "Level 1"
 FAN_SPEED_LEVEL2 = "Level 2"
 FAN_SPEED_LEVEL3 = "Level 3"
@@ -217,6 +225,13 @@ FAN_PRESET_MODES_1C = {
     FAN_SPEED_LEVEL3: 3,
 }
 
+FAN_SPEEDS_1C = list(FAN_PRESET_MODES_1C)
+FAN_SPEEDS_1C.remove(SPEED_OFF)
+
+# FIXME: Add speed level 4
+FAN_PRESET_MODES_ZA5 = FAN_PRESET_MODES_1C
+FAN_SPEEDS_ZA5 = FAN_SPEEDS_1C
+
 SUCCESS = ["ok"]
 
 FEATURE_SET_BUZZER = 1
@@ -244,6 +259,13 @@ FEATURE_FLAGS_FAN_P5 = (
 
 FEATURE_FLAGS_FAN_LESHOW_SS4 = FEATURE_SET_BUZZER
 FEATURE_FLAGS_FAN_1C = FEATURE_FLAGS_FAN
+
+# FIXME: Implement FEATURE_SET_OSCILLATION_ANGLE
+FEATURE_FLAGS_FAN_ZA5 = (
+    FEATURE_SET_BUZZER
+    | FEATURE_SET_CHILD_LOCK
+    | FEATURE_SET_NATURAL_MODE
+)
 
 SERVICE_SET_BUZZER_ON = "fan_set_buzzer_on"
 SERVICE_SET_BUZZER_OFF = "fan_set_buzzer_off"
@@ -344,7 +366,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     elif model == MODEL_FAN_P10:
         fan = FanP10(host, token, model=model)
         device = XiaomiFanMiot(name, fan, model, unique_id, retries)
-    elif model == MODEL_FAN_P11:
+    elif model in [MODEL_FAN_P11, MODEL_FAN_P15]:
         fan = FanP11(host, token, model=model)
         device = XiaomiFanMiot(name, fan, model, unique_id, retries)
     elif model == MODEL_FAN_LESHOW_SS4:
@@ -353,6 +375,9 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     elif model in [MODEL_FAN_1C, MODEL_FAN_P8]:
         fan = Fan1C(host, token, model=model)
         device = XiaomiFan1C(name, fan, model, unique_id, retries)
+    elif model == MODEL_FAN_ZA5:
+        fan = Fan1C(host, token, model=model)
+        device = XiaomiFanZA5(name, fan, model, unique_id, retries)
     else:
         _LOGGER.error(
             "Unsupported device found! Please create an issue at "
@@ -1050,7 +1075,7 @@ class XiaomiFan1C(XiaomiFan):
     @property
     def supported_features(self) -> int:
         """Supported features."""
-        return SUPPORT_PRESET_MODE | SUPPORT_OSCILLATE
+        return SUPPORT_SET_SPEED | SUPPORT_PRESET_MODE | SUPPORT_OSCILLATE
 
     async def async_update(self):
         """Fetch state from the device."""
@@ -1096,6 +1121,16 @@ class XiaomiFan1C(XiaomiFan):
                 )
 
     @property
+    def percentage(self) -> Optional[int]:
+        """Return the current speed percentage."""
+        return ordered_list_item_to_percentage(FAN_SPEEDS_1C, self._preset_mode)
+
+    @property
+    def speed_count(self) -> int:
+        """Return the number of speeds the fan supports."""
+        return len(FAN_SPEEDS_1C)
+
+    @property
     def preset_modes(self):
         """Get the list of available preset modes."""
         return self._preset_modes
@@ -1112,10 +1147,34 @@ class XiaomiFan1C(XiaomiFan):
         """Set the preset mode of the fan."""
         _LOGGER.debug("Setting the preset mode to: %s", preset_mode)
 
+        if not self._state:
+            await self._try_command(
+                "Turning the miio device on failed.", self._device.on
+            )
         await self._try_command(
             "Setting preset mode of the miio device failed.",
             self._device.set_speed,
             FAN_PRESET_MODES_1C[preset_mode],
+        )
+
+    async def async_set_percentage(self, percentage: int) -> None:
+        """Set the speed percentage of the fan."""
+        _LOGGER.debug("Setting the fan speed percentage to: %s", percentage)
+
+        if percentage == 0:
+            await self.async_turn_off()
+            return
+
+        if not self._state:
+            await self._try_command(
+                "Turning the miio device on failed.", self._device.on
+            )
+        await self._try_command(
+            "Setting preset mode of the miio device failed.",
+            self._device.set_speed,
+            FAN_PRESET_MODES_1C[
+                percentage_to_ordered_list_item(FAN_SPEEDS_1C, percentage)
+            ],
         )
 
     @property
@@ -1167,4 +1226,21 @@ class XiaomiFan1C(XiaomiFan):
             "Setting fan natural mode of the miio device failed.",
             self._device.set_mode,
             FanOperationModeMiot.Normal,
+        )
+
+
+class XiaomiFanZA5(XiaomiFan1C):
+    """Representation of a Xiaomi Fan ZA5."""
+
+    def __init__(self, name, device, model, unique_id, retries):
+        """Initialize the fan entity."""
+        super().__init__(name, device, model, unique_id, retries)
+
+        self._device_features = FEATURE_FLAGS_FAN_ZA5
+        self._available_attributes = AVAILABLE_ATTRIBUTES_FAN_ZA5
+        self._preset_modes = list(FAN_PRESET_MODES_ZA5)
+        self._oscillate = None
+
+        self._state_attrs.update(
+            {attribute: None for attribute in self._available_attributes}
         )
