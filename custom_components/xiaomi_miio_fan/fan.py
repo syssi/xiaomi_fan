@@ -683,7 +683,7 @@ class XiaomiFan(XiaomiGenericDevice):
     async def async_set_direction(self, direction: str) -> None:
         """Set the direction of the fan."""
         if direction == 'forward':
-            direction = 'left'
+            direction = 'right'
 
         if direction == 'reverse':
             direction = 'left'
