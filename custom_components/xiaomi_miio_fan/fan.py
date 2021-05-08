@@ -682,24 +682,19 @@ class XiaomiFan(XiaomiGenericDevice):
 
     async def async_set_direction(self, direction: str) -> None:
         """Set the direction of the fan."""
-        if direction == 'forward':
-            direction = 'left'
+        if direction in ["left", "right"]:
+            if self._oscillate:
+                await self._try_command(
+                    "Setting oscillate off of the miio device failed.",
+                    self._device.set_oscillate,
+                    False,
+                )
 
-        if direction == 'reverse':
-            direction = 'left'
-
-        if self._oscillate:
             await self._try_command(
-                "Setting oscillate off of the miio device failed.",
-                self._device.set_oscillate,
-                False,
+                "Setting move direction of the miio device failed.",
+                self._device.set_rotate,
+                FanMoveDirection(direction),
             )
-
-        await self._try_command(
-            "Setting move direction of the miio device failed.",
-            self._device.set_rotate,
-            FanMoveDirection(direction),
-        )
 
     @property
     def oscillating(self):
