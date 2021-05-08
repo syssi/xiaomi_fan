@@ -1040,7 +1040,7 @@ class XiaomiFan1C(XiaomiFan):
 
         self._device_features = FEATURE_FLAGS_FAN_1C
         self._available_attributes = AVAILABLE_ATTRIBUTES_FAN_1C
-        self._preset_modes = FAN_PRESET_MODES_1C
+        self._preset_modes = list(FAN_PRESET_MODES_1C)
         self._oscillate = None
 
         self._state_attrs.update(
