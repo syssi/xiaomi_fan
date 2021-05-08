@@ -2,10 +2,11 @@
   "domain": "xiaomi_miio_fan",
   "name": "Xiaomi Mi Smart Pedestal Fan",
   "version": "0.3.3",
+  "iot_class": "local_polling",
   "documentation": "https://github.com/syssi/xiaomi_fan",
   "requirements": [
     "construct==2.10.56",
-    "python-miio>=0.5.5"
+    "python-miio>=0.5.6"
   ],
   "dependencies": [],
   "codeowners": [

@@ -3,5 +3,5 @@
   "content_in_root": false,
   "render_readme": true,
   "iot_class": "local_polling",
-  "homeassistant": "2021.4.0"
+  "homeassistant": "2021.5.1"
 }

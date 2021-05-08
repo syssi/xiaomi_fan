@@ -16,7 +16,9 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
 | Pedestal Fan Fan ZA1    | zhimi.fan.za1          | | |
 | Pedestal Fan Fan ZA3    | zhimi.fan.za3          | | |
 | Pedestal Fan Fan ZA4    | zhimi.fan.za4          | | |
+| Pedestal Fan Fan 1C     | dmaker.fan.1c          | | |
 | Pedestal Fan Fan P5     | dmaker.fan.p5          | | |
+| Pedestal Fan Fan P8     | dmaker.fan.p8          | | |
 | Pedestal Fan Fan P9     | dmaker.fan.p9          | | |
 | Pedestal Fan Fan P10    | dmaker.fan.p10         | | |
 | Mijia Pedestal Fan      | dmaker.fan.p11         | BPLDS03DM  | 2800mAh, 24W, <=58dB  |
@@ -140,7 +142,7 @@ Rotates the fan 5 degrees to the left/right.
 | `entity_id`               |      yes | Only act on a specific fan entity. Else targets all.                 |
 | `direction`               |       no | Rotate the fan 5 degrees. Valid values are `left` and `right`.       |
 
-#### Service `fan.xiaomi_miio_set_oscillation_angle`
+#### Service `xiaomi_miio_fan.fan_set_oscillation_angle`
 
 Set the oscillation angle. Supported values are 30, 60, 90 and 120 degrees.
 
@@ -149,7 +151,7 @@ Set the oscillation angle. Supported values are 30, 60, 90 and 120 degrees.
 | `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
 | `angle`                   |       no | Angle in degrees. Valid values are `30`, `60`, `90` and `120`.       |
 
-#### Service `fan.xiaomi_miio_set_delay_off`
+#### Service `xiaomi_miio_fan.fan_set_delay_off`
 
 Set the scheduled turn off time. Supported values are 0, 60, 120, 180, 240, 300, 360, 420, 480 minutes. When 0 is passed, delay_off is disabled.
 
@@ -159,7 +161,7 @@ Set the scheduled turn off time. Supported values are 0, 60, 120, 180, 240, 300,
 | `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
 | `delay_off_countdown`     |       no | Time in minutes. Valid values are `0`, `60`, `120`, `180`, `240`, `300`, `240`, `300`, `360`, `420`, `480` minutes. |
 
-#### Service `fan.xiaomi_miio_set_natural_mode_on`
+#### Service `xiaomi_miio_fan.fan_set_natural_mode_on`
 
 Turn the natural mode on.
 
@@ -167,7 +169,7 @@ Turn the natural mode on.
 |---------------------------|----------|----------------------------------------------------------------------|
 | `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
 
-#### Service `fan.xiaomi_miio_set_natural_mode_off`
+#### Service `xiaomi_miio_fan.fan_set_natural_mode_off`
 
 Turn the natural mode off.
 
@@ -175,7 +177,7 @@ Turn the natural mode off.
 |---------------------------|----------|----------------------------------------------------------------------|
 | `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
 
-#### Service `fan.xiaomi_miio_set_buzzer_on`
+#### Service `xiaomi_miio_fan.fan_set_buzzer_on`
 
 Turn the buzzer on.
 
@@ -183,7 +185,7 @@ Turn the buzzer on.
 |---------------------------|----------|----------------------------------------------------------------------|
 | `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
 
-#### Service `fan.xiaomi_miio_set_buzzer_off`
+#### Service `xiaomi_miio_fan.fan_set_buzzer_off`
 
 Turn the buzzer off.
 
@@ -191,7 +193,7 @@ Turn the buzzer off.
 |---------------------------|----------|----------------------------------------------------------------------|
 | `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
 
-#### Service `fan.xiaomi_miio_set_child_lock_on`
+#### Service `xiaomi_miio_fan.fan_set_child_lock_on`
 
 Turn the child lock on.
 
@@ -199,7 +201,7 @@ Turn the child lock on.
 |---------------------------|----------|----------------------------------------------------------------------|
 | `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
 
-#### Service `fan.xiaomi_miio_set_child_lock_off`
+#### Service `xiaomi_miio_fan.fan_set_child_lock_off`
 
 Turn the child lock off.
 
@@ -207,7 +209,7 @@ Turn the child lock off.
 |---------------------------|----------|----------------------------------------------------------------------|
 | `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
 
-#### Service `fan.xiaomi_miio_set_led_brightness`
+#### Service `xiaomi_miio_fan.fan_set_led_brightness`
 
 Set the led brightness. Supported values are 0 (Bright), 1 (Dim), 2 (Off).
 
