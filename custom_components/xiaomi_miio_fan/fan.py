@@ -5,35 +5,13 @@ For more details about this platform, please refer to the documentation
 https://home-assistant.io/components/fan.xiaomi_miio/
 """
 import asyncio
+import logging
 from enum import Enum
 from functools import partial
 from typing import Optional
-import logging
 
-from miio import (  # pylint: disable=import-error
-    Device,
-    DeviceException,
-    Fan,
-    FanLeshow,
-    FanP5,
-    Fan1C,
-    FanP9,
-    FanP10,
-    FanP11,
-)
-from miio.fan import (  # pylint: disable=import-error, import-error
-    LedBrightness as FanLedBrightness,
-    MoveDirection as FanMoveDirection,
-    OperationMode as FanOperationMode,
-)
-from miio.fan_leshow import (  # pylint: disable=import-error, import-error
-    OperationMode as FanLeshowOperationMode,
-)
-from miio.fan_miot import (
-    OperationModeMiot as FanOperationModeMiot
-)
+import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
-
 from homeassistant.components.fan import (
     ATTR_SPEED,
     PLATFORM_SCHEMA,
@@ -52,9 +30,30 @@ from homeassistant.const import (
     CONF_TOKEN,
 )
 from homeassistant.exceptions import PlatformNotReady
-from homeassistant.util.percentage import ordered_list_item_to_percentage, percentage_to_ordered_list_item
-import homeassistant.helpers.config_validation as cv
-
+from homeassistant.util.percentage import (
+    ordered_list_item_to_percentage,
+    percentage_to_ordered_list_item,
+)
+from miio import (  # pylint: disable=import-error
+    Device,
+    DeviceException,
+    Fan,
+    Fan1C,
+    FanLeshow,
+    FanP5,
+    FanP9,
+    FanP10,
+    FanP11,
+)
+from miio.fan import (
+    LedBrightness as FanLedBrightness,  # pylint: disable=import-error, import-error
+)
+from miio.fan import MoveDirection as FanMoveDirection
+from miio.fan import OperationMode as FanOperationMode
+from miio.fan_leshow import (
+    OperationMode as FanLeshowOperationMode,  # pylint: disable=import-error, import-error
+)
+from miio.fan_miot import OperationModeMiot as FanOperationModeMiot
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -108,8 +107,9 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
             ]
         ),
         vol.Optional(CONF_RETRIES, default=DEFAULT_RETRIES): cv.positive_int,
-        vol.Optional(CONF_PRESET_MODES_OVERRIDE, default=None):
-            vol.Any(None, [cv.string]),
+        vol.Optional(CONF_PRESET_MODES_OVERRIDE, default=None): vol.Any(
+            None, [cv.string]
+        ),
     }
 )
 
@@ -266,9 +266,7 @@ FEATURE_FLAGS_FAN_1C = FEATURE_FLAGS_FAN
 
 # FIXME: Implement FEATURE_SET_OSCILLATION_ANGLE
 FEATURE_FLAGS_FAN_ZA5 = (
-    FEATURE_SET_BUZZER
-    | FEATURE_SET_CHILD_LOCK
-    | FEATURE_SET_NATURAL_MODE
+    FEATURE_SET_BUZZER | FEATURE_SET_CHILD_LOCK | FEATURE_SET_NATURAL_MODE
 )
 
 SERVICE_SET_BUZZER_ON = "fan_set_buzzer_on"
@@ -364,25 +362,39 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         device = XiaomiFan(name, fan, model, unique_id, retries, preset_modes_override)
     elif model == MODEL_FAN_P5:
         fan = FanP5(host, token, model=model)
-        device = XiaomiFanP5(name, fan, model, unique_id, retries, preset_modes_override)
+        device = XiaomiFanP5(
+            name, fan, model, unique_id, retries, preset_modes_override
+        )
     elif model == MODEL_FAN_P9:
         fan = FanP9(host, token, model=model)
-        device = XiaomiFanMiot(name, fan, model, unique_id, retries, preset_modes_override)
+        device = XiaomiFanMiot(
+            name, fan, model, unique_id, retries, preset_modes_override
+        )
     elif model == MODEL_FAN_P10:
         fan = FanP10(host, token, model=model)
-        device = XiaomiFanMiot(name, fan, model, unique_id, retries, preset_modes_override)
+        device = XiaomiFanMiot(
+            name, fan, model, unique_id, retries, preset_modes_override
+        )
     elif model in [MODEL_FAN_P11, MODEL_FAN_P15]:
         fan = FanP11(host, token, model=model)
-        device = XiaomiFanMiot(name, fan, model, unique_id, retries, preset_modes_override)
+        device = XiaomiFanMiot(
+            name, fan, model, unique_id, retries, preset_modes_override
+        )
     elif model == MODEL_FAN_LESHOW_SS4:
         fan = FanLeshow(host, token, model=model)
-        device = XiaomiFanLeshow(name, fan, model, unique_id, retries, preset_modes_override)
+        device = XiaomiFanLeshow(
+            name, fan, model, unique_id, retries, preset_modes_override
+        )
     elif model in [MODEL_FAN_1C, MODEL_FAN_P8]:
         fan = Fan1C(host, token, model=model)
-        device = XiaomiFan1C(name, fan, model, unique_id, retries, preset_modes_override)
+        device = XiaomiFan1C(
+            name, fan, model, unique_id, retries, preset_modes_override
+        )
     elif model == MODEL_FAN_ZA5:
         fan = Fan1C(host, token, model=model)
-        device = XiaomiFanZA5(name, fan, model, unique_id, retries, preset_modes_override)
+        device = XiaomiFanZA5(
+            name, fan, model, unique_id, retries, preset_modes_override
+        )
     else:
         _LOGGER.error(
             "Unsupported device found! Please create an issue at "
@@ -716,11 +728,11 @@ class XiaomiFan(XiaomiGenericDevice):
 
     async def async_set_direction(self, direction: str) -> None:
         """Set the direction of the fan."""
-        if direction == 'forward':
-            direction = 'right'
+        if direction == "forward":
+            direction = "right"
 
-        if direction == 'reverse':
-            direction = 'left'
+        if direction == "reverse":
+            direction = "left"
 
         if self._oscillate:
             await self._try_command(
