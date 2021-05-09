@@ -376,7 +376,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
             name, fan, model, unique_id, retries, preset_modes_override
         )
     elif model in [MODEL_FAN_P11, MODEL_FAN_P15]:
-        fan = FanP11(host, token, model=model)
+        fan = FanP11(host, token, model=MODEL_FAN_P11)
         device = XiaomiFanMiot(
             name, fan, model, unique_id, retries, preset_modes_override
         )
