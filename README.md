@@ -2,7 +2,7 @@
 
 This is a custom component for home assistant to integrate the Xiaomi Mi Smart Fan.
 
-Please follow the instructions on [Retrieving the Access Token](https://www.home-assistant.io/components/vacuum.xiaomi_miio/#retrieving-the-access-token) to get the API token to use in the configuration.yaml file.
+Please follow the instructions on [Retrieving the Access Token](https://www.home-assistant.io/integrations/xiaomi_miio#retrieving-the-access-token) to get the API token to use in the configuration.yaml file.
 
 Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all the work.
 
