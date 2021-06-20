@@ -103,6 +103,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
                 MODEL_FAN_P10,
                 MODEL_FAN_P11,
                 MODEL_FAN_P15,
+                MODEL_FAN_P18,
                 MODEL_FAN_LESHOW_SS4,
                 MODEL_FAN_1C,
             ]
