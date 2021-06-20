@@ -79,6 +79,7 @@ MODEL_FAN_P9 = "dmaker.fan.p9"
 MODEL_FAN_P10 = "dmaker.fan.p10"
 MODEL_FAN_P11 = "dmaker.fan.p11"
 MODEL_FAN_P15 = "dmaker.fan.p15"
+MODEL_FAN_P18 = "dmaker.fan.p18"
 MODEL_FAN_LESHOW_SS4 = "leshow.fan.ss4"
 MODEL_FAN_1C = "dmaker.fan.1c"
 
@@ -102,6 +103,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
                 MODEL_FAN_P10,
                 MODEL_FAN_P11,
                 MODEL_FAN_P15,
+                MODEL_FAN_P18,
                 MODEL_FAN_LESHOW_SS4,
                 MODEL_FAN_1C,
             ]
@@ -370,8 +372,8 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         device = XiaomiFanMiot(
             name, fan, model, unique_id, retries, preset_modes_override
         )
-    elif model == MODEL_FAN_P10:
-        fan = FanP10(host, token, model=model)
+    elif model in [MODEL_FAN_P10, MODEL_FAN_P18]:
+        fan = FanP10(host, token, model=MODEL_FAN_P10)
         device = XiaomiFanMiot(
             name, fan, model, unique_id, retries, preset_modes_override
         )
@@ -943,7 +945,7 @@ class XiaomiFanP5(XiaomiFan):
 
 
 class XiaomiFanMiot(XiaomiFanP5):
-    """Representation of a Xiaomi Pedestal Fan P9, P10, P11."""
+    """Representation of a Xiaomi Pedestal Fan P9, P10, P11, P18."""
 
 
 class XiaomiFanLeshow(XiaomiGenericDevice):
