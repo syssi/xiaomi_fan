@@ -2,7 +2,7 @@
 
 This is a custom component for home assistant to integrate the Xiaomi Mi Smart Fan.
 
-Please follow the instructions on [Retrieving the Access Token](https://www.home-assistant.io/components/vacuum.xiaomi_miio/#retrieving-the-access-token) to get the API token to use in the configuration.yaml file.
+Please follow the instructions on [Retrieving the Access Token](https://www.home-assistant.io/integrations/xiaomi_miio#retrieving-the-access-token) to get the API token to use in the configuration.yaml file.
 
 Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all the work.
 
@@ -24,6 +24,7 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
 | Pedestal Fan Fan P10    | dmaker.fan.p10         | | |
 | Mijia Pedestal Fan      | dmaker.fan.p11         | BPLDS03DM  | 2800mAh, 24W, <=58dB  |
 | Pedestal Fan Fan P15    | dmaker.fan.p15         | | |
+| Mi Smart Standing Fan 2 | dmaker.fan.p18         | BPLDS02DM  | AC, 15W, 30.2-55.8bB  |
 | Rosou SS4 Ventilator    | leshow.fan.ss4         | | |
 
 
