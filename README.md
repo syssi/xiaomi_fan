@@ -24,6 +24,7 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
 | Pedestal Fan Fan P10    | dmaker.fan.p10         | | |
 | Mijia Pedestal Fan      | dmaker.fan.p11         | BPLDS03DM  | 2800mAh, 24W, <=58dB  |
 | Pedestal Fan Fan P15    | dmaker.fan.p15         | | |
+| Pedestal Fan Fan P18    | dmaker.fan.p18         | | |
 | Rosou SS4 Ventilator    | leshow.fan.ss4         | | |
 
 
