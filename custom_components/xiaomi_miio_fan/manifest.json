@@ -1,7 +1,7 @@
 {
   "domain": "xiaomi_miio_fan",
   "name": "Xiaomi Mi Smart Pedestal Fan",
-  "version": "0.3.11",
+  "version": "0.3.14",
   "iot_class": "local_polling",
   "documentation": "https://github.com/syssi/xiaomi_fan",
   "issue_tracker": "https://github.com/syssi/xiaomi_fan/issues",
