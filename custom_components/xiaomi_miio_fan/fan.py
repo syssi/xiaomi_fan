@@ -10,7 +10,6 @@ from enum import Enum
 from functools import partial
 from typing import Optional
 
-import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from homeassistant.components.fan import (
     ATTR_SPEED,
@@ -29,6 +28,9 @@ from homeassistant.const import (
     CONF_NAME,
     CONF_TOKEN,
 )
+
+import homeassistant.helpers.config_validation as cv
+from homeassistant.config_entries import SOURCE_IMPORT
 from homeassistant.exceptions import PlatformNotReady
 from homeassistant.util.percentage import (
     ordered_list_item_to_percentage,
@@ -54,34 +56,35 @@ from miio.fan_leshow import (
     OperationMode as FanLeshowOperationMode,  # pylint: disable=import-error, import-error
 )
 from miio.fan_miot import OperationModeMiot as FanOperationModeMiot
+from .const import (
+    DEFAULT_NAME,
+    DEFAULT_RETRIES,
+    DATA_KEY,
+    DOMAIN,
+    CONF_MODEL,
+    CONF_RETRIES,
+    CONF_PRESET_MODES_OVERRIDE,
+    MODEL_FAN_V2,
+    MODEL_FAN_V3,
+    MODEL_FAN_SA1,
+    MODEL_FAN_ZA1,
+    MODEL_FAN_ZA3,
+    MODEL_FAN_ZA4,
+    MODEL_FAN_ZA5,
+    MODEL_FAN_P5,
+    MODEL_FAN_P8,
+    MODEL_FAN_P9,
+    MODEL_FAN_P10,
+    MODEL_FAN_P11,
+    MODEL_FAN_P15,
+    MODEL_FAN_P18,
+    MODEL_FAN_LESHOW_SS4,
+    MODEL_FAN_1C,
+    OPT_MODEL
+)
+
 
 _LOGGER = logging.getLogger(__name__)
-
-DEFAULT_NAME = "Xiaomi Miio Fan"
-DEFAULT_RETRIES = 20
-DATA_KEY = "fan.xiaomi_miio_fan"
-DOMAIN = "xiaomi_miio_fan"
-
-CONF_MODEL = "model"
-CONF_RETRIES = "retries"
-CONF_PRESET_MODES_OVERRIDE = "preset_modes_override"
-
-MODEL_FAN_V2 = "zhimi.fan.v2"
-MODEL_FAN_V3 = "zhimi.fan.v3"
-MODEL_FAN_SA1 = "zhimi.fan.sa1"
-MODEL_FAN_ZA1 = "zhimi.fan.za1"
-MODEL_FAN_ZA3 = "zhimi.fan.za3"
-MODEL_FAN_ZA4 = "zhimi.fan.za4"
-MODEL_FAN_ZA5 = "zhimi.fan.za5"
-MODEL_FAN_P5 = "dmaker.fan.p5"
-MODEL_FAN_P8 = "dmaker.fan.p8"
-MODEL_FAN_P9 = "dmaker.fan.p9"
-MODEL_FAN_P10 = "dmaker.fan.p10"
-MODEL_FAN_P11 = "dmaker.fan.p11"
-MODEL_FAN_P15 = "dmaker.fan.p15"
-MODEL_FAN_P18 = "dmaker.fan.p18"
-MODEL_FAN_LESHOW_SS4 = "leshow.fan.ss4"
-MODEL_FAN_1C = "dmaker.fan.1c"
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
@@ -90,22 +93,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
         vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
         vol.Optional(CONF_MODEL): vol.In(
             [
-                MODEL_FAN_V2,
-                MODEL_FAN_V3,
-                MODEL_FAN_SA1,
-                MODEL_FAN_ZA1,
-                MODEL_FAN_ZA3,
-                MODEL_FAN_ZA4,
-                MODEL_FAN_ZA5,
-                MODEL_FAN_P5,
-                MODEL_FAN_P8,
-                MODEL_FAN_P9,
-                MODEL_FAN_P10,
-                MODEL_FAN_P11,
-                MODEL_FAN_P15,
-                MODEL_FAN_P18,
-                MODEL_FAN_LESHOW_SS4,
-                MODEL_FAN_1C,
+                list(OPT_MODEL.keys()).remove("auto.detect")
             ]
         ),
         vol.Optional(CONF_RETRIES, default=DEFAULT_RETRIES): cv.positive_int,
@@ -323,19 +311,42 @@ SERVICE_TO_METHOD = {
 
 # pylint: disable=unused-argument
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
+    """Import Xiaomi Mi Smart Pedestal Fan configuration from YAML."""
+    _LOGGER.warning(
+        "Loading Xiaomi Mi Smart Pedestal Fan via platform setup is deprecated; Please remove it from your configuration"
+    )
+    hass.async_create_task(
+        hass.config_entries.flow.async_init(
+            DOMAIN,
+            context={"source": SOURCE_IMPORT},
+            data=config,
+        )
+    )
+
+async def async_setup_entry(hass, config, async_add_devices, discovery_info=None):
     """Set up the miio fan device from config."""
     if DATA_KEY not in hass.data:
         hass.data[DATA_KEY] = {}
 
-    host = config[CONF_HOST]
-    token = config[CONF_TOKEN]
-    name = config[CONF_NAME]
-    model = config.get(CONF_MODEL)
-    retries = config[CONF_RETRIES]
-    preset_modes_override = config.get(CONF_PRESET_MODES_OVERRIDE)
+    if config.data.get(CONF_HOST, None):
+        host = config.data[CONF_HOST]
+        token = config.data[CONF_TOKEN]
+        name = config.data.get(CONF_NAME, config.title)
+        model = config.data.get(CONF_MODEL)
+        retries = config.data.get(CONF_RETRIES, 3)
+        preset_modes_override = config.data.get(CONF_PRESET_MODES_OVERRIDE)
+    else:
+        host = config.options[CONF_HOST]
+        token = config.options[CONF_TOKEN]
+        name = config.options.get(CONF_NAME, config.title)
+        model = config.options.get(CONF_MODEL)
+        retries = config.options.get(CONF_RETRIES, 3)
+        preset_modes_override = config.options.get(CONF_PRESET_MODES_OVERRIDE)
 
     _LOGGER.info("Initializing with host %s (token %s...)", host, token[:5])
     unique_id = None
+    if model == "auto.detect":
+        model = None
 
     if model is None:
         try:
@@ -351,6 +362,8 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
             )
         except DeviceException as ex:
             raise PlatformNotReady from ex
+    else:
+        unique_id = f"{model}-{host}"
 
     if model in [
         MODEL_FAN_V2,
@@ -407,7 +420,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         return False
 
     hass.data[DATA_KEY][host] = device
-    async_add_entities([device], update_before_add=True)
+    async_add_devices([device], update_before_add=True)
 
     async def async_service_handler(service):
         """Map services to methods on XiaomiFan."""
@@ -505,6 +518,20 @@ class XiaomiGenericDevice(FanEntity):
             return value.value
 
         return value
+
+    @property
+    def device_info(self):
+        device_info = self._device.info()
+        model = device_info.model
+        manufacturer = model.split(".")[0]
+        return {
+            'identifiers': {(DOMAIN, device_info.mac_address)},
+            'manufacturer': manufacturer,
+            'model': model,
+            'name': self._name,
+            'hw_version': device_info.hardware_version,
+            'sw_version': device_info.firmware_version
+        }
 
     async def _try_command(self, mask_error, func, *args, **kwargs):
         """Call a miio device command handling error messages."""

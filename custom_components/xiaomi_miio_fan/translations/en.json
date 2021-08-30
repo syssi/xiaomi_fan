@@ -1,0 +1,34 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Device is already configured",
+            "model_error": "Wrong Model or Not supported Model",
+            "connection_error": "Can't connect to Xiaomi Smart Pedestal Fan."
+        },
+        "flow_title": "Xiaomi Smart Pedestal Fan: {name}",
+        "step": {
+            "user": {
+                "data": {
+                    "host": "Host",
+                    "token": "Token",
+                    "model": "Model"
+                },
+                "description": "Please enter connection settings of your Xiaomi Smart Pedestal Fan."
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Xiaomi Smart Pedestal Fan:",
+                "data": {
+                    "host": "Host",
+                    "token": "Token",
+                    "model": "Model",
+                    "retries": "Retries",
+                    "preset_modes_override": "preset_modes_override"
+                }
+            }
+        }
+    }
+}
