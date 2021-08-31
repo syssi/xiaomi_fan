@@ -17,6 +17,8 @@ MODEL_FAN_ZA1 = "zhimi.fan.za1"
 MODEL_FAN_ZA3 = "zhimi.fan.za3"
 MODEL_FAN_ZA4 = "zhimi.fan.za4"
 MODEL_FAN_ZA5 = "zhimi.fan.za5"
+MODEL_FAN_FA1 = "zhimi.fan.fa1"
+MODEL_FAN_FB1 = "zhimi.fan.fb1"
 MODEL_FAN_P5 = "dmaker.fan.p5"
 MODEL_FAN_P8 = "dmaker.fan.p8"
 MODEL_FAN_P9 = "dmaker.fan.p9"
@@ -44,6 +46,8 @@ OPT_MODEL = {
     MODEL_FAN_P11: "Pedestal Fan P11",
     MODEL_FAN_P15: "Pedestal Fan P15",
     MODEL_FAN_P18: "Pedestal Fan P18",
+    MODEL_FAN_FA1: "Xiaomi Circulating Fan",
+    MODEL_FAN_FB1: "Xiaomi Circulating Fan (Global)",
     MODEL_FAN_LESHOW_SS4: "Rosou SS4 Ventilator",
     MODEL_FAN_1C: "Pedestal Fan Fan 1C",
 }
