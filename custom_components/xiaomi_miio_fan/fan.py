@@ -277,6 +277,7 @@ FEATURE_SET_CHILD_LOCK = 4
 FEATURE_SET_LED_BRIGHTNESS = 8
 FEATURE_SET_OSCILLATION_ANGLE = 16
 FEATURE_SET_NATURAL_MODE = 32
+FEATURE_SET_ANION = 64
 
 FEATURE_FLAGS_FAN = (
     FEATURE_SET_BUZZER
@@ -303,6 +304,7 @@ FEATURE_FLAGS_FAN_ZA5 = (
     | FEATURE_SET_LED_BRIGHTNESS
     | FEATURE_SET_OSCILLATION_ANGLE
     | FEATURE_SET_NATURAL_MODE
+    | FEATURE_SET_ANION
 )
 
 SERVICE_SET_BUZZER_ON = "fan_set_buzzer_on"
@@ -315,6 +317,8 @@ SERVICE_SET_OSCILLATION_ANGLE = "fan_set_oscillation_angle"
 SERVICE_SET_DELAY_OFF = "fan_set_delay_off"
 SERVICE_SET_NATURAL_MODE_ON = "fan_set_natural_mode_on"
 SERVICE_SET_NATURAL_MODE_OFF = "fan_set_natural_mode_off"
+SERVICE_SET_ANION_ON = "fan_set_anion_on"
+SERVICE_SET_ANION_OFF = "fan_set_anion_off"
 
 AIRPURIFIER_SERVICE_SCHEMA = vol.Schema({vol.Optional(ATTR_ENTITY_ID): cv.entity_ids})
 
@@ -361,6 +365,8 @@ SERVICE_TO_METHOD = {
     },
     SERVICE_SET_NATURAL_MODE_ON: {"method": "async_set_natural_mode_on"},
     SERVICE_SET_NATURAL_MODE_OFF: {"method": "async_set_natural_mode_off"},
+    SERVICE_SET_ANION_ON: {"method": "async_set_anion_on"},
+    SERVICE_SET_ANION_OFF: {"method": "async_set_anion_off"},
 }
 
 
@@ -1499,6 +1505,28 @@ class XiaomiFanZA5(XiaomiFan):
             "Setting the led brightness of the miio device failed.",
             self._device.set_light,
             brightness,
+        )
+
+    async def async_set_anion_on(self):
+        """Turn anion on."""
+        if self._device_features & FEATURE_SET_ANION == 0:
+            return
+
+        await self._try_command(
+            "Setting anion of the miio device failed.",
+            self._device.set_anion,
+            True,
+        )
+
+    async def async_set_anion_off(self):
+        """Turn anion off."""
+        if self._device_features & FEATURE_SET_ANION == 0:
+            return
+
+        await self._try_command(
+            "Setting anion of the miio device failed.",
+            self._device.set_anion,
+            False,
         )
 
 
