@@ -1,5 +1,11 @@
 # Xiaomi Mi Smart Pedestal Fan
 
+![GitHub actions](https://github.com/syssi/xiaomi_fan/actions/workflows/ci.yaml/badge.svg)
+![GitHub stars](https://img.shields.io/github/stars/syssi/xiaomi_fan)
+![GitHub forks](https://img.shields.io/github/forks/syssi/xiaomi_fan)
+![GitHub watchers](https://img.shields.io/github/watchers/syssi/xiaomi_fan)
+[!["Buy Me A Coffee"](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg)](https://www.buymeacoffee.com/syssi)
+
 This is a custom component for home assistant to integrate the Xiaomi Mi Smart Fan.
 
 Please follow the instructions on [Retrieving the Access Token](https://www.home-assistant.io/integrations/xiaomi_miio#retrieving-the-access-token) to get the API token to use in the configuration.yaml file.
