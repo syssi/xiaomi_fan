@@ -68,6 +68,7 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
   - button_pressed (zhimi.fan.v2 & v3 only)
   - led (zhimi.fan.v2 only)
   - battery_state (zhimi.fan.v2 only)
+  - anion (zhimi.fan.za5 only)
 
 
 ### Rosou SS4 Ventilator (leshow.fan.ss4)
@@ -229,3 +230,18 @@ Set the led brightness. Supported values are 0 (Bright), 1 (Dim), 2 (Off).
 | `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
 | `brightness`              |       no | Brightness, between 0 and 2.                                         |
 
+#### Service `xiaomi_miio_fan.fan_set_anion_on`
+
+Turn the ionizer on.
+
+| Service data attribute    | Optional | Description                                                          |
+|---------------------------|----------|----------------------------------------------------------------------|
+| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
+
+#### Service `xiaomi_miio_fan.fan_set_anion_off`
+
+Turn the ionizer off.
+
+| Service data attribute    | Optional | Description                                                          |
+|---------------------------|----------|----------------------------------------------------------------------|
+| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
