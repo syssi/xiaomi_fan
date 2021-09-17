@@ -113,7 +113,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
         vol.Optional(CONF_PRESET_MODES_OVERRIDE, default=None): vol.Any(
             None, [cv.string]
         ),
-        vol.Optional(CONF_UNIQUE_ID, default=None): cv.string,
+        vol.Optional(CONF_UNIQUE_ID): cv.string,
         
     }
 )
