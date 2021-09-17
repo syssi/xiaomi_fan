@@ -65,6 +65,7 @@ DOMAIN = "xiaomi_miio_fan"
 CONF_MODEL = "model"
 CONF_RETRIES = "retries"
 CONF_PRESET_MODES_OVERRIDE = "preset_modes_override"
+CONF_UNIQUE_ID = "unique_id"
 
 MODEL_FAN_V2 = "zhimi.fan.v2"
 MODEL_FAN_V3 = "zhimi.fan.v3"
@@ -112,6 +113,8 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
         vol.Optional(CONF_PRESET_MODES_OVERRIDE, default=None): vol.Any(
             None, [cv.string]
         ),
+        vol.Optional(CONF_UNIQUE_ID, default=None): cv.string,
+        
     }
 )
 
@@ -384,7 +387,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     preset_modes_override = config.get(CONF_PRESET_MODES_OVERRIDE)
 
     _LOGGER.info("Initializing with host %s (token %s...)", host, token[:5])
-    unique_id = None
+    unique_id = config.get(CONF_UNIQUE_ID)
 
     if model is None:
         try:
