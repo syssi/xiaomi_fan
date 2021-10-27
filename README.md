@@ -21,7 +21,7 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
 | Pedestal Fan Fan SA1    | zhimi.fan.sa1          | | |
 | Pedestal Fan Fan ZA1    | zhimi.fan.za1          | | |
 | Pedestal Fan Fan ZA3    | zhimi.fan.za3          | | |
-| Pedestal Fan Fan ZA4    | zhimi.fan.za4          | | |
+| Pedestal Fan Fan ZA4    | zhimi.fan.za4          | ZLBPLDS04ZM | |
 | Smartmi Standing Fan 3  | zhimi.fan.za5          | | |
 | Pedestal Fan Fan 1C     | dmaker.fan.1c          | | |
 | Pedestal Fan Fan P5     | dmaker.fan.p5          | | |
