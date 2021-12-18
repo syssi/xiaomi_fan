@@ -538,8 +538,8 @@ class XiaomiGenericDevice(FanEntity):
         return self._available
 
     @property
-    def device_state_attributes(self):
-        """Return the state attributes of the device."""
+    def extra_state_attributes(self):
+        """Return the extra state attributes of the device."""
         return self._state_attrs
 
     @property
