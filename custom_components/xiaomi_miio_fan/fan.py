@@ -1329,7 +1329,6 @@ class XiaomiFanZA5(XiaomiFan):
         self._preset_modes = list(FAN_PRESET_MODES_ZA5)
         if preset_modes_override is not None:
             self._preset_modes = preset_modes_override
-        
 
         self._state_attrs.update(
             {attribute: None for attribute in self._available_attributes}
@@ -1672,8 +1671,7 @@ class FanZA5(MiotDevice):
         lazy_discover: bool = True,
         model: str = MODEL_FAN_ZA5,
     ) -> None:
-        super().__init__(ip, token, start_id, debug, lazy_discover)
-        self.model = model
+        super().__init__(ip, token, start_id, debug, lazy_discover, model=model)
 
     def status(self):
         """Retrieve properties."""
