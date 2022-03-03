@@ -13,7 +13,6 @@ from typing import Optional, Dict, Any
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from homeassistant.components.fan import (
-    ATTR_SPEED,
     PLATFORM_SCHEMA,
     SPEED_OFF,
     SUPPORT_DIRECTION,
@@ -50,6 +49,7 @@ from miio.fan_common import (
     LedBrightness as FanLedBrightness,  # pylint: disable=import-error, import-error
     MoveDirection as FanMoveDirection,
     OperationMode as FanOperationMode,
+    FanException,
 )
 from miio.integrations.fan.leshow.fan_leshow import (
     OperationMode as FanLeshowOperationMode,  # pylint: disable=import-error, import-error
@@ -1000,6 +1000,7 @@ class XiaomiFanP5(XiaomiFan):
 class XiaomiFanMiot(XiaomiFanP5):
     """Representation of a Xiaomi Pedestal Fan P9, P10, P11, P18."""
     pass
+
 
 class XiaomiFanLeshow(XiaomiGenericDevice):
     """Representation of a Xiaomi Fan Leshow SS4."""
