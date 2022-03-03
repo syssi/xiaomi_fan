@@ -46,14 +46,14 @@ from miio import (  # pylint: disable=import-error
     FanP11,
 )
 from miio.miot_device import MiotDevice, DeviceStatus
-from miio.fan import (
+from miio.fan_common import (
     LedBrightness as FanLedBrightness,  # pylint: disable=import-error, import-error
+    MoveDirection as FanMoveDirection,
+    OperationMode as FanOperationMode,
 )
-from miio.fan import MoveDirection as FanMoveDirection
-from miio.fan_leshow import (
+from miio.integrations.fan.leshow.fan_leshow import (
     OperationMode as FanLeshowOperationMode,  # pylint: disable=import-error, import-error
 )
-from miio.fan_miot import OperationModeMiot as FanOperationModeMiot
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -902,7 +902,7 @@ class XiaomiFanP5(XiaomiFan):
             self._available = True
             self._percentage = state.speed
             self._oscillate = state.oscillate
-            self._natural_mode = state.mode == FanOperationModeMiot.Nature
+            self._natural_mode = state.mode == FanOperationMode.Nature
             self._state = state.is_on
 
             for preset_mode, range in FAN_PRESET_MODES.items():
@@ -973,7 +973,7 @@ class XiaomiFanP5(XiaomiFan):
         await self._try_command(
             "Turning on natural mode of the miio device failed.",
             self._device.set_mode,
-            FanOperationModeMiot.Nature,
+            FanOperationMode.Nature,
         )
 
     async def async_set_natural_mode_off(self):
@@ -984,7 +984,7 @@ class XiaomiFanP5(XiaomiFan):
         await self._try_command(
             "Turning on natural mode of the miio device failed.",
             self._device.set_mode,
-            FanOperationModeMiot.Normal,
+            FanOperationMode.Normal,
         )
 
     async def async_set_delay_off(self, delay_off_countdown: int) -> None:
@@ -1302,7 +1302,7 @@ class XiaomiFan1C(XiaomiFan):
         await self._try_command(
             "Setting fan natural mode of the miio device failed.",
             self._device.set_mode,
-            FanOperationModeMiot.Nature,
+            FanOperationMode.Nature,
         )
 
     async def async_set_natural_mode_off(self):
@@ -1313,7 +1313,7 @@ class XiaomiFan1C(XiaomiFan):
         await self._try_command(
             "Setting fan natural mode of the miio device failed.",
             self._device.set_mode,
-            FanOperationModeMiot.Normal,
+            FanOperationMode.Normal,
         )
 
 
@@ -1355,7 +1355,7 @@ class XiaomiFanZA5(XiaomiFan):
             self._available = True
             self._percentage = state.fan_speed
             self._oscillate = state.swing_mode
-            self._natural_mode = state.mode == FanOperationModeMiot.Nature
+            self._natural_mode = state.mode == FanOperationMode.Nature
             self._state = state.power
 
             for preset_mode, value in FAN_PRESET_MODES_ZA5.items():
@@ -1470,7 +1470,7 @@ class XiaomiFanZA5(XiaomiFan):
         await self._try_command(
             "Setting fan natural mode of the miio device failed.",
             self._device.set_mode,
-            FanOperationModeMiot.Nature,
+            FanOperationMode.Nature,
         )
 
     async def async_set_natural_mode_off(self):
@@ -1481,7 +1481,7 @@ class XiaomiFanZA5(XiaomiFan):
         await self._try_command(
             "Setting fan natural mode of the miio device failed.",
             self._device.set_mode,
-            FanOperationModeMiot.Normal,
+            FanOperationMode.Normal,
         )
 
     async def async_set_led_brightness(self, brightness: int = 2):
@@ -1736,7 +1736,7 @@ class FanZA5(MiotDevice):
 
         return self.set_property("light", light)
 
-    def set_mode(self, mode: FanOperationModeMiot):
+    def set_mode(self, mode: FanOperationMode):
         """Set mode."""
         return self.set_property("mode", OperationModeFanZA5[mode.name].value)
 
