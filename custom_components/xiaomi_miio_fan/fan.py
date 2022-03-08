@@ -40,9 +40,7 @@ from miio import (  # pylint: disable=import-error
     Fan1C,
     FanLeshow,
     FanP5,
-    FanP9,
-    FanP10,
-    FanP11,
+    FanMiot
 )
 from miio.miot_device import MiotDevice, DeviceStatus
 from miio.fan_common import (
