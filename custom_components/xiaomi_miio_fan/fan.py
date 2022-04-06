@@ -8,13 +8,12 @@ import asyncio
 import logging
 from enum import Enum
 from functools import partial
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from homeassistant.components.fan import (
     PLATFORM_SCHEMA,
-    SPEED_OFF,
     SUPPORT_DIRECTION,
     SUPPORT_OSCILLATE,
     SUPPORT_PRESET_MODE,
@@ -33,25 +32,25 @@ from homeassistant.util.percentage import (
     ordered_list_item_to_percentage,
     percentage_to_ordered_list_item,
 )
-from miio import (  # pylint: disable=import-error
+from miio import (
     Device,
     DeviceException,
-    Fan,
+    Fan,  # pylint: disable=import-error
     Fan1C,
     FanLeshow,
+    FanMiot,
     FanP5,
-    FanMiot
 )
-from miio.miot_device import MiotDevice, DeviceStatus
+from miio.fan_common import FanException
 from miio.fan_common import (
-    LedBrightness as FanLedBrightness,  # pylint: disable=import-error, import-error
-    MoveDirection as FanMoveDirection,
-    OperationMode as FanOperationMode,
-    FanException,
-)
+    LedBrightness as FanLedBrightness,
+)  # pylint: disable=import-error, import-error
+from miio.fan_common import MoveDirection as FanMoveDirection
+from miio.fan_common import OperationMode as FanOperationMode
 from miio.integrations.fan.leshow.fan_leshow import (
-    OperationMode as FanLeshowOperationMode,  # pylint: disable=import-error, import-error
-)
+    OperationMode as FanLeshowOperationMode,
+)  # pylint: disable=import-error, import-error
+from miio.miot_device import DeviceStatus, MiotDevice
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -112,6 +111,8 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
         ),
     }
 )
+
+SPEED_OFF = "off"
 
 ATTR_MODEL = "model"
 ATTR_BRIGHTNESS = "brightness"
@@ -997,6 +998,7 @@ class XiaomiFanP5(XiaomiFan):
 
 class XiaomiFanMiot(XiaomiFanP5):
     """Representation of a Xiaomi Pedestal Fan P9, P10, P11, P18."""
+
     pass
 
 
