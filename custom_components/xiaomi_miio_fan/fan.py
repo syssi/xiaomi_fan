@@ -399,6 +399,8 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
             )
         except DeviceException as ex:
             raise PlatformNotReady from ex
+    else:
+        unique_id = f"{model}-{token}"
 
     if model in [
         MODEL_FAN_V2,
