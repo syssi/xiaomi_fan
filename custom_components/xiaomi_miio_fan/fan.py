@@ -334,11 +334,7 @@ SERVICE_SCHEMA_OSCILLATION_ANGLE = AIRPURIFIER_SERVICE_SCHEMA.extend(
 )
 
 SERVICE_SCHEMA_DELAY_OFF = AIRPURIFIER_SERVICE_SCHEMA.extend(
-    {
-        vol.Required(ATTR_DELAY_OFF_COUNTDOWN): vol.All(
-            vol.Coerce(int), vol.Clamp(min=0, max=480)
-        )
-    }
+    {vol.Required(ATTR_DELAY_OFF_COUNTDOWN): cv.positive_int}
 )
 
 SERVICE_TO_METHOD = {
@@ -1460,7 +1456,7 @@ class XiaomiFanZA5(XiaomiFan):
         await self._try_command(
             "Setting delay off miio device failed.",
             self._device.delay_off,
-            delay_off_countdown,
+            delay_off_countdown * 60,
         )
 
     async def async_set_natural_mode_on(self):
