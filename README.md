@@ -29,9 +29,11 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
 | Pedestal Fan Fan P9     | dmaker.fan.p9          | | |
 | Pedestal Fan Fan P10    | dmaker.fan.p10         | | |
 | Mijia Pedestal Fan      | dmaker.fan.p11         | BPLDS03DM  | 2800mAh, 24W, <=58dB  |
+| Smart Standing Fan 2 Pro| dmaker.fan.p33         | BPLDS03DM  | 2800mAh, 24W, <=58dB  |
 | Pedestal Fan Fan P15    | dmaker.fan.p15         | | |
 | Mi Smart Standing Fan 2 | dmaker.fan.p18         | BPLDS02DM  | AC, 15W, 30.2-55.8bB  |
 | Rosou SS4 Ventilator    | leshow.fan.ss4         | | |
+
 
 
 ## Features
@@ -152,16 +154,16 @@ Rotates the fan 5 degrees to the left/right.
 | Service data attribute    | Optional | Description                                                          |
 |---------------------------|----------|----------------------------------------------------------------------|
 | `entity_id`               |      yes | Only act on a specific fan entity. Else targets all.                 |
-| `direction`               |       no | Rotate the fan 5 degrees. Valid values are `left` and `right`.       |
+| `direction`               |       no | Rotate the fan 5 degrees. Valid values are `left`/`reverse` and `right`/`forward`.       |
 
 #### Service `xiaomi_miio_fan.fan_set_oscillation_angle`
 
 Set the oscillation angle. Supported values are 30, 60, 90 and 120 degrees.
 
-| Service data attribute    | Optional | Description                                                          |
-|---------------------------|----------|----------------------------------------------------------------------|
-| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
-| `angle`                   |       no | Angle in degrees. Valid values are `30`, `60`, `90` and `120`.       |
+| Service data attribute    | Optional | Description                                                            |
+|---------------------------|----------|------------------------------------------------------------------------|
+| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.           |
+| `angle`                   |       no | Angle in degrees. Valid values are `30`, `60`, `90`, `120`, and `140`. |
 
 #### Service `xiaomi_miio_fan.fan_set_delay_off`
 
