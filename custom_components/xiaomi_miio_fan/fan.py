@@ -1920,15 +1920,6 @@ class XiaomiFanP33(XiaomiFanMiot):
             OperationModeFanP33.StraightWind,
         )
 
-    async def async_set_delay_off(self, delay_off_countdown: int) -> None:
-        """Set scheduled off timer in minutes."""
-
-        await self._try_command(
-            "Setting delay off miio device failed.",
-            self._device.delay_off,
-            delay_off_countdown * 60,
-        )
-
 
 class OperationModeFanP33(Enum):
     StraightWind = 0
@@ -2099,13 +2090,13 @@ class FanP33(MiotDevice):
         name = "Normal" if mode.name == "NaturalWind" else "Nature"
         return self.set_property("mode", OperationModeFanZA5[name].value)
 
-    def delay_off(self, seconds: int):
+    def delay_off(self, minutes: int):
         """Set delay off seconds."""
 
-        if seconds < 0 or seconds > 10 * 60 * 60:
-            raise FanException("Invalid value for a delayed turn off: %s" % seconds)
+        if minutes < 0 or minutes > 480:
+            raise FanException("Invalid value for a delayed turn off: %s" % minutes)
 
-        return self.set_property("delay_off_countdown", seconds)
+        return self.set_property("delay_off_countdown", minutes)
 
     def set_rotate(self, direction: FanMoveDirection):
         """Rotate fan 7.5 degrees horizontally to given direction."""
