@@ -1573,9 +1573,12 @@ class XiaomiFanZA5(XiaomiFan):
         )
 
 
-class OperationModeFanZA5(Enum):
+class FanOperationModeIndex(Enum):
+    """Fans P33 and ZA5 use indexes"""
     Nature = 0
     Normal = 1
+    StraightWind = 0
+    NaturalWind = 1
 
 
 class FanStatusZA5(DeviceStatus):
@@ -1640,7 +1643,7 @@ class FanStatusZA5(DeviceStatus):
 
     @property
     def mode(self) -> str:
-        return OperationModeFanZA5(self.data["mode"]).name
+        return FanOperationModeIndex(self.data["mode"]).name
 
     @property
     def power(self) -> bool:
@@ -1782,7 +1785,7 @@ class FanZA5(MiotDevice):
 
     def set_mode(self, mode: FanOperationMode):
         """Set mode."""
-        return self.set_property("mode", OperationModeFanZA5[mode.name].value)
+        return self.set_property("mode", FanOperationModeIndex[mode.name].value)
 
     def delay_off(self, seconds: int):
         """Set delay off seconds."""
@@ -1926,6 +1929,11 @@ class XiaomiFanP33(XiaomiFanMiot):
             OperationModeFanP33.NaturalWind,
         )
 
+        # if OperationModeFanP33(self.data["mode"]).name == "StraightWind":
+        #     return "Normal"
+        # else:
+        #     return "Natural"
+
     async def async_set_natural_mode_off(self):
         """Turn the natural mode off."""
         if self._device_features & FEATURE_SET_NATURAL_MODE == 0:
@@ -1957,7 +1965,19 @@ class FanStatusP33(DeviceStatus):
     def __init__(self, data: Dict[str, Any]) -> None:
         """
         TODO: Response example
-        Response of a Fan (dmaker.fan.p33):
+        Response of a Fan (model: dmaker.fan.p33) (fw: 2.1.3):
+
+        {'id': 7, 'result': [{'did': 'power', 'siid': 2, 'piid': 1, 'code': 0, 'value': True}, 
+        {'did': 'fan_level', 'siid': 2, 'piid': 2, 'code': 0, 'value': 1}, 
+        {'did': 'oscillate', 'siid': 2, 'piid': 4, 'code': 0, 'value': False}, 
+        {'did': 'angle', 'siid': 2, 'piid': 5, 'code': 0, 'value': 120}, 
+        {'did': 'mode', 'siid': 2, 'piid': 3, 'code': 0, 'value': 1}, 
+        {'did': 'delay_off_countdown', 'siid': 3, 'piid': 1, 'code': 0, 'value': 0}, 
+        {'did': 'child_lock', 'siid': 7, 'piid': 1, 'code': 0, 'value': False}, 
+        {'did': 'light', 'siid': 4, 'piid': 1, 'code': 0, 'value': True}, 
+        {'did': 'buzzer', 'siid': 5, 'piid': 1, 'code': 0, 'value': True}, 
+        {'did': 'motor_control', 'siid': 6, 'piid': 1, 'code': -4003}, 
+        {'did': 'speed', 'siid': 2, 'piid': 6, 'code': 0, 'value': 20}], 'exe_time': 150}
         
         """
         self.data = data
@@ -1984,8 +2004,11 @@ class FanStatusP33(DeviceStatus):
 
 
     @property
-    def mode(self) -> int:
-        return OperationModeFanP33(self.data["mode"])
+    def mode(self) -> str:
+        if OperationModeFanP33(self.data["mode"]).name == "StraightWind":
+            return "Normal"
+        else:
+            return "Nature"
 
     @property
     def power(self) -> bool:
@@ -2039,12 +2062,14 @@ class FanP33(MiotDevice):
 
     def status(self):
         """Retrieve properties."""
-        return FanStatusP33(
+        status = FanStatusP33(
             {
                 prop["did"]: prop["value"] if prop["code"] == 0 else None
                 for prop in self.get_properties_for_mapping()
             }
         )
+        _LOGGER.debug("MIIO STATUS: %s", status.data)
+        return status
 
     def on(self):
         """Power on."""
@@ -2087,15 +2112,16 @@ class FanP33(MiotDevice):
 
     def set_child_lock(self, lock: bool):
         """Set child lock on/off."""
+        self.status()
         return self.set_property("child_lock", lock)
 
     def set_light(self, light: bool):
         """Set indicator state."""
         return self.set_property("light", light)
 
-    def set_mode(self, mode: OperationModeFanP33):
+    def set_mode(self, mode: FanOperationModeIndex):
         """Set mode."""
-        return self.set_property("mode", OperationModeFanP33[mode.name].value)
+        return self.set_property("mode", FanOperationModeIndex[mode.name].value)
 
     def delay_off(self, seconds: int):
         """Set delay off seconds."""
