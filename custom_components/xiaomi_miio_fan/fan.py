@@ -290,7 +290,6 @@ FAN_SPEEDS_1C.remove(SPEED_OFF)
 FAN_SPEEDS_ZA5 = list(FAN_PRESET_MODES_ZA5)
 FAN_SPEEDS_ZA5.remove(SPEED_OFF)
 
-# FIXME: Add speed level 4
 FAN_SPEEDS_P33 = list(FAN_PRESET_MODES_P33)
 FAN_SPEEDS_P33.remove(SPEED_OFF)
 
@@ -1903,21 +1902,6 @@ class XiaomiFanP33(XiaomiFanMiot):
             return self._preset_mode
         return None
 
-    async def async_oscillate(self, oscillating: bool) -> None:
-        """Set oscillation."""
-        if oscillating:
-            await self._try_command(
-                "Setting oscillate on of the miio device failed.",
-                self._device.set_oscillate,
-                True,
-            )
-        else:
-            await self._try_command(
-                "Setting oscillate off of the miio device failed.",
-                self._device.set_oscillate,
-                False,
-            )
-
     async def async_set_natural_mode_on(self):
         """Turn the natural mode on."""
         if self._device_features & FEATURE_SET_NATURAL_MODE == 0:
@@ -1928,11 +1912,6 @@ class XiaomiFanP33(XiaomiFanMiot):
             self._device.set_mode,
             OperationModeFanP33.NaturalWind,
         )
-
-        # if OperationModeFanP33(self.data["mode"]).name == "StraightWind":
-        #     return "Normal"
-        # else:
-        #     return "Natural"
 
     async def async_set_natural_mode_off(self):
         """Turn the natural mode off."""
