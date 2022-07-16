@@ -1572,13 +1572,9 @@ class XiaomiFanZA5(XiaomiFan):
         )
 
 
-class FanOperationModeIndex(Enum):
-    """Fans P33 and ZA5 use indexes"""
+class OperationModeFanZA5(Enum):
     Nature = 0
     Normal = 1
-    StraightWind = 0
-    NaturalWind = 1
-
 
 class FanStatusZA5(DeviceStatus):
     """Container for status reports for FanZA5."""
@@ -1642,7 +1638,7 @@ class FanStatusZA5(DeviceStatus):
 
     @property
     def mode(self) -> str:
-        return FanOperationModeIndex(self.data["mode"]).name
+        return OperationModeFanZA5(self.data["mode"]).name
 
     @property
     def power(self) -> bool:
@@ -1784,7 +1780,7 @@ class FanZA5(MiotDevice):
 
     def set_mode(self, mode: FanOperationMode):
         """Set mode."""
-        return self.set_property("mode", FanOperationModeIndex[mode.name].value)
+        return self.set_property("mode", OperationModeFanZA5[mode.name].value)
 
     def delay_off(self, seconds: int):
         """Set delay off seconds."""
@@ -1944,9 +1940,9 @@ class FanStatusP33(DeviceStatus):
     def __init__(self, data: Dict[str, Any]) -> None:
         """
         TODO: Response example
-        Response of a Fan (model: dmaker.fan.p33) (fw: 2.1.3):
+        Response of a Fan (dmaker.fan.p33) (fw: 2.1.3):
 
-        {'id': 7, 'result': [{'did': 'power', 'siid': 2, 'piid': 1, 'code': 0, 'value': True}, 
+        {'did': 'power', 'siid': 2, 'piid': 1, 'code': 0, 'value': True}, 
         {'did': 'fan_level', 'siid': 2, 'piid': 2, 'code': 0, 'value': 1}, 
         {'did': 'oscillate', 'siid': 2, 'piid': 4, 'code': 0, 'value': False}, 
         {'did': 'angle', 'siid': 2, 'piid': 5, 'code': 0, 'value': 120}, 
@@ -1956,8 +1952,7 @@ class FanStatusP33(DeviceStatus):
         {'did': 'light', 'siid': 4, 'piid': 1, 'code': 0, 'value': True}, 
         {'did': 'buzzer', 'siid': 5, 'piid': 1, 'code': 0, 'value': True}, 
         {'did': 'motor_control', 'siid': 6, 'piid': 1, 'code': -4003}, 
-        {'did': 'speed', 'siid': 2, 'piid': 6, 'code': 0, 'value': 20}], 'exe_time': 150}
-        
+        {'did': 'speed', 'siid': 2, 'piid': 6, 'code': 0, 'value': 20},
         """
         self.data = data
 
@@ -2098,9 +2093,11 @@ class FanP33(MiotDevice):
         """Set indicator state."""
         return self.set_property("light", light)
 
-    def set_mode(self, mode: FanOperationModeIndex):
+    def set_mode(self, mode: OperationModeFanP33):
         """Set mode."""
-        return self.set_property("mode", FanOperationModeIndex[mode.name].value)
+        # Here we convert P33 mode names (inverted) to the standard Miot ones
+        name = "Normal" if mode.name == "NaturalWind" else "Nature"
+        return self.set_property("mode", OperationModeFanZA5[name].value)
 
     def delay_off(self, seconds: int):
         """Set delay off seconds."""
