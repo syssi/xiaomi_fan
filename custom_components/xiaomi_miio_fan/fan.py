@@ -1969,6 +1969,10 @@ class FanStatusP33(DeviceStatus):
         return self.data["light"]
 
     @property
+    def led(self) -> bool:
+        return self.light
+
+    @property
     def mode(self) -> str:
         return OperationModeFanP33(self.data["mode"]).name
 
@@ -1987,12 +1991,6 @@ class FanStatusP33(DeviceStatus):
     @property
     def angle(self) -> int:
         return self.data["angle"]
-
-    @property
-    def led(self) -> Optional[bool]:
-        if self.light is None:
-            return
-        return self.light
 
 
 class FanP33(MiotDevice):
