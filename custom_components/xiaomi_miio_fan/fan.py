@@ -1845,7 +1845,7 @@ class XiaomiFanP33(XiaomiFanMiot):
             self._available = True
             self._percentage = state.fan_speed
             self._oscillate = state.oscillate
-            self._natural_mode = state.mode == OperationModeFanP33.NaturalWind
+            self._natural_mode = state.mode == OperationModeFanP33.Nature
             self._state = state.power
 
             for preset_mode, value in FAN_PRESET_MODES_P33.items():
@@ -1906,7 +1906,7 @@ class XiaomiFanP33(XiaomiFanMiot):
         await self._try_command(
             "Setting fan natural mode of the miio device failed.",
             self._device.set_mode,
-            OperationModeFanP33.NaturalWind,
+            OperationModeFanP33.Nature,
         )
 
     async def async_set_natural_mode_off(self):
@@ -1917,21 +1917,20 @@ class XiaomiFanP33(XiaomiFanMiot):
         await self._try_command(
             "Setting fan natural mode of the miio device failed.",
             self._device.set_mode,
-            OperationModeFanP33.StraightWind,
+            OperationModeFanP33.Normal,
         )
 
 
 class OperationModeFanP33(Enum):
-    StraightWind = 0
-    NaturalWind = 1
+    Normal = 0
+    Nature = 1
 
 class FanStatusP33(DeviceStatus):
     """Container for status reports for FanP33."""
 
     def __init__(self, data: Dict[str, Any]) -> None:
         """
-        TODO: Response example
-        Response of a Fan (dmaker.fan.p33) (fw: 2.1.3):
+        Response of a Fan (dmaker.fan.p33, fw: 2.1.3):
 
         {'did': 'power', 'siid': 2, 'piid': 1, 'code': 0, 'value': True}, 
         {'did': 'fan_level', 'siid': 2, 'piid': 2, 'code': 0, 'value': 1}, 
@@ -1970,10 +1969,7 @@ class FanStatusP33(DeviceStatus):
 
     @property
     def mode(self) -> str:
-        if OperationModeFanP33(self.data["mode"]).name == "StraightWind":
-            return "Normal"
-        else:
-            return "Nature"
+        return OperationModeFanP33(self.data["mode"]).name
 
     @property
     def power(self) -> bool:
@@ -2027,14 +2023,12 @@ class FanP33(MiotDevice):
 
     def status(self):
         """Retrieve properties."""
-        status = FanStatusP33(
+        return FanStatusP33(
             {
                 prop["did"]: prop["value"] if prop["code"] == 0 else None
                 for prop in self.get_properties_for_mapping()
             }
         )
-        _LOGGER.debug("MIIO STATUS: %s", status.data)
-        return status
 
     def on(self):
         """Power on."""
@@ -2086,12 +2080,10 @@ class FanP33(MiotDevice):
 
     def set_mode(self, mode: OperationModeFanP33):
         """Set mode."""
-        # Here we convert P33 mode names (inverted) to the standard Miot ones
-        name = "Normal" if mode.name == "NaturalWind" else "Nature"
-        return self.set_property("mode", OperationModeFanZA5[name].value)
+        return self.set_property("mode", OperationModeFanP33[mode.name].value)
 
     def delay_off(self, minutes: int):
-        """Set delay off seconds."""
+        """Set delay off minutes."""
 
         if minutes < 0 or minutes > 480:
             raise FanException("Invalid value for a delayed turn off: %s" % minutes)
