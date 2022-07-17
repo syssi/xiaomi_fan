@@ -35,7 +35,6 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
 | Rosou SS4 Ventilator    | leshow.fan.ss4         | | |
 
 
-
 ## Features
 
 ### Pedestal Fan
