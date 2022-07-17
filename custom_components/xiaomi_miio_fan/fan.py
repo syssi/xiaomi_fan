@@ -63,23 +63,23 @@ CONF_MODEL = "model"
 CONF_RETRIES = "retries"
 CONF_PRESET_MODES_OVERRIDE = "preset_modes_override"
 
-MODEL_FAN_V2 = "zhimi.fan.v2"           # Pedestal Fan Fan V2
-MODEL_FAN_V3 = "zhimi.fan.v3"           # Pedestal Fan Fan V3
-MODEL_FAN_SA1 = "zhimi.fan.sa1"         # Pedestal Fan Fan SA1
-MODEL_FAN_ZA1 = "zhimi.fan.za1"         # Pedestal Fan Fan ZA1
-MODEL_FAN_ZA3 = "zhimi.fan.za3"         # Pedestal Fan Fan ZA3
-MODEL_FAN_ZA4 = "zhimi.fan.za4"         # Pedestal Fan Fan ZA4
-MODEL_FAN_ZA5 = "zhimi.fan.za5"         # Smartmi Standing Fan 3
-MODEL_FAN_P5 = "dmaker.fan.p5"          # Pedestal Fan Fan P5
-MODEL_FAN_P8 = "dmaker.fan.p8"          # Pedestal Fan Fan P8
-MODEL_FAN_P9 = "dmaker.fan.p9"          # Pedestal Fan Fan P9
-MODEL_FAN_P10 = "dmaker.fan.p10"        # Pedestal Fan Fan P10
-MODEL_FAN_P11 = "dmaker.fan.p11"        # Mijia Pedestal Fan
-MODEL_FAN_P15 = "dmaker.fan.p15"        # Pedestal Fan Fan P15
-MODEL_FAN_P18 = "dmaker.fan.p18"        # Mi Smart Standing Fan 2
-MODEL_FAN_P33 = "dmaker.fan.p33"        # Mi Smart Standing Fan Pro 2
+MODEL_FAN_V2 = "zhimi.fan.v2"  # Pedestal Fan Fan V2
+MODEL_FAN_V3 = "zhimi.fan.v3"  # Pedestal Fan Fan V3
+MODEL_FAN_SA1 = "zhimi.fan.sa1"  # Pedestal Fan Fan SA1
+MODEL_FAN_ZA1 = "zhimi.fan.za1"  # Pedestal Fan Fan ZA1
+MODEL_FAN_ZA3 = "zhimi.fan.za3"  # Pedestal Fan Fan ZA3
+MODEL_FAN_ZA4 = "zhimi.fan.za4"  # Pedestal Fan Fan ZA4
+MODEL_FAN_ZA5 = "zhimi.fan.za5"  # Smartmi Standing Fan 3
+MODEL_FAN_P5 = "dmaker.fan.p5"  # Pedestal Fan Fan P5
+MODEL_FAN_P8 = "dmaker.fan.p8"  # Pedestal Fan Fan P8
+MODEL_FAN_P9 = "dmaker.fan.p9"  # Pedestal Fan Fan P9
+MODEL_FAN_P10 = "dmaker.fan.p10"  # Pedestal Fan Fan P10
+MODEL_FAN_P11 = "dmaker.fan.p11"  # Mijia Pedestal Fan
+MODEL_FAN_P15 = "dmaker.fan.p15"  # Pedestal Fan Fan P15
+MODEL_FAN_P18 = "dmaker.fan.p18"  # Mi Smart Standing Fan 2
+MODEL_FAN_P33 = "dmaker.fan.p33"  # Mi Smart Standing Fan Pro 2
 MODEL_FAN_LESHOW_SS4 = "leshow.fan.ss4"
-MODEL_FAN_1C = "dmaker.fan.1c"          # Pedestal Fan Fan 1C
+MODEL_FAN_1C = "dmaker.fan.1c"  # Pedestal Fan Fan 1C
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
@@ -1039,7 +1039,7 @@ class XiaomiFanP5(XiaomiFan):
 
 
 class XiaomiFanMiot(XiaomiFanP5):
-    """Representation of a Xiaomi Pedestal Fan P9, P10, P11, P18, P33"""
+    """Representation of a Xiaomi Pedestal Fan P9, P10, P11, P18."""
 
     pass
 
@@ -1576,6 +1576,7 @@ class OperationModeFanZA5(Enum):
     Nature = 0
     Normal = 1
 
+
 class FanStatusZA5(DeviceStatus):
     """Container for status reports for FanZA5."""
 
@@ -1925,6 +1926,7 @@ class OperationModeFanP33(Enum):
     StraightWind = 0
     NaturalWind = 1
 
+
 class FanStatusP33(DeviceStatus):
     """Container for status reports for FanP33."""
 
@@ -1933,16 +1935,16 @@ class FanStatusP33(DeviceStatus):
         TODO: Response example
         Response of a Fan (dmaker.fan.p33) (fw: 2.1.3):
 
-        {'did': 'power', 'siid': 2, 'piid': 1, 'code': 0, 'value': True}, 
-        {'did': 'fan_level', 'siid': 2, 'piid': 2, 'code': 0, 'value': 1}, 
-        {'did': 'oscillate', 'siid': 2, 'piid': 4, 'code': 0, 'value': False}, 
-        {'did': 'angle', 'siid': 2, 'piid': 5, 'code': 0, 'value': 120}, 
-        {'did': 'mode', 'siid': 2, 'piid': 3, 'code': 0, 'value': 1}, 
-        {'did': 'delay_off_countdown', 'siid': 3, 'piid': 1, 'code': 0, 'value': 0}, 
-        {'did': 'child_lock', 'siid': 7, 'piid': 1, 'code': 0, 'value': False}, 
-        {'did': 'light', 'siid': 4, 'piid': 1, 'code': 0, 'value': True}, 
-        {'did': 'buzzer', 'siid': 5, 'piid': 1, 'code': 0, 'value': True}, 
-        {'did': 'motor_control', 'siid': 6, 'piid': 1, 'code': -4003}, 
+        {'did': 'power', 'siid': 2, 'piid': 1, 'code': 0, 'value': True},
+        {'did': 'fan_level', 'siid': 2, 'piid': 2, 'code': 0, 'value': 1},
+        {'did': 'oscillate', 'siid': 2, 'piid': 4, 'code': 0, 'value': False},
+        {'did': 'angle', 'siid': 2, 'piid': 5, 'code': 0, 'value': 120},
+        {'did': 'mode', 'siid': 2, 'piid': 3, 'code': 0, 'value': 1},
+        {'did': 'delay_off_countdown', 'siid': 3, 'piid': 1, 'code': 0, 'value': 0},
+        {'did': 'child_lock', 'siid': 7, 'piid': 1, 'code': 0, 'value': False},
+        {'did': 'light', 'siid': 4, 'piid': 1, 'code': 0, 'value': True},
+        {'did': 'buzzer', 'siid': 5, 'piid': 1, 'code': 0, 'value': True},
+        {'did': 'motor_control', 'siid': 6, 'piid': 1, 'code': -4003},
         {'did': 'speed', 'siid': 2, 'piid': 6, 'code': 0, 'value': 20},
         """
         self.data = data
@@ -1966,7 +1968,6 @@ class FanStatusP33(DeviceStatus):
     @property
     def light(self) -> bool:
         return self.data["light"]
-
 
     @property
     def mode(self) -> str:
@@ -2011,7 +2012,7 @@ class FanP33(MiotDevice):
         "light": {"siid": 4, "piid": 1},
         "buzzer": {"siid": 5, "piid": 1},
         "motor_control": {"siid": 6, "piid": 1},
-        "speed": {"siid": 2, "piid": 6 },
+        "speed": {"siid": 2, "piid": 6},
     }
 
     def __init__(
