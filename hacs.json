@@ -2,5 +2,5 @@
   "name": "Xiaomi Mi Smart Pedestal Fan Integration",
   "content_in_root": false,
   "render_readme": true,
-  "homeassistant": "2021.5.1"
+  "homeassistant": "2022.8.0"
 }

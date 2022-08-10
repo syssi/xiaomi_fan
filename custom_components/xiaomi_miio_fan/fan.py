@@ -35,7 +35,7 @@ from homeassistant.util.percentage import (
 from miio import (
     Device,
     DeviceException,
-    Fan,  # pylint: disable=import-error
+    Fan,
     Fan1C,
     FanLeshow,
     FanMiot,
@@ -44,12 +44,12 @@ from miio import (
 from miio.fan_common import FanException
 from miio.fan_common import (
     LedBrightness as FanLedBrightness,
-)  # pylint: disable=import-error, import-error
+)
 from miio.fan_common import MoveDirection as FanMoveDirection
 from miio.fan_common import OperationMode as FanOperationMode
 from miio.integrations.fan.leshow.fan_leshow import (
     OperationMode as FanLeshowOperationMode,
-)  # pylint: disable=import-error, import-error
+)
 from miio.miot_device import DeviceStatus, MiotDevice
 
 _LOGGER = logging.getLogger(__name__)
