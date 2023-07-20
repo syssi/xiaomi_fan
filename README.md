@@ -33,6 +33,7 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
 | Pedestal Fan Fan P15    | dmaker.fan.p15         | | |
 | Mi Smart Standing Fan 2 | dmaker.fan.p18         | BPLDS02DM  | AC, 15W, 30.2-55.8bB  |
 | Rosou SS4 Ventilator    | leshow.fan.ss4         | | |
+| Xiaomi Smart Tower Fan  | dmaker.fan.p39         | BPTS01DM | 22W, <=63dB |
 
 
 ## Features
