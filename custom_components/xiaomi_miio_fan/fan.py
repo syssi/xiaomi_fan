@@ -78,7 +78,7 @@ MODEL_FAN_P11 = "dmaker.fan.p11"  # Mijia Pedestal Fan
 MODEL_FAN_P15 = "dmaker.fan.p15"  # Pedestal Fan Fan P15
 MODEL_FAN_P18 = "dmaker.fan.p18"  # Mi Smart Standing Fan 2
 MODEL_FAN_P33 = "dmaker.fan.p33"  # Mi Smart Standing Fan Pro 2
-MODEL_FAN_P39 = "dmaker.fan.p39" # Smart Tower Fan
+MODEL_FAN_P39 = "dmaker.fan.p39"  # Smart Tower Fan
 MODEL_FAN_LESHOW_SS4 = "leshow.fan.ss4"
 MODEL_FAN_1C = "dmaker.fan.1c"  # Pedestal Fan Fan 1C
 
@@ -362,9 +362,7 @@ FEATURE_FLAGS_FAN_P33 = (
 )
 
 FEATURE_FLAGS_FAN_P39 = (
-    FEATURE_SET_CHILD_LOCK
-    | FEATURE_SET_OSCILLATION_ANGLE
-    | FEATURE_SET_NATURAL_MODE
+    FEATURE_SET_CHILD_LOCK | FEATURE_SET_OSCILLATION_ANGLE | FEATURE_SET_NATURAL_MODE
 )
 
 SERVICE_SET_BUZZER_ON = "fan_set_buzzer_on"
@@ -2025,6 +2023,7 @@ class FanStatusP33(DeviceStatus):
     def angle(self) -> int:
         return self.data["angle"]
 
+
 class FanP33(MiotDevice):
     mapping = {
         # https://miot-spec.org/miot-spec-v2/instance?type=urn:miot-spec-v2:device:fan:0000A005:dmaker-p33:1
@@ -2134,6 +2133,7 @@ class FanP33(MiotDevice):
             value = 2
         return self.set_property("motor_control", value)
 
+
 class XiaomiFanP39(XiaomiFanMiot):
     """Representation of a Xiaomi Fan P39."""
 
@@ -2164,11 +2164,6 @@ class XiaomiFanP39(XiaomiFanMiot):
             | SUPPORT_PRESET_MODE
             | SUPPORT_SET_SPEED
         )
-
-    """
-    TODO:
-    - HA accurately reflects child lock status but can't set it
-    """
 
     async def async_update(self):
         if self._skip_update:
@@ -2300,7 +2295,8 @@ class FanStatusP39(DeviceStatus):
     @property
     def angle(self) -> int:
         return self.data["angle"]
-    
+
+
 class FanP39(MiotDevice):
     mapping = {
         # https://miot-spec.org/miot-spec-v2/instance?type=urn:miot-spec-v2:device:fan:0000A005:dmaker-p39:1
