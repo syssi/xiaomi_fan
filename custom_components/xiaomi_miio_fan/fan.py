@@ -2317,7 +2317,7 @@ class FanP39(MiotDevice):
         start_id: int = 0,
         debug: int = 0,
         lazy_discover: bool = True,
-        model: str = MODEL_FAN_P33,
+        model: str = MODEL_FAN_P39,
     ) -> None:
         super().__init__(ip, token, start_id, debug, lazy_discover, model=model)
 
