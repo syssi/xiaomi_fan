@@ -2306,7 +2306,6 @@ class FanP39(MiotDevice):
         "oscillate": {"siid": 2, "piid": 5},
         "angle": {"siid": 2, "piid": 6},
         "delay_off_countdown": {"siid": 2, "piid": 8},
-        "motor_control": {"siid": 2, "piid": 10},
         "speed": {"siid": 2, "piid": 11},
         "child_lock": {"siid": 3, "piid": 1},
     }
