@@ -2306,7 +2306,6 @@ class FanP39(MiotDevice):
         "oscillate": {"siid": 2, "piid": 5},
         "angle": {"siid": 2, "piid": 6},
         "delay_off_countdown": {"siid": 2, "piid": 8},
-        "motor_control": {"siid": 2, "piid": 10},
         "speed": {"siid": 2, "piid": 11},
         "child_lock": {"siid": 3, "piid": 1},
     }
@@ -2318,7 +2317,7 @@ class FanP39(MiotDevice):
         start_id: int = 0,
         debug: int = 0,
         lazy_discover: bool = True,
-        model: str = MODEL_FAN_P33,
+        model: str = MODEL_FAN_P39,
     ) -> None:
         super().__init__(ip, token, start_id, debug, lazy_discover, model=model)
 
