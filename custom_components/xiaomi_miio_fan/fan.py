@@ -424,6 +424,11 @@ SERVICE_TO_METHOD = {
 }
 
 
+# backported from current master
+def _filter_request_fields(req):
+    """Return only the parts that belong to the request.."""
+    return {k: v for k, v in req.items() if k in ["did", "siid", "piid"]}
+
 # pylint: disable=unused-argument
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up the miio fan device from config."""
@@ -2320,6 +2325,23 @@ class FanP39(MiotDevice):
         model: str = MODEL_FAN_P39,
     ) -> None:
         super().__init__(ip, token, start_id, debug, lazy_discover, model=model)
+
+    # backported and adapted from current master
+    def get_properties_for_mapping(self, *, max_properties=15) -> list:
+        """Retrieve raw properties based on mapping."""
+        mapping = self._get_mapping()
+
+        # We send property key in "did" because it's sent back via response and we can identify the property.
+        properties = [
+            {"did": k, **_filter_request_fields(v)}
+            for k, v in mapping.items()
+            if "aiid" not in v
+            and ("access" not in v or "read" in v["access"])
+        ]
+
+        return self.get_properties(
+            properties, property_getter="get_properties", max_properties=max_properties
+        )
 
     def status(self):
         """Retrieve properties."""
