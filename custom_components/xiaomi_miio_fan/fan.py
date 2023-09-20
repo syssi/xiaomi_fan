@@ -53,7 +53,6 @@ from miio.integrations.fan.leshow.fan_leshow import (
 from miio.miot_device import DeviceStatus, MiotDevice
 
 _LOGGER = logging.getLogger(__name__)
-_LOGGER.setLevel(logging.DEBUG)
 
 DEFAULT_NAME = "Xiaomi Miio Fan"
 DEFAULT_RETRIES = 20
