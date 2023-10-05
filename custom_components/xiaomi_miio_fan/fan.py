@@ -1380,7 +1380,7 @@ class XiaomiFan1C(XiaomiFan):
             return
 
         await self._try_command(
-            "Setting fan natural mode of the miio device failed.",
+            "Setting the led brightness of the miio device failed.",
             self._device.set_led,
             brightness == FanLedBrightness.Bright,
         )
