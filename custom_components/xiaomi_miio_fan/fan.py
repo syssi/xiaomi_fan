@@ -637,7 +637,7 @@ class XiaomiGenericDevice(FanEntity):
             self._available = False
             return False
 
-    async def async_turn_on(self, speed: str = None, **kwargs) -> None:
+    async def async_turn_on(self, speed: str = None, mode: str = None, **kwargs) -> None:
         """Turn the device on."""
         result = await self._try_command(
             "Turning the miio device on failed.", self._device.on
