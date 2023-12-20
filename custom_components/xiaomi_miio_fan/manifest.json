@@ -9,8 +9,8 @@
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/syssi/xiaomi_fan/issues",
   "requirements": [
-    "construct==2.10.56",
+    "construct==2.10.68",
     "python-miio>=0.5.12"
   ],
-  "version": "2023.7.0.0"
+  "version": "2023.12.0.0"
 }

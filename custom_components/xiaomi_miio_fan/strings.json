@@ -1,0 +1,106 @@
+{
+  "services": {
+    "fan_set_buzzer_on": {
+      "name": "Set buzzer on",
+      "description": "Turn the buzzer on.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the Xiaomi Mi Smart Fan entity."
+        }
+      }
+    },
+    "fan_set_buzzer_off": {
+      "name": "Set buzzer off",
+      "description": "Turn the buzzer off.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the Xiaomi Mi Smart Fan entity."
+        }
+      }
+    },
+    "fan_set_child_lock_on": {
+      "name": "Set child lock on",
+      "description": "Turn the child lock on.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the Xiaomi Mi Smart Fan entity."
+        }
+      }
+    },
+    "fan_set_child_lock_off": {
+      "name": "Set child lock off",
+      "description": "Turn the child lock off.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the Xiaomi Mi Smart Fan entity."
+        }
+      }
+    },
+    "fan_set_led_brightness": {
+      "name": "Set LED brightness",
+      "description": "Set the LED brightness.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the Xiaomi Mi Smart Fan entity."
+        },
+        "brightness": {
+          "name": "Brightness",
+          "description": "Brightness (0 = Bright, 1 = Dim, 2 = Off)"
+        }
+      }
+    },
+    "fan_set_natural_mode_on": {
+      "name": "Set natural mode on",
+      "description": "Turn the natural mode on.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the Xiaomi Mi Smart Fan entity."
+        }
+      }
+    },
+    "fan_set_natural_mode_off": {
+      "name": "Set natural mode off",
+      "description": "Turn the natural mode off.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the Xiaomi Mi Smart Fan entity."
+        }
+      }
+    },
+    "fan_set_oscillation_angle": {
+      "name": "Set oscillation angle",
+      "description": "Set the oscillation angle.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the Xiaomi Mi Smart Fan entity."
+        },
+        "angle": {
+          "name": "Angle",
+          "description": "Supported angles are 30, 60, 90, 120, 140 or 150 degrees."
+        }
+      }
+    },
+    "fan_set_delay_off": {
+      "name": "Set delay off",
+      "description": "Set the scheduled turn off time.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the Xiaomi Mi Smart Fan entity."
+        },
+        "delay_off_countdown": {
+          "name": "Delay off countdown",
+          "description": "Time in minutes. Valid values are 0, 60, 120, 180, 240, 300, 240, 300, 360, 420, 480 minutes."
+        }
+      }
+    }
+  }
+}
