@@ -424,6 +424,11 @@ SERVICE_TO_METHOD = {
 }
 
 
+# backported from current master
+def _filter_request_fields(req):
+    """Return only the parts that belong to the request.."""
+    return {k: v for k, v in req.items() if k in ["did", "siid", "piid"]}
+
 # pylint: disable=unused-argument
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up the miio fan device from config."""
@@ -632,7 +637,7 @@ class XiaomiGenericDevice(FanEntity):
             self._available = False
             return False
 
-    async def async_turn_on(self, speed: str = None, **kwargs) -> None:
+    async def async_turn_on(self, speed: str = None, mode: str = None, **kwargs) -> None:
         """Turn the device on."""
         result = await self._try_command(
             "Turning the miio device on failed.", self._device.on
@@ -2256,6 +2261,7 @@ class XiaomiFanP39(XiaomiFanMiot):
 class OperationModeFanP39(Enum):
     Normal = 0
     Nature = 1
+    Sleep = 2
 
 
 class FanStatusP39(DeviceStatus):
@@ -2306,7 +2312,7 @@ class FanP39(MiotDevice):
         "oscillate": {"siid": 2, "piid": 5},
         "angle": {"siid": 2, "piid": 6},
         "delay_off_countdown": {"siid": 2, "piid": 8},
-        "motor_control": {"siid": 2, "piid": 10},
+        "motor_control": {"siid": 2, "piid": 10, "access": ["write"]},
         "speed": {"siid": 2, "piid": 11},
         "child_lock": {"siid": 3, "piid": 1},
     }
@@ -2318,9 +2324,26 @@ class FanP39(MiotDevice):
         start_id: int = 0,
         debug: int = 0,
         lazy_discover: bool = True,
-        model: str = MODEL_FAN_P33,
+        model: str = MODEL_FAN_P39,
     ) -> None:
         super().__init__(ip, token, start_id, debug, lazy_discover, model=model)
+
+    # backported and adapted from current master
+    def get_properties_for_mapping(self, *, max_properties=15) -> list:
+        """Retrieve raw properties based on mapping."""
+        mapping = self._get_mapping()
+
+        # We send property key in "did" because it's sent back via response and we can identify the property.
+        properties = [
+            {"did": k, **_filter_request_fields(v)}
+            for k, v in mapping.items()
+            if "aiid" not in v
+            and ("access" not in v or "read" in v["access"])
+        ]
+
+        return self.get_properties(
+            properties, property_getter="get_properties", max_properties=max_properties
+        )
 
     def status(self):
         """Retrieve properties."""
