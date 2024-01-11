@@ -14,12 +14,10 @@ import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from homeassistant.components.fan import (
     PLATFORM_SCHEMA,
-    SUPPORT_DIRECTION,
-    SUPPORT_OSCILLATE,
-    SUPPORT_PRESET_MODE,
-    SUPPORT_SET_SPEED,
     FanEntity,
+    FanEntityFeature,
 )
+
 from homeassistant.const import (
     ATTR_ENTITY_ID,
     ATTR_MODE,
@@ -725,15 +723,14 @@ class XiaomiFan(XiaomiGenericDevice):
         self._state_attrs.update(
             {attribute: None for attribute in self._available_attributes}
         )
-
     @property
     def supported_features(self) -> int:
         """Supported features."""
         return (
-            SUPPORT_SET_SPEED
-            | SUPPORT_PRESET_MODE
-            | SUPPORT_OSCILLATE
-            | SUPPORT_DIRECTION
+            FanEntityFeature.SET_SPEED
+            | FanEntityFeature.PRESET_MODE
+            | FanEntityFeature.OSCILLATE
+            | FanEntityFeature.DIRECTION
         )
 
     async def async_update(self):
@@ -1102,7 +1099,7 @@ class XiaomiFanLeshow(XiaomiGenericDevice):
     @property
     def supported_features(self) -> int:
         """Supported features."""
-        return SUPPORT_SET_SPEED | SUPPORT_PRESET_MODE | SUPPORT_OSCILLATE
+        return FanEntityFeature.SET_SPEED | FanEntityFeature.PRESET_MODE | FanEntityFeature.OSCILLATE
 
     async def async_update(self):
         """Fetch state from the device."""
@@ -1240,7 +1237,7 @@ class XiaomiFan1C(XiaomiFan):
     @property
     def supported_features(self) -> int:
         """Supported features."""
-        return SUPPORT_SET_SPEED | SUPPORT_PRESET_MODE | SUPPORT_OSCILLATE
+        return FanEntityFeature.SET_SPEED | FanEntityFeature.PRESET_MODE | FanEntityFeature.OSCILLATE
 
     async def async_update(self):
         """Fetch state from the device."""
@@ -1416,10 +1413,10 @@ class XiaomiFanZA5(XiaomiFan):
     @property
     def supported_features(self) -> int:
         return (
-            SUPPORT_DIRECTION
-            | SUPPORT_OSCILLATE
-            | SUPPORT_PRESET_MODE
-            | SUPPORT_SET_SPEED
+            FanEntityFeature.DIRECTION
+            | FanEntityFeature.OSCILLATE
+            | FanEntityFeature.PRESET_MODE
+            | FanEntityFeature.SET_SPEED
         )
 
     async def async_update(self):
@@ -1857,10 +1854,10 @@ class XiaomiFanP33(XiaomiFanMiot):
     @property
     def supported_features(self) -> int:
         return (
-            SUPPORT_DIRECTION
-            | SUPPORT_OSCILLATE
-            | SUPPORT_PRESET_MODE
-            | SUPPORT_SET_SPEED
+            FanEntityFeature.DIRECTION
+            | FanEntityFeature.OSCILLATE
+            | FanEntityFeature.PRESET_MODE
+            | FanEntityFeature.SET_SPEED
         )
 
     """
@@ -2164,10 +2161,10 @@ class XiaomiFanP39(XiaomiFanMiot):
     @property
     def supported_features(self) -> int:
         return (
-            SUPPORT_DIRECTION
-            | SUPPORT_OSCILLATE
-            | SUPPORT_PRESET_MODE
-            | SUPPORT_SET_SPEED
+            FanEntityFeature.DIRECTION
+            | FanEntityFeature.OSCILLATE
+            | FanEntityFeature.PRESET_MODE
+            | FanEntityFeature.SET_SPEED
         )
 
     async def async_update(self):
