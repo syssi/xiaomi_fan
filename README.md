@@ -14,26 +14,27 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
 
 ## Supported devices
 
-| Name                    | Model                  | Model no. | Specs |
-| ----------------------- | ---------------------- | --------- | ----- |
-| Pedestal Fan Fan V2     | zhimi.fan.v2           | | |
-| Pedestal Fan Fan V3     | zhimi.fan.v3           | | |
-| Pedestal Fan Fan SA1    | zhimi.fan.sa1          | | |
-| Pedestal Fan Fan ZA1    | zhimi.fan.za1          | | |
-| Pedestal Fan Fan ZA3    | zhimi.fan.za3          | | |
-| Pedestal Fan Fan ZA4    | zhimi.fan.za4          | ZLBPLDS04ZM | |
-| Smartmi Standing Fan 3  | zhimi.fan.za5          | | |
-| Pedestal Fan Fan 1C     | dmaker.fan.1c          | | |
-| Pedestal Fan Fan P5     | dmaker.fan.p5          | | |
-| Pedestal Fan Fan P8     | dmaker.fan.p8          | | |
-| Pedestal Fan Fan P9     | dmaker.fan.p9          | | |
-| Pedestal Fan Fan P10    | dmaker.fan.p10         | | |
-| Mijia Pedestal Fan      | dmaker.fan.p11         | BPLDS03DM  | 2800mAh, 24W, <=58dB  |
-| Smart Standing Fan 2 Pro| dmaker.fan.p33         | BPLDS03DM  | 2800mAh, 24W, <=58dB  |
-| Pedestal Fan Fan P15    | dmaker.fan.p15         | | |
-| Mi Smart Standing Fan 2 | dmaker.fan.p18         | BPLDS02DM  | AC, 15W, 30.2-55.8bB  |
-| Rosou SS4 Ventilator    | leshow.fan.ss4         | | |
-| Xiaomi Smart Tower Fan  | dmaker.fan.p39         | BPTS01DM | 22W, <=63dB |
+| Name                        | Model                  | Model no. | Specs |
+| ----------------------------| ---------------------- | --------- | ----- |
+| Pedestal Fan Fan V2         | zhimi.fan.v2           | | |
+| Pedestal Fan Fan V3         | zhimi.fan.v3           | | |
+| Pedestal Fan Fan SA1        | zhimi.fan.sa1          | | |
+| Pedestal Fan Fan ZA1        | zhimi.fan.za1          | | |
+| Pedestal Fan Fan ZA3        | zhimi.fan.za3          | | |
+| Pedestal Fan Fan ZA4        | zhimi.fan.za4          | ZLBPLDS04ZM | |
+| Smartmi Standing Fan 3      | zhimi.fan.za5          | | |
+| Pedestal Fan Fan 1C         | dmaker.fan.1c          | | |
+| Pedestal Fan Fan P5         | dmaker.fan.p5          | | |
+| Pedestal Fan Fan P8         | dmaker.fan.p8          | | |
+| Pedestal Fan Fan P9         | dmaker.fan.p9          | | |
+| Pedestal Fan Fan P10        | dmaker.fan.p10         | | |
+| Mijia Pedestal Fan          | dmaker.fan.p11         | BPLDS03DM  | 2800mAh, 24W, <=58dB  |
+| Smart Standing Fan 2 Pro    | dmaker.fan.p33         | BPLDS03DM  | 2800mAh, 24W, <=58dB  |
+| Pedestal Fan Fan P15        | dmaker.fan.p15         | | |
+| Mi Smart Standing Fan 2 P18 | dmaker.fan.p18         | BPLDS02DM  | AC, 15W, 30.2-55.8bB  |
+| Mi Smart Standing Fan 2 P30 | dmaker.fan.p30         | BPLDS02DM  | AC, 15W, 30.2-55.8bB  |
+| Rosou SS4 Ventilator        | leshow.fan.ss4         | | |
+| Xiaomi Smart Tower Fan      | dmaker.fan.p39         | BPTS01DM | 22W, <=63dB |
 
 
 ## Features
