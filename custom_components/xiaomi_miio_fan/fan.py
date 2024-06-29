@@ -368,6 +368,7 @@ FEATURE_SET_LED_BRIGHTNESS = 8
 FEATURE_SET_OSCILLATION_ANGLE = 16
 FEATURE_SET_NATURAL_MODE = 32
 FEATURE_SET_ANION = 64
+
 # Fan MODEL_FAN_P221
 FEATURE_SET_SMART_MODE = 128
 FEATURE_SET_SLEEP_MODE = 256
@@ -512,7 +513,7 @@ SERVICE_TO_METHOD = {
 }
 
 # Fan MODEL_FAN_P221
-# Add Service th Support Features 
+# Add Service th Support Features
 SERVICE_SET_HORIZONTAL_OSCILLATE = "fan_set_horizontal_oscillate"
 SERVICE_SET_VERTICAL_OSCILLATE = "fan_set_vertical_oscillate"
 SERVICE_SET_TOGGLE_OSCILLATE = "fan_set_toggle_oscillate"
@@ -578,10 +579,15 @@ for kenneth in REMOVE_SERVER_NOT_SUPPORT:
 
 del SERVICE_SET_OSCILLATION_ANGLE
 del SERVICE_SET_NATURAL_MODE_OFF
-del SERVICE_SET_ANION_ON 
-del SERVICE_SET_ANION_OFF 
+del SERVICE_SET_ANION_ON
+del SERVICE_SET_ANION_OFF
 del SERVICE_SET_RAW_LED_BRIGHTNESS
 del SERVICE_SET_LED_BRIGHTNESS
+
+# backported from current master
+def _filter_request_fields(req):
+    """Return only the parts that belong to the request.."""
+    return {k: v for k, v in req.items() if k in ["did", "siid", "piid"]}
 
 # pylint: disable=unused-argument
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
@@ -779,10 +785,7 @@ class XiaomiGenericDevice(FanEntity):
     @staticmethod
     def _extract_value_from_attribute(state, attribute):
         value = getattr(state, attribute, None)
-        #_LOGGER.debug("1: %s", value)
-
         if isinstance(value, Enum):
-            #_LOGGER.debug("2: %s", value)
             return value.value
 
         return value
@@ -800,7 +803,7 @@ class XiaomiGenericDevice(FanEntity):
             self._available = False
             return False
 
-    async def async_turn_on(self, speed: str = None, **kwargs) -> None:
+    async def async_turn_on(self, speed: str = None, mode: str = None, **kwargs) -> None:
         """Turn the device on."""
         result = await self._try_command(
             "Turning the miio device on failed.", self._device.on
@@ -2424,6 +2427,7 @@ class XiaomiFanP39(XiaomiFanMiot):
 class OperationModeFanP39(Enum):
     Normal = 0
     Nature = 1
+    Sleep = 2
 
 
 class FanStatusP39(DeviceStatus):
@@ -2474,7 +2478,7 @@ class FanP39(MiotDevice):
         "oscillate": {"siid": 2, "piid": 5},
         "angle": {"siid": 2, "piid": 6},
         "delay_off_countdown": {"siid": 2, "piid": 8},
-        "motor_control": {"siid": 2, "piid": 10},
+        "motor_control": {"siid": 2, "piid": 10, "access": ["write"]},
         "speed": {"siid": 2, "piid": 11},
         "child_lock": {"siid": 3, "piid": 1},
     }
@@ -2486,9 +2490,26 @@ class FanP39(MiotDevice):
         start_id: int = 0,
         debug: int = 0,
         lazy_discover: bool = True,
-        model: str = MODEL_FAN_P33,
+        model: str = MODEL_FAN_P39,
     ) -> None:
         super().__init__(ip, token, start_id, debug, lazy_discover, model=model)
+
+    # backported and adapted from current master
+    def get_properties_for_mapping(self, *, max_properties=15) -> list:
+        """Retrieve raw properties based on mapping."""
+        mapping = self._get_mapping()
+
+        # We send property key in "did" because it's sent back via response and we can identify the property.
+        properties = [
+            {"did": k, **_filter_request_fields(v)}
+            for k, v in mapping.items()
+            if "aiid" not in v
+            and ("access" not in v or "read" in v["access"])
+        ]
+
+        return self.get_properties(
+            properties, property_getter="get_properties", max_properties=max_properties
+        )
 
     def status(self):
         """Retrieve properties."""
@@ -2559,8 +2580,6 @@ class FanP39(MiotDevice):
             value = 1
         elif direction == FanMoveDirection.Right:
             value = 2
-        return self.set_property("motor_control", value)
-
 
 class XiaomiFanP39(XiaomiFanMiot):
     """Representation of a Xiaomi Fan P39."""
@@ -3019,7 +3038,7 @@ class XiaomiFanP221(XiaomiGenericDevice):
                     "Setting Fan Speed of the miio device failed.",
                     self._device.set_speed,
                     speed,
-                )               
+                )
         elif fan_speed == 120:
             speed = self._percentage - 10
             if speed < 0:
@@ -3033,13 +3052,13 @@ class XiaomiFanP221(XiaomiGenericDevice):
                     "Setting Fan Speed of the miio device failed.",
                     self._device.set_speed,
                     speed,
-                )                    
+                )
         else:
             _LOGGER.debug("Try to Set Fan Speed: %s", fan_speed)
             await self._try_command(
                 "Setting Fan Speed of the miio device failed.",
                 self._device.set_speed,
-                fan_speed,                
+                fan_speed,
             )
 
     async def async_horizontal_oscillate(self, horizontal_oscillate: bool) -> None:
@@ -3126,7 +3145,7 @@ class XiaomiFanP221(XiaomiGenericDevice):
             "Setting delay off miio device failed.",
             self._device.delay_off,
             delay_off_countdown,
-        ) 
+        )
 
 
 class OperationModeFanP221(Enum):
@@ -3242,9 +3261,9 @@ class FanP221(MiotDevice):
         "child_lock"           : {"siid": 7, "piid": 1},
         "speed"                : {"siid": 8, "piid": 1},
         "swing_updown"         : {"siid": 8, "piid": 2},
-        "swing_lr"             : {"siid": 8, "piid": 3},   
+        "swing_lr"             : {"siid": 8, "piid": 3},
         "temperature"          : {"siid": 9, "piid": 1},
-        "humidity"             : {"siid": 9, "piid": 2},             
+        "humidity"             : {"siid": 9, "piid": 2},
     }
 
     def __init__(
