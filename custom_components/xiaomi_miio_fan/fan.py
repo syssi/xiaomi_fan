@@ -723,6 +723,8 @@ class XiaomiFan(XiaomiGenericDevice):
             | FanEntityFeature.PRESET_MODE
             | FanEntityFeature.OSCILLATE
             | FanEntityFeature.DIRECTION
+            | FanEntityFeature.TURN_OFF
+            | FanEntityFeature.TURN_ON
         )
 
     async def async_update(self):
@@ -1095,6 +1097,8 @@ class XiaomiFanLeshow(XiaomiGenericDevice):
             FanEntityFeature.SET_SPEED
             | FanEntityFeature.PRESET_MODE
             | FanEntityFeature.OSCILLATE
+            | FanEntityFeature.TURN_OFF
+            | FanEntityFeature.TURN_ON
         )
 
     async def async_update(self):
@@ -1237,6 +1241,8 @@ class XiaomiFan1C(XiaomiFan):
             FanEntityFeature.SET_SPEED
             | FanEntityFeature.PRESET_MODE
             | FanEntityFeature.OSCILLATE
+            | FanEntityFeature.TURN_OFF
+            | FanEntityFeature.TURN_ON
         )
 
     async def async_update(self):
@@ -1417,6 +1423,8 @@ class XiaomiFanZA5(XiaomiFan):
             | FanEntityFeature.OSCILLATE
             | FanEntityFeature.PRESET_MODE
             | FanEntityFeature.SET_SPEED
+            | FanEntityFeature.TURN_OFF
+            | FanEntityFeature.TURN_ON
         )
 
     async def async_update(self):
@@ -1858,6 +1866,8 @@ class XiaomiFanP33(XiaomiFanMiot):
             | FanEntityFeature.OSCILLATE
             | FanEntityFeature.PRESET_MODE
             | FanEntityFeature.SET_SPEED
+            | FanEntityFeature.TURN_OFF
+            | FanEntityFeature.TURN_ON
         )
 
     """
@@ -2165,6 +2175,8 @@ class XiaomiFanP39(XiaomiFanMiot):
             | FanEntityFeature.OSCILLATE
             | FanEntityFeature.PRESET_MODE
             | FanEntityFeature.SET_SPEED
+            | FanEntityFeature.TURN_OFF
+            | FanEntityFeature.TURN_ON
         )
 
     async def async_update(self):
