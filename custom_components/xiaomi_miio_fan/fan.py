@@ -4,6 +4,7 @@ Support for Xiaomi Mi Smart Pedestal Fan.
 For more details about this platform, please refer to the documentation
 https://home-assistant.io/components/fan.xiaomi_miio/
 """
+
 import asyncio
 import logging
 from enum import Enum
@@ -12,12 +13,7 @@ from typing import Any, Dict, Optional
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
-from homeassistant.components.fan import (
-    PLATFORM_SCHEMA,
-    FanEntity,
-    FanEntityFeature,
-)
-
+from homeassistant.components.fan import PLATFORM_SCHEMA, FanEntity, FanEntityFeature
 from homeassistant.const import (
     ATTR_ENTITY_ID,
     ATTR_MODE,
@@ -30,19 +26,9 @@ from homeassistant.util.percentage import (
     ordered_list_item_to_percentage,
     percentage_to_ordered_list_item,
 )
-from miio import (
-    Device,
-    DeviceException,
-    Fan,
-    Fan1C,
-    FanLeshow,
-    FanMiot,
-    FanP5,
-)
+from miio import Device, DeviceException, Fan, Fan1C, FanLeshow, FanMiot, FanP5
 from miio.fan_common import FanException
-from miio.fan_common import (
-    LedBrightness as FanLedBrightness,
-)
+from miio.fan_common import LedBrightness as FanLedBrightness
 from miio.fan_common import MoveDirection as FanMoveDirection
 from miio.fan_common import OperationMode as FanOperationMode
 from miio.integrations.fan.leshow.fan_leshow import (
@@ -429,6 +415,7 @@ def _filter_request_fields(req):
     """Return only the parts that belong to the request.."""
     return {k: v for k, v in req.items() if k in ["did", "siid", "piid"]}
 
+
 # pylint: disable=unused-argument
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up the miio fan device from config."""
@@ -627,7 +614,7 @@ class XiaomiGenericDevice(FanEntity):
     async def _try_command(self, mask_error, func, *args, **kwargs):
         """Call a miio device command handling error messages."""
         try:
-            result = await self.hass.async_add_job(partial(func, *args, **kwargs))
+            result = await self.hass.async_add_executor_job(partial(func, *args, **kwargs))
 
             _LOGGER.debug("Response received from miio device: %s", result)
 
@@ -637,7 +624,9 @@ class XiaomiGenericDevice(FanEntity):
             self._available = False
             return False
 
-    async def async_turn_on(self, speed: str = None, mode: str = None, **kwargs) -> None:
+    async def async_turn_on(
+        self, speed: str = None, mode: str = None, **kwargs
+    ) -> None:
         """Turn the device on."""
         result = await self._try_command(
             "Turning the miio device on failed.", self._device.on
@@ -725,6 +714,7 @@ class XiaomiFan(XiaomiGenericDevice):
         self._state_attrs.update(
             {attribute: None for attribute in self._available_attributes}
         )
+
     @property
     def supported_features(self) -> int:
         """Supported features."""
@@ -733,6 +723,8 @@ class XiaomiFan(XiaomiGenericDevice):
             | FanEntityFeature.PRESET_MODE
             | FanEntityFeature.OSCILLATE
             | FanEntityFeature.DIRECTION
+            | FanEntityFeature.TURN_OFF
+            | FanEntityFeature.TURN_ON
         )
 
     async def async_update(self):
@@ -743,7 +735,7 @@ class XiaomiFan(XiaomiGenericDevice):
             return
 
         try:
-            state = await self.hass.async_add_job(self._device.status)
+            state = await self.hass.async_add_executor_job(self._device.status)
             _LOGGER.debug("Got new state: %s", state)
 
             self._available = True
@@ -964,7 +956,7 @@ class XiaomiFanP5(XiaomiFan):
             return
 
         try:
-            state = await self.hass.async_add_job(self._device.status)
+            state = await self.hass.async_add_executor_job(self._device.status)
             _LOGGER.debug("Got new state: %s", state)
 
             self._available = True
@@ -1101,7 +1093,13 @@ class XiaomiFanLeshow(XiaomiGenericDevice):
     @property
     def supported_features(self) -> int:
         """Supported features."""
-        return FanEntityFeature.SET_SPEED | FanEntityFeature.PRESET_MODE | FanEntityFeature.OSCILLATE
+        return (
+            FanEntityFeature.SET_SPEED
+            | FanEntityFeature.PRESET_MODE
+            | FanEntityFeature.OSCILLATE
+            | FanEntityFeature.TURN_OFF
+            | FanEntityFeature.TURN_ON
+        )
 
     async def async_update(self):
         """Fetch state from the device."""
@@ -1111,7 +1109,7 @@ class XiaomiFanLeshow(XiaomiGenericDevice):
             return
 
         try:
-            state = await self.hass.async_add_job(self._device.status)
+            state = await self.hass.async_add_executor_job(self._device.status)
             _LOGGER.debug("Got new state: %s", state)
 
             self._available = True
@@ -1239,7 +1237,13 @@ class XiaomiFan1C(XiaomiFan):
     @property
     def supported_features(self) -> int:
         """Supported features."""
-        return FanEntityFeature.SET_SPEED | FanEntityFeature.PRESET_MODE | FanEntityFeature.OSCILLATE
+        return (
+            FanEntityFeature.SET_SPEED
+            | FanEntityFeature.PRESET_MODE
+            | FanEntityFeature.OSCILLATE
+            | FanEntityFeature.TURN_OFF
+            | FanEntityFeature.TURN_ON
+        )
 
     async def async_update(self):
         """Fetch state from the device."""
@@ -1249,7 +1253,7 @@ class XiaomiFan1C(XiaomiFan):
             return
 
         try:
-            state = await self.hass.async_add_job(self._device.status)
+            state = await self.hass.async_add_executor_job(self._device.status)
             _LOGGER.debug("Got new state: %s", state)
 
             self._available = True
@@ -1419,6 +1423,8 @@ class XiaomiFanZA5(XiaomiFan):
             | FanEntityFeature.OSCILLATE
             | FanEntityFeature.PRESET_MODE
             | FanEntityFeature.SET_SPEED
+            | FanEntityFeature.TURN_OFF
+            | FanEntityFeature.TURN_ON
         )
 
     async def async_update(self):
@@ -1427,7 +1433,7 @@ class XiaomiFanZA5(XiaomiFan):
             return
 
         try:
-            state = await self.hass.async_add_job(self._device.status)
+            state = await self.hass.async_add_executor_job(self._device.status)
             _LOGGER.debug("Got new state: %s", state)
 
             self._available = True
@@ -1860,6 +1866,8 @@ class XiaomiFanP33(XiaomiFanMiot):
             | FanEntityFeature.OSCILLATE
             | FanEntityFeature.PRESET_MODE
             | FanEntityFeature.SET_SPEED
+            | FanEntityFeature.TURN_OFF
+            | FanEntityFeature.TURN_ON
         )
 
     """
@@ -1875,7 +1883,7 @@ class XiaomiFanP33(XiaomiFanMiot):
             return
 
         try:
-            state = await self.hass.async_add_job(self._device.status)
+            state = await self.hass.async_add_executor_job(self._device.status)
             _LOGGER.debug("Got new state: %s", state)
 
             self._available = True
@@ -2167,6 +2175,8 @@ class XiaomiFanP39(XiaomiFanMiot):
             | FanEntityFeature.OSCILLATE
             | FanEntityFeature.PRESET_MODE
             | FanEntityFeature.SET_SPEED
+            | FanEntityFeature.TURN_OFF
+            | FanEntityFeature.TURN_ON
         )
 
     async def async_update(self):
@@ -2175,7 +2185,7 @@ class XiaomiFanP39(XiaomiFanMiot):
             return
 
         try:
-            state = await self.hass.async_add_job(self._device.status)
+            state = await self.hass.async_add_executor_job(self._device.status)
             _LOGGER.debug("Got new state: %s", state)
 
             self._available = True
@@ -2336,8 +2346,7 @@ class FanP39(MiotDevice):
         properties = [
             {"did": k, **_filter_request_fields(v)}
             for k, v in mapping.items()
-            if "aiid" not in v
-            and ("access" not in v or "read" in v["access"])
+            if "aiid" not in v and ("access" not in v or "read" in v["access"])
         ]
 
         return self.get_properties(
