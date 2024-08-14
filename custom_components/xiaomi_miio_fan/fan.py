@@ -552,6 +552,8 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
 class XiaomiGenericDevice(FanEntity):
     """Representation of a generic Xiaomi device."""
 
+    _enable_turn_on_off_backwards_compatibility = False
+
     def __init__(self, name, device, model, unique_id, retries, preset_modes_override):
         """Initialize the generic Xiaomi device."""
         self._name = name
@@ -614,7 +616,9 @@ class XiaomiGenericDevice(FanEntity):
     async def _try_command(self, mask_error, func, *args, **kwargs):
         """Call a miio device command handling error messages."""
         try:
-            result = await self.hass.async_add_executor_job(partial(func, *args, **kwargs))
+            result = await self.hass.async_add_executor_job(
+                partial(func, *args, **kwargs)
+            )
 
             _LOGGER.debug("Response received from miio device: %s", result)
 
