@@ -1876,8 +1876,6 @@ class XiaomiFanP33(XiaomiFanMiot):
 
     """
     TODO:
-    - fan.turn_on works, but doesn't go to the declared percentage. This is
-      not an issue when using set_percentage()
     - setting child lock works, but HA always reads the value as null
     """
 
@@ -1983,15 +1981,15 @@ class FanStatusP33(DeviceStatus):
 
         {'did': 'power', 'siid': 2, 'piid': 1, 'code': 0, 'value': True},
         {'did': 'fan_level', 'siid': 2, 'piid': 2, 'code': 0, 'value': 1},
-        {'did': 'oscillate', 'siid': 2, 'piid': 4, 'code': 0, 'value': False},
-        {'did': 'angle', 'siid': 2, 'piid': 5, 'code': 0, 'value': 120},
+        {'did': 'swing_mode', 'siid': 2, 'piid': 4, 'code': 0, 'value': False},
+        {'did': 'swing_mode_angle', 'siid': 2, 'piid': 5, 'code': 0, 'value': 120},
         {'did': 'mode', 'siid': 2, 'piid': 3, 'code': 0, 'value': 1},
-        {'did': 'delay_off_countdown', 'siid': 3, 'piid': 1, 'code': 0, 'value': 0},
+        {'did': 'power_off_time', 'siid': 3, 'piid': 1, 'code': 0, 'value': 0},
         {'did': 'child_lock', 'siid': 7, 'piid': 1, 'code': 0, 'value': False},
         {'did': 'light', 'siid': 4, 'piid': 1, 'code': 0, 'value': True},
         {'did': 'buzzer', 'siid': 5, 'piid': 1, 'code': 0, 'value': True},
-        {'did': 'motor_control', 'siid': 6, 'piid': 1, 'code': -4003},
-        {'did': 'speed', 'siid': 2, 'piid': 6, 'code': 0, 'value': 20},
+        {'did': 'set_move', 'siid': 6, 'piid': 1, 'code': -4003},
+        {'did': 'fan_speed', 'siid': 2, 'piid': 6, 'code': 0, 'value': 20},
         """
         self.data = data
 
@@ -2009,7 +2007,7 @@ class FanStatusP33(DeviceStatus):
 
     @property
     def fan_speed(self) -> int:
-        return self.data["speed"]
+        return self.data["fan_speed"]
 
     @property
     def light(self) -> bool:
@@ -2029,15 +2027,15 @@ class FanStatusP33(DeviceStatus):
 
     @property
     def delay_off_countdown(self) -> int:
-        return self.data["delay_off_countdown"]
+        return self.data["power_off_time"]
 
     @property
     def oscillate(self) -> bool:
-        return self.data["oscillate"]
+        return self.data["swing_mode"]
 
     @property
     def angle(self) -> int:
-        return self.data["angle"]
+        return self.data["swing_mode_angle"]
 
 
 class FanP33(MiotDevice):
@@ -2045,15 +2043,15 @@ class FanP33(MiotDevice):
         # https://miot-spec.org/miot-spec-v2/instance?type=urn:miot-spec-v2:device:fan:0000A005:dmaker-p33:1
         "power": {"siid": 2, "piid": 1},
         "fan_level": {"siid": 2, "piid": 2},
-        "oscillate": {"siid": 2, "piid": 4},
-        "angle": {"siid": 2, "piid": 5},
+        "swing_mode": {"siid": 2, "piid": 4},
+        "swing_mode_angle": {"siid": 2, "piid": 5},
         "mode": {"siid": 2, "piid": 3},
-        "delay_off_countdown": {"siid": 3, "piid": 1},
+        "power_off_time": {"siid": 3, "piid": 1},
         "child_lock": {"siid": 7, "piid": 1},
         "light": {"siid": 4, "piid": 1},
         "buzzer": {"siid": 5, "piid": 1},
-        "motor_control": {"siid": 6, "piid": 1},
-        "speed": {"siid": 2, "piid": 6},
+        "set_move": {"siid": 6, "piid": 1},
+        "fan_speed": {"siid": 2, "piid": 6},
     }
 
     def __init__(
@@ -2099,14 +2097,14 @@ class FanP33(MiotDevice):
                 + ", ".join("{0}".format(i) for i in [30, 60, 90, 120, 140])
             )
 
-        return self.set_property("angle", angle)
+        return self.set_property("swing_mode_angle", angle)
 
     def set_oscillate(self, oscillate: bool):
         """Set oscillate on/off."""
         if oscillate:
-            return self.set_property("oscillate", True)
+            return self.set_property("swing_mode", True)
         else:
-            return self.set_property("oscillate", False)
+            return self.set_property("swing_mode", False)
 
     def set_buzzer(self, buzzer: bool):
         """Set buzzer on/off."""
@@ -2134,7 +2132,7 @@ class FanP33(MiotDevice):
         if minutes < 0 or minutes > 480:
             raise FanException("Invalid value for a delayed turn off: %s" % minutes)
 
-        return self.set_property("delay_off_countdown", minutes)
+        return self.set_property("power_off_time", minutes)
 
     def set_rotate(self, direction: FanMoveDirection):
         """Rotate fan 7.5 degrees horizontally to given direction."""
@@ -2147,7 +2145,7 @@ class FanP33(MiotDevice):
             value = 1
         elif direction == FanMoveDirection.Right:
             value = 2
-        return self.set_property("motor_control", value)
+        return self.set_property("set_move", value)
 
 
 class XiaomiFanP39(XiaomiFanMiot):
@@ -2293,7 +2291,7 @@ class FanStatusP39(DeviceStatus):
 
     @property
     def fan_speed(self) -> int:
-        return self.data["speed"]
+        return self.data["fan_speed"]
 
     @property
     def mode(self) -> str:
@@ -2305,15 +2303,15 @@ class FanStatusP39(DeviceStatus):
 
     @property
     def delay_off_countdown(self) -> int:
-        return self.data["delay_off_countdown"]
+        return self.data["power_off_time"]
 
     @property
     def oscillate(self) -> bool:
-        return self.data["oscillate"]
+        return self.data["swing_mode"]
 
     @property
     def angle(self) -> int:
-        return self.data["angle"]
+        return self.data["swing_mode_angle"]
 
 
 class FanP39(MiotDevice):
@@ -2322,11 +2320,11 @@ class FanP39(MiotDevice):
         "power": {"siid": 2, "piid": 1},
         "fan_level": {"siid": 2, "piid": 2},
         "mode": {"siid": 2, "piid": 4},
-        "oscillate": {"siid": 2, "piid": 5},
-        "angle": {"siid": 2, "piid": 6},
-        "delay_off_countdown": {"siid": 2, "piid": 8},
-        "motor_control": {"siid": 2, "piid": 10, "access": ["write"]},
-        "speed": {"siid": 2, "piid": 11},
+        "swing_mode": {"siid": 2, "piid": 5},
+        "swing_mode_angle": {"siid": 2, "piid": 6},
+        "power_off_time": {"siid": 2, "piid": 8},
+        "set_move": {"siid": 2, "piid": 10, "access": ["write"]},
+        "fan_speed": {"siid": 2, "piid": 11},
         "child_lock": {"siid": 3, "piid": 1},
     }
 
@@ -2389,14 +2387,14 @@ class FanP39(MiotDevice):
                 + ", ".join("{0}".format(i) for i in [30, 60, 90, 120, 140])
             )
 
-        return self.set_property("angle", angle)
+        return self.set_property("swing_mode_angle", angle)
 
     def set_oscillate(self, oscillate: bool):
         """Set oscillate on/off."""
         if oscillate:
-            return self.set_property("oscillate", True)
+            return self.set_property("swing_mode", True)
         else:
-            return self.set_property("oscillate", False)
+            return self.set_property("swing_mode", False)
 
     def set_child_lock(self, lock: bool):
         """Set child lock on/off."""
@@ -2413,7 +2411,7 @@ class FanP39(MiotDevice):
         if minutes < 0 or minutes > 480:
             raise FanException("Invalid value for a delayed turn off: %s" % minutes)
 
-        return self.set_property("delay_off_countdown", minutes)
+        return self.set_property("power_off_time", minutes)
 
     def set_rotate(self, direction: FanMoveDirection):
         """Rotate fan 7.5 degrees horizontally to given direction."""
@@ -2426,4 +2424,4 @@ class FanP39(MiotDevice):
             value = 1
         elif direction == FanMoveDirection.Right:
             value = 2
-        return self.set_property("motor_control", value)
+        return self.set_property("set_move", value)
