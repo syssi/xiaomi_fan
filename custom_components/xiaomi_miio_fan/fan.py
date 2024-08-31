@@ -2087,7 +2087,7 @@ class FanP33(MiotDevice):
         if speed < 0 or speed > 100:
             raise FanException("Invalid speed: %s" % speed)
 
-        return self.set_property("speed", speed)
+        return self.set_property("fan_speed", speed)
 
     def set_angle(self, angle: int):
         """Set the oscillation angle."""
@@ -2377,7 +2377,7 @@ class FanP39(MiotDevice):
         if speed < 0 or speed > 100:
             raise FanException("Invalid speed: %s" % speed)
 
-        return self.set_property("speed", speed)
+        return self.set_property("fan_speed", speed)
 
     def set_angle(self, angle: int):
         """Set the oscillation angle."""
