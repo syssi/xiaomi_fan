@@ -1380,6 +1380,18 @@ class XiaomiFan1C(XiaomiFan):
             delay_off_countdown,
         )
 
+    async def async_set_led_brightness(self, brightness: int = 2):
+        """Set the led brightness."""
+        brightness = FanLedBrightness(brightness)
+        if brightness == FanLedBrightness.Dim:
+            return
+
+        await self._try_command(
+            "Setting the led brightness of the miio device failed.",
+            self._device.set_led,
+            brightness == FanLedBrightness.Bright,
+        )
+
     async def async_set_natural_mode_on(self):
         """Turn the natural mode on."""
         if self._device_features & FEATURE_SET_NATURAL_MODE == 0:
