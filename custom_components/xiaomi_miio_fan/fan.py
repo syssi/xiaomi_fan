@@ -1887,7 +1887,7 @@ class XiaomiFanP33(XiaomiFanMiot):
             _LOGGER.debug("Got new state: %s", state)
 
             self._available = True
-            self._percentage = state.fan_speed
+            self._percentage = state.percentage
             self._oscillate = state.oscillate
             self._natural_mode = state.mode == OperationModeFanP33.Nature
             self._state = state.power
@@ -1927,10 +1927,6 @@ class XiaomiFanP33(XiaomiFanMiot):
     @property
     def percentage(self) -> Optional[int]:
         return self._percentage
-
-    @property
-    def speed_count(self) -> int:
-        return len(FAN_SPEEDS_P33)
 
     @property
     def preset_modes(self):
@@ -2004,7 +2000,7 @@ class FanStatusP33(DeviceStatus):
         return self.data["fan_level"]
 
     @property
-    def fan_speed(self) -> int:
+    def percentage(self) -> int:
         return self.data["speed"]
 
     @property
@@ -2081,11 +2077,15 @@ class FanP33(MiotDevice):
         return self.set_property("power", False)
 
     def set_speed(self, speed: int):
-        """Set fan speed."""
-        if speed < 0 or speed > 100:
-            raise FanException("Invalid speed: %s" % speed)
+        """Set fan speed, needed to wrap next method"""
+        return self.set_percentage(speed)
 
-        return self.set_property("speed", speed)
+    def set_percentage(self, percentage: int):
+        """Set fan percentage."""
+        if percentage < 0 or percentage > 100:
+            raise FanException("Invalid percentage: %s" % percentage)
+
+        return self.set_property("speed", percentage)
 
     def set_angle(self, angle: int):
         """Set the oscillation angle."""
