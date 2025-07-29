@@ -412,7 +412,7 @@ SERVICE_TO_METHOD = {
 
 # backported from current master
 def _filter_request_fields(req):
-    """Return only the parts that belong to the request.."""
+    """Return only the parts that belong to the request."""
     return {k: v for k, v in req.items() if k in ["did", "siid", "piid"]}
 
 
@@ -2231,10 +2231,6 @@ class XiaomiFanP39(XiaomiFanMiot):
     @property
     def percentage(self) -> Optional[int]:
         return self._percentage
-
-    @property
-    def speed_count(self) -> int:
-        return len(FAN_SPEEDS_P39)
 
     @property
     def preset_modes(self):
