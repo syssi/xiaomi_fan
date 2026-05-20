@@ -101,6 +101,26 @@
           "description": "Time in minutes. Valid values are 0, 60, 120, 180, 240, 300, 240, 300, 360, 420, 480 minutes."
         }
       }
+    },
+    "fan_set_vertical_oscillation_on": {
+      "name": "Set vertical oscillation on",
+      "description": "Turn the vertical oscillation on.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the Xiaomi Mi Smart Fan entity."
+        }
+      }
+    },
+    "fan_set_vertical_oscillation_off": {
+      "name": "Set vertical oscillation off",
+      "description": "Turn the vertical oscillation off.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the Xiaomi Mi Smart Fan entity."
+        }
+      }
     }
   }
 }
