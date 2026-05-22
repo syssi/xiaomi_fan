@@ -2689,8 +2689,11 @@ class XiaomiFanP76(XiaomiFanP33):
     async def async_set_direction(self, direction: str) -> None:
         if direction == "forward":
             await self.async_set_vertical_oscillation_on()
+            self._vertical_oscillate = True
         else:
             await self.async_set_vertical_oscillation_off()
+            self._vertical_oscillate = False
+        self.async_write_ha_state()
 
     async def async_update(self):
         if self._skip_update:
