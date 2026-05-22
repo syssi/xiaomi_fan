@@ -1,0 +1,16 @@
+{
+  "domain": "xiaomi_miio_fan_p76",
+  "name": "Xiaomi Mi Smart Pedestal Fan (with P76)",
+  "codeowners": [
+    "@b0x42"
+  ],
+  "dependencies": [],
+  "documentation": "https://github.com/b0x42/xiaomi_fan",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/b0x42/xiaomi_fan/issues",
+  "requirements": [
+    "construct==2.10.68",
+    "python-miio>=0.5.12"
+  ],
+  "version": "2025.7.0.1"
+}
