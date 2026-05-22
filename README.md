@@ -1,104 +1,41 @@
-# Xiaomi Mi Smart Pedestal Fan
+# Xiaomi Mi Smart Pedestal Fan (with P76 support)
 
-![GitHub actions](https://github.com/syssi/xiaomi_fan/actions/workflows/ci.yaml/badge.svg)
-![GitHub stars](https://img.shields.io/github/stars/syssi/xiaomi_fan)
-![GitHub forks](https://img.shields.io/github/forks/syssi/xiaomi_fan)
-![GitHub watchers](https://img.shields.io/github/watchers/syssi/xiaomi_fan)
-[!["Buy Me A Coffee"](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg)](https://www.buymeacoffee.com/syssi)
+This is a fork of [syssi/xiaomi_fan](https://github.com/syssi/xiaomi_fan) with added support for the **Xiaomi Smart Standing Air Circulation Fan (xiaomi.fan.p76)**, including vertical oscillation.
 
-This is a custom component for home assistant to integrate the Xiaomi Mi Smart Fan.
-
-Please follow the instructions on [Retrieving the Access Token](https://www.home-assistant.io/integrations/xiaomi_miio/#xiaomi-cloud-tokens-extractor) to get the API token to use in the configuration.yaml file.
-
-Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all the work.
+Credits: [syssi](https://github.com/syssi) for the original integration, [Rytilahti](https://github.com/rytilahti/python-miio) for python-miio.
 
 ## Supported devices
 
-| Name                        | Model                  | Model no. | Specs |
-| ----------------------------| ---------------------- | --------- | ----- |
-| Pedestal Fan Fan V2         | zhimi.fan.v2           | | |
-| Pedestal Fan Fan V3         | zhimi.fan.v3           | | |
-| Pedestal Fan Fan SA1        | zhimi.fan.sa1          | | |
-| Pedestal Fan Fan ZA1        | zhimi.fan.za1          | | |
-| Pedestal Fan Fan ZA3        | zhimi.fan.za3          | | |
-| Pedestal Fan Fan ZA4        | zhimi.fan.za4          | ZLBPLDS04ZM | |
-| Smartmi Standing Fan 3      | zhimi.fan.za5          | | |
-| Pedestal Fan Fan 1C         | dmaker.fan.1c          | | |
-| Pedestal Fan Fan P5         | dmaker.fan.p5          | | |
-| Pedestal Fan Fan P8         | dmaker.fan.p8          | | |
-| Pedestal Fan Fan P9         | dmaker.fan.p9          | | |
-| Pedestal Fan Fan P10        | dmaker.fan.p10         | | |
-| Mijia Pedestal Fan          | dmaker.fan.p11         | BPLDS03DM  | 2800mAh, 24W, <=58dB  |
-| Smart Standing Fan 2 Pro    | dmaker.fan.p33         | BPLDS03DM  | 2800mAh, 24W, <=58dB  |
-| Pedestal Fan Fan P15        | dmaker.fan.p15         | | |
-| Mi Smart Standing Fan 2 P18 | dmaker.fan.p18         | BPLDS02DM  | AC, 15W, 30.2-55.8bB  |
-| Mi Smart Standing Fan 2 P30 | dmaker.fan.p30         | BPLDS02DM  | AC, 15W, 30.2-55.8bB  |
-| Rosou SS4 Ventilator        | leshow.fan.ss4         | | |
-| Xiaomi Smart Tower Fan      | dmaker.fan.p39         | BPTS01DM | 22W, <=63dB |
+| Name                                        | Model                  | Model no.  | Specs |
+| ------------------------------------------- | ---------------------- | ---------- | ----- |
+| Pedestal Fan Fan V2                         | zhimi.fan.v2           | | |
+| Pedestal Fan Fan V3                         | zhimi.fan.v3           | | |
+| Pedestal Fan Fan SA1                        | zhimi.fan.sa1          | | |
+| Pedestal Fan Fan ZA1                        | zhimi.fan.za1          | | |
+| Pedestal Fan Fan ZA3                        | zhimi.fan.za3          | | |
+| Pedestal Fan Fan ZA4                        | zhimi.fan.za4          | ZLBPLDS04ZM | |
+| Smartmi Standing Fan 3                      | zhimi.fan.za5          | | |
+| Pedestal Fan Fan 1C                         | dmaker.fan.1c          | | |
+| Pedestal Fan Fan P5                         | dmaker.fan.p5          | | |
+| Pedestal Fan Fan P8                         | dmaker.fan.p8          | | |
+| Pedestal Fan Fan P9                         | dmaker.fan.p9          | | |
+| Pedestal Fan Fan P10                        | dmaker.fan.p10         | | |
+| Mijia Pedestal Fan                          | dmaker.fan.p11         | BPLDS03DM  | 2800mAh, 24W, <=58dB |
+| Smart Standing Fan 2 Pro                    | dmaker.fan.p33         | BPLDS03DM  | 2800mAh, 24W, <=58dB |
+| Pedestal Fan Fan P15                        | dmaker.fan.p15         | | |
+| Mi Smart Standing Fan 2 P18                 | dmaker.fan.p18         | BPLDS02DM  | AC, 15W, 30.2-55.8dB |
+| Mi Smart Standing Fan 2 P30                 | dmaker.fan.p30         | BPLDS02DM  | AC, 15W, 30.2-55.8dB |
+| Rosou SS4 Ventilator                        | leshow.fan.ss4         | | |
+| Xiaomi Smart Tower Fan                      | dmaker.fan.p39         | BPTS01DM   | 22W, <=63dB |
+| **Xiaomi Smart Air Circulation Fan** *(new)*| **xiaomi.fan.p76**     | | MIoT, horizontal + vertical swing |
 
 
-## Features
+## Install via HACS
 
-### Pedestal Fan
-
-* Power (on, off)
-* Preset modes (Level 1, Level 2, Level 3, Level 4)
-* Speed percentage (0...100)
-* Oscillate (on, off)
-* Oscillation angle (30, 60, 90, 120, 140, 150)
-* Natural mode (on, off)
-* Rotate by 5 degrees (left, right)
-* Child lock (on, off)
-* LED brightness (bright, dim, off)
-* Attributes
-  - model
-  - temperature (zhimi.fan.v2 and v3 only)
-  - humidity (zhimi.fan.v2 and v3 only)
-  - led_brightness
-  - buzzer
-  - child_lock
-  - natural_level
-  - oscillate
-  - delay_off_countdown
-  - speed
-  - direct_speed
-  - natural_speed
-  - angle
-  - use_time
-  - ac_power
-  - battery (zhimi.fan.v2 and v3 only)
-  - battery_charge (zhimi.fan.v2 & v3 only)
-  - button_pressed (zhimi.fan.v2 & v3 only)
-  - led (zhimi.fan.v2 only)
-  - battery_state (zhimi.fan.v2 only)
-  - anion (zhimi.fan.za5 only)
-
-
-### Rosou SS4 Ventilator (leshow.fan.ss4)
-
-* Power (on, off)
-* Operation modes (manual, sleep, strong, natural)
-* Preset modes (Level 1, Level 2, Level 3, Level 4)
-* Speed percentage (0...100)
-* Oscillate (on, off)
-* Buzzer (on, off)
-* Delayed turn off (minutes)
-
-* Attributes
-  - `model`
-  - `mode`
-  - `speed`
-  - `buzzer`
-  - `oscillate`
-  - `delay_off_countdown`
-  - `error_detected`
-
-
-## Install
-
-You can install this custom component via [HACS](https://hacs.xyz/). Search for for 'Xiaomi Mi Smart Pedestal Fan Integration' at the integration page of HACS. Alternatively, you can install it manually by copying the custom_component folder to your Home Assistant configuration folder.
-
-As next step you have to setup the custom component at your `configuration.yaml`. This custom component doesn't provide a `config-flow` right now. A restart of Home Assistant is required afterwards.
+1. HACS → Integrations → ⋮ → **Custom repositories**
+2. Add `https://github.com/b0x42/xiaomi_fan` — type: **Integration**
+3. Install **"Xiaomi Mi Smart Pedestal Fan (with P76)"**
+4. Restart Home Assistant
 
 ## Setup
 
@@ -106,145 +43,83 @@ As next step you have to setup the custom component at your `configuration.yaml`
 # configuration.yaml
 
 fan:
-  - platform: xiaomi_miio_fan
-    name: Xiaomi Smart Fan
-    host: 192.168.130.71
-    token: b7c4a758c251955d2c24b1d9e41ce47d
+  - platform: xiaomi_miio_fan_p76
+    name: Xiaomi Fan P76
+    host: 192.168.1.100
+    token: YOUR_TOKEN_HERE
+    model: xiaomi.fan.p76
 ```
 
 Configuration variables:
-- **host** (*Required*): The IP of your fan.
-- **token** (*Required*): The API token of your fan.
-- **name** (*Optional*): The name of your fan.
-- **model** (*Optional*): The model of your device. This setting can be used to bypass the device model detection and is recommended if your device isn't always available.
-- **preset_modes_override** (*Optional*): Overrides the list of preset modes. Can be used to suppress the preset mode switches at homekit by passing an empty list (`preset_modes_override: []`).
+- **host** (*Required*): IP address of the fan.
+- **token** (*Required*): API token. See [Retrieving the Access Token](https://www.home-assistant.io/integrations/xiaomi_miio/#xiaomi-cloud-tokens-extractor).
+- **name** (*Optional*): Entity name.
+- **model** (*Optional*): Device model string. Recommended to set explicitly.
+- **preset_modes_override** (*Optional*): Override preset mode list (e.g. `[]` to suppress HomeKit switches).
+
+
+## P76-specific features
+
+### Xiaomi Smart Air Circulation Fan (xiaomi.fan.p76)
+
+* Power (on, off)
+* Preset modes (Level 1–4) — gear-based (0-indexed device values)
+* Speed percentage (1–100) — stepless
+* Horizontal oscillation (on, off)
+* Horizontal oscillation angle (30, 60, 90, 120°)
+* Vertical oscillation (on, off) — *new service*
+* Natural mode (on, off)
+* Child lock (on, off)
+* LED (on, off)
+* Buzzer (on, off)
+* Delayed turn off (0–480 minutes)
+
+Attributes:
+- `mode` — Straight / Natural
+- `oscillate` — horizontal swing state
+- `angle` — horizontal swing angle
+- `vertical_oscillate` — vertical swing state
+- `vertical_angle` — vertical swing angle
+- `delay_off_countdown`
+- `led`, `buzzer`, `child_lock`
+- `raw_speed` — current stepless speed (1–100)
+
 
 ## Platform services
 
-#### Service `fan.set_percentage`
+All service names use the domain `xiaomi_miio_fan_p76`.
 
-Set the fan speed percentage.
+#### `xiaomi_miio_fan_p76.fan_set_vertical_oscillation_on` / `_off`
 
-| Service data attribute    | Optional | Description                                                                |
-|---------------------------|----------|----------------------------------------------------------------------------|
-| `entity_id`               |      yes | Only act on a specific fan entity. Else targets all.                       |
-| `percentage`              |       no | Percentage speed setting. Valid values are between 0 and 100.              |
+Turn vertical oscillation on or off (P76 only).
 
-#### Service `fan.set_preset_mode`
+| Attribute   | Optional | Description            |
+|-------------|----------|------------------------|
+| `entity_id` | yes      | Target fan entity.     |
 
-Set a preset mode.
+#### `xiaomi_miio_fan_p76.fan_set_oscillation_angle`
 
-| Service data attribute    | Optional | Description                                                                  |
-|---------------------------|----------|------------------------------------------------------------------------------|
-| `entity_id`               |      yes | Only act on a specific fan entity. Else targets all.                         |
-| `preset_mode`             |       no | Preset mode. Valid values are `Level 1`, `Level 2`, `Level 3` and `Level 4`. |
+| Attribute   | Optional | Description                                      |
+|-------------|----------|--------------------------------------------------|
+| `entity_id` | yes      | Target fan entity.                               |
+| `angle`     | no       | Degrees: `30`, `60`, `90`, `120` (P76); `140` (others). |
 
-#### Service `fan.oscillate`
+#### `xiaomi_miio_fan_p76.fan_set_natural_mode_on` / `_off`
 
-Oscillates the fan.
+Toggle natural wind mode.
 
-| Service data attribute    | Optional | Description                                                           |
-|---------------------------|----------|-----------------------------------------------------------------------|
-| `entity_id`               |      yes | Only act on a specific fan entity. Else targets all.                  |
-| `oscillating`             |       no | Flag to turn on/off oscillation. Valid values are `True` and `False`. |
+#### `xiaomi_miio_fan_p76.fan_set_delay_off`
 
-#### Service `fan.set_direction`
+| Attribute             | Optional | Description                                      |
+|-----------------------|----------|--------------------------------------------------|
+| `entity_id`           | yes      | Target fan entity.                               |
+| `delay_off_countdown` | no       | Minutes: `0`, `60`, `120`, `180`, `240`, `300`, `360`, `420`, `480`. |
 
-Rotates the fan 5 degrees to the left/right.
+#### `xiaomi_miio_fan_p76.fan_set_buzzer_on` / `_off`
+#### `xiaomi_miio_fan_p76.fan_set_child_lock_on` / `_off`
+#### `xiaomi_miio_fan_p76.fan_set_led_brightness`
 
-| Service data attribute    | Optional | Description                                                          |
-|---------------------------|----------|----------------------------------------------------------------------|
-| `entity_id`               |      yes | Only act on a specific fan entity. Else targets all.                 |
-| `direction`               |       no | Rotate the fan 5 degrees. Valid values are `left`/`reverse` and `right`/`forward`.       |
-
-#### Service `xiaomi_miio_fan.fan_set_oscillation_angle`
-
-Set the oscillation angle. Supported values are 30, 60, 90 and 120 degrees.
-
-| Service data attribute    | Optional | Description                                                            |
-|---------------------------|----------|------------------------------------------------------------------------|
-| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.           |
-| `angle`                   |       no | Angle in degrees. Valid values are `30`, `60`, `90`, `120`, and `140`. |
-
-#### Service `xiaomi_miio_fan.fan_set_delay_off`
-
-Set the scheduled turn off time. Supported values are 0, 60, 120, 180, 240, 300, 360, 420, 480 minutes. When 0 is passed, delay_off is disabled.
-
-
-| Service data attribute    | Optional | Description                                                          |
-|---------------------------|----------|----------------------------------------------------------------------|
-| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
-| `delay_off_countdown`     |       no | Time in minutes. Valid values are `0`, `60`, `120`, `180`, `240`, `300`, `240`, `300`, `360`, `420`, `480` minutes. |
-
-#### Service `xiaomi_miio_fan.fan_set_natural_mode_on`
-
-Turn the natural mode on.
-
-| Service data attribute    | Optional | Description                                                          |
-|---------------------------|----------|----------------------------------------------------------------------|
-| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
-
-#### Service `xiaomi_miio_fan.fan_set_natural_mode_off`
-
-Turn the natural mode off.
-
-| Service data attribute    | Optional | Description                                                          |
-|---------------------------|----------|----------------------------------------------------------------------|
-| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
-
-#### Service `xiaomi_miio_fan.fan_set_buzzer_on`
-
-Turn the buzzer on.
-
-| Service data attribute    | Optional | Description                                                          |
-|---------------------------|----------|----------------------------------------------------------------------|
-| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
-
-#### Service `xiaomi_miio_fan.fan_set_buzzer_off`
-
-Turn the buzzer off.
-
-| Service data attribute    | Optional | Description                                                          |
-|---------------------------|----------|----------------------------------------------------------------------|
-| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
-
-#### Service `xiaomi_miio_fan.fan_set_child_lock_on`
-
-Turn the child lock on.
-
-| Service data attribute    | Optional | Description                                                          |
-|---------------------------|----------|----------------------------------------------------------------------|
-| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
-
-#### Service `xiaomi_miio_fan.fan_set_child_lock_off`
-
-Turn the child lock off.
-
-| Service data attribute    | Optional | Description                                                          |
-|---------------------------|----------|----------------------------------------------------------------------|
-| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
-
-#### Service `xiaomi_miio_fan.fan_set_led_brightness`
-
-Set the led brightness. Supported values are 0 (Bright), 1 (Dim), 2 (Off).
-
-| Service data attribute    | Optional | Description                                                          |
-|---------------------------|----------|----------------------------------------------------------------------|
-| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
-| `brightness`              |       no | Brightness, between 0 and 2.                                         |
-
-#### Service `xiaomi_miio_fan.fan_set_anion_on`
-
-Turn the ionizer on.
-
-| Service data attribute    | Optional | Description                                                          |
-|---------------------------|----------|----------------------------------------------------------------------|
-| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
-
-#### Service `xiaomi_miio_fan.fan_set_anion_off`
-
-Turn the ionizer off.
-
-| Service data attribute    | Optional | Description                                                          |
-|---------------------------|----------|----------------------------------------------------------------------|
-| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
+| Attribute    | Optional | Description                              |
+|--------------|----------|------------------------------------------|
+| `entity_id`  | yes      | Target fan entity.                       |
+| `brightness` | no       | `0` = Bright, `1` = Dim, `2` = Off.     |
