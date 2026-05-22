@@ -2664,9 +2664,10 @@ class XiaomiFanP76(XiaomiFanP33):
         self._vertical_oscillate = None
         self._natural_mode = False
 
-        self._state_attrs.update(
-            {attribute: None for attribute in self._available_attributes}
-        )
+        self._state_attrs = {
+            ATTR_MODEL: self._model,
+            **{attribute: None for attribute in self._available_attributes},
+        }
 
     @property
     def supported_features(self) -> int:
