@@ -2668,6 +2668,16 @@ class XiaomiFanP76(XiaomiFanP33):
             {attribute: None for attribute in self._available_attributes}
         )
 
+    @property
+    def supported_features(self) -> int:
+        return (
+            FanEntityFeature.OSCILLATE
+            | FanEntityFeature.PRESET_MODE
+            | FanEntityFeature.SET_SPEED
+            | FanEntityFeature.TURN_OFF
+            | FanEntityFeature.TURN_ON
+        )
+
     async def async_update(self):
         if self._skip_update:
             self._skip_update = False
