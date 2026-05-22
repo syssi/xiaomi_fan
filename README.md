@@ -1,6 +1,11 @@
 # Xiaomi Mi Smart Pedestal Fan (with P76 support)
 
+![GitHub stars](https://img.shields.io/github/stars/b0x42/xiaomi_fan)
+![GitHub forks](https://img.shields.io/github/forks/b0x42/xiaomi_fan)
+
 This is a fork of [syssi/xiaomi_fan](https://github.com/syssi/xiaomi_fan) with added support for the **Xiaomi Smart Standing Air Circulation Fan (xiaomi.fan.p76)**, including vertical oscillation.
+
+Fork maintained at: https://github.com/b0x42/xiaomi_fan
 
 Credits: [syssi](https://github.com/syssi) for the original integration, [Rytilahti](https://github.com/rytilahti/python-miio) for python-miio.
 
