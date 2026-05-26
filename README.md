@@ -1,9 +1,9 @@
-# Xiaomi Mi Smart Pedestal Fan (with P76 support)
+# Xiaomi Mi Smart Pedestal Fan (with P76 and P70 support)
 
 ![GitHub stars](https://img.shields.io/github/stars/b0x42/xiaomi_fan)
 ![GitHub forks](https://img.shields.io/github/forks/b0x42/xiaomi_fan)
 
-This is a fork of [syssi/xiaomi_fan](https://github.com/syssi/xiaomi_fan) with added support for the **Xiaomi Smart Standing Air Circulation Fan (xiaomi.fan.p76)**, including vertical oscillation.
+This is a fork of [syssi/xiaomi_fan](https://github.com/syssi/xiaomi_fan) with added support for the **Xiaomi Smart Standing Air Circulation Fan (xiaomi.fan.p76, xiaomi.fan.p70)**, including vertical oscillation.
 
 Fork maintained at: https://github.com/b0x42/xiaomi_fan
 
@@ -33,13 +33,14 @@ Credits: [syssi](https://github.com/syssi) for the original integration, [Rytila
 | Rosou SS4 Ventilator                        | leshow.fan.ss4         | | |
 | Xiaomi Smart Tower Fan                      | dmaker.fan.p39         | BPTS01DM   | 22W, <=63dB |
 | **Xiaomi Smart Air Circulation Fan** *(new)*| **xiaomi.fan.p76**     | | MIoT, horizontal + vertical swing |
+| **Smart Desktop Air Circulation Fan** *(new)*| **xiaomi.fan.p70** | | Same as P76, different stand |
 
 
 ## Install via HACS
 
 1. HACS → Integrations → ⋮ → **Custom repositories**
 2. Add `https://github.com/b0x42/xiaomi_fan` — type: **Integration**
-3. Install **"Xiaomi Mi Smart Pedestal Fan (with P76)"**
+3. Install **"Xiaomi Mi Smart Pedestal Fan (with P76, P70)"**
 4. Restart Home Assistant
 
 ## Setup
@@ -63,9 +64,11 @@ Configuration variables:
 - **preset_modes_override** (*Optional*): Override preset mode list (e.g. `[]` to suppress HomeKit switches).
 
 
-## P76-specific features
+For P70 use `model: xiaomi.fan.p70` — all other configuration is identical.
 
-### Xiaomi Smart Air Circulation Fan (xiaomi.fan.p76)
+## P76/P70-specific features
+
+### Xiaomi Smart Air Circulation Fan (xiaomi.fan.p76 / xiaomi.fan.p70)
 
 * Power (on, off)
 * Preset modes (Level 1–4) — gear-based (0-indexed device values)
