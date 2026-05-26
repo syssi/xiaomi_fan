@@ -2477,6 +2477,9 @@ class OperationModeFanP76(Enum):
 class FanStatusP76(DeviceStatus):
     """Container for status reports for FanP76."""
 
+    def __init__(self, data: Dict[str, Any]) -> None:
+        self.data = data
+
     @property
     def power(self) -> bool:
         return self.data["power"]
@@ -2556,12 +2559,29 @@ class FanP76(MiotDevice):
     ):
         super().__init__(ip, token, start_id, debug, lazy_discover, timeout, model=model)
 
+    # backported and adapted from current master
+    def get_properties_for_mapping(self, *, max_properties=15) -> list:
+        """Retrieve raw properties based on mapping."""
+        mapping = self._get_mapping()
+
+        # We send property key in "did" because it's sent back via response and we can identify the property.
+        properties = [
+            {"did": k, **_filter_request_fields(v)}
+            for k, v in mapping.items()
+            if "aiid" not in v and ("access" not in v or "read" in v["access"])
+        ]
+
+        return self.get_properties(
+            properties, property_getter="get_properties", max_properties=max_properties
+        )
+
     def status(self):
         """Retrieve properties."""
-        properties = [_filter_request_fields(x) for x in self.mapping.values()]
-        values = self.get_properties(properties, property_getter="get_properties", max_properties=10)
         return FanStatusP76(
-            {k: v["value"] for k, v in zip(self.mapping.keys(), values) if "value" in v}
+            {
+                prop["did"]: prop["value"] if prop["code"] == 0 else None
+                for prop in self.get_properties_for_mapping()
+            }
         )
 
     def on(self):
@@ -2587,6 +2607,31 @@ class FanP76(MiotDevice):
     def set_vertical_oscillate(self, oscillate: bool):
         """Set vertical oscillation on/off."""
         return self.set_property("vertical_swing", oscillate)
+
+    def set_buzzer(self, buzzer: bool):
+        """Set buzzer on/off."""
+        if buzzer:
+            return self.set_property("buzzer", True)
+        else:
+            return self.set_property("buzzer", False)
+
+    def set_child_lock(self, lock: bool):
+        """Set child lock on/off."""
+        self.status()
+        return self.set_property("child_lock", lock)
+
+    def set_angle(self, angle: int):
+        """Set the horizontal oscillation angle."""
+        if angle not in [30, 60, 90, 120, 140]:
+            raise FanException(
+                "Unsupported angle. Supported values: "
+                + ", ".join("{0}".format(i) for i in [30, 60, 90, 120, 140])
+            )
+        return self.set_property("horizontal_swing_angle", angle)
+
+    def set_light(self, light: bool):
+        """Set indicator state."""
+        return self.set_property("led", light)
 
     def set_mode(self, mode: OperationModeFanP76):
         """Set mode."""
