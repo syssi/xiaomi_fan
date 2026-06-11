@@ -250,3 +250,11 @@ Turn the ionizer off.
 | Service data attribute    | Optional | Description                                                          |
 |---------------------------|----------|----------------------------------------------------------------------|
 | `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
+
+#### Service `xiaomi_miio_fan.fan_turn`
+
+Turn to the given direction. Supported values are left, right, up and down. (P76 only)
+
+| Service data attribute    | Optional | Description                                                          |
+|---------------------------|----------|----------------------------------------------------------------------|
+| `direction`               |       no | Direction. Valid values are `left`, `right`, `up` and `down`.        |
