@@ -110,6 +110,7 @@ SPEED_OFF = "off"
 
 ATTR_MODEL = "model"
 ATTR_BRIGHTNESS = "brightness"
+ATTR_DIRECTION = "direction"
 
 ATTR_TEMPERATURE = "temperature"
 ATTR_HUMIDITY = "humidity"
@@ -372,6 +373,7 @@ FEATURE_SET_OSCILLATION_ANGLE = 16
 FEATURE_SET_NATURAL_MODE = 32
 FEATURE_SET_ANION = 64
 FEATURE_SET_VERTICAL_OSCILLATION = 128
+FEATURE_TURN = 256
 
 FEATURE_FLAGS_FAN = (
     FEATURE_SET_BUZZER
@@ -420,6 +422,7 @@ FEATURE_FLAGS_FAN_P76 = (
     | FEATURE_SET_OSCILLATION_ANGLE
     | FEATURE_SET_NATURAL_MODE
     | FEATURE_SET_VERTICAL_OSCILLATION
+    | FEATURE_TURN
 )
 
 FEATURE_FLAGS_FAN_P70 = (
@@ -445,6 +448,7 @@ SERVICE_SET_ANION_ON = "fan_set_anion_on"
 SERVICE_SET_ANION_OFF = "fan_set_anion_off"
 SERVICE_SET_VERTICAL_OSCILLATION_ON = "fan_set_vertical_oscillation_on"
 SERVICE_SET_VERTICAL_OSCILLATION_OFF = "fan_set_vertical_oscillation_off"
+SERVICE_TURN = "fan_turn"
 
 AIRPURIFIER_SERVICE_SCHEMA = vol.Schema({vol.Optional(ATTR_ENTITY_ID): cv.entity_ids})
 
@@ -462,6 +466,10 @@ SERVICE_SCHEMA_OSCILLATION_ANGLE = AIRPURIFIER_SERVICE_SCHEMA.extend(
 
 SERVICE_SCHEMA_DELAY_OFF = AIRPURIFIER_SERVICE_SCHEMA.extend(
     {vol.Required(ATTR_DELAY_OFF_COUNTDOWN): cv.positive_int}
+)
+
+SERVICE_SCHEMA_TURN = AIRPURIFIER_SERVICE_SCHEMA.extend(
+    {vol.Required(ATTR_DIRECTION): vol.All(vol.Coerce(str), vol.In(["left", "right", "up", "down"]))}
 )
 
 SERVICE_TO_METHOD = {
@@ -491,6 +499,10 @@ SERVICE_TO_METHOD = {
     SERVICE_SET_ANION_OFF: {"method": "async_set_anion_off"},
     SERVICE_SET_VERTICAL_OSCILLATION_ON: {"method": "async_set_vertical_oscillation_on"},
     SERVICE_SET_VERTICAL_OSCILLATION_OFF: {"method": "async_set_vertical_oscillation_off"},
+    SERVICE_TURN: {
+        "method": "async_turn",
+        "schema": SERVICE_SCHEMA_TURN,
+    },
 }
 
 
@@ -2605,6 +2617,10 @@ class FanP76(MiotDevice):
         "delay": {"siid": 9, "piid": 1},
         "delay_time": {"siid": 9, "piid": 2},
         "delay_remain_time": {"siid": 9, "piid": 4},
+        "turn_left": {"siid": 2, "aiid": 4},
+        "turn_right": {"siid": 2, "aiid": 5},
+        "turn_up": {"siid": 2, "aiid": 6},
+        "turn_down": {"siid": 2, "aiid": 7},
     }
 
     def __init__(
@@ -2711,6 +2727,22 @@ class FanP76(MiotDevice):
         if minutes < 0 or minutes > 480:
             raise FanException("Invalid value for a delayed turn off: %s" % minutes)
         return self.set_property("delay_time", minutes)
+
+    def turn(self, direction: str):
+        """Turn to the given direction."""
+        if direction == "left":
+            return self.call_action("turn_left")
+        elif direction == "right":
+            return self.call_action("turn_right")
+        elif direction == "up":
+            return self.call_action("turn_up")
+        elif direction == "down":
+            return self.call_action("turn_down")
+        else:
+            raise FanException(
+                "Unsupported direction. Supported values: "
+                + ", ".join(["left", "right", "up", "down"])
+            )
 
 
 class XiaomiFanP76(XiaomiFanP33):
@@ -2898,6 +2930,15 @@ class XiaomiFanP76(XiaomiFanP33):
             "Setting vertical oscillation off of the miio device failed.",
             self._device.set_vertical_oscillate,
             False,
+        )
+
+    async def async_turn(self, direction: str):
+        if self._device_features & FEATURE_TURN == 0:
+            return
+        await self._try_command(
+            "Turning the miio device failed.",
+            self._device.turn,
+            direction,
         )
 
 

@@ -101,6 +101,20 @@
           "description": "Time in minutes. Valid values are 0, 60, 120, 180, 240, 300, 240, 300, 360, 420, 480 minutes."
         }
       }
+    },
+    "fan_turn": {
+      "name": "Turn",
+      "description": "Turn to the given direction. (P76 only)",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the Xiaomi Mi Smart Fan entity."
+        },
+        "direction": {
+          "name": "Direction",
+          "description": "Supported values are left, right, up and down."
+        }
+      }
     }
   }
 }
