@@ -37,6 +37,7 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
 | Xiaomi Smart Tower Fan      | dmaker.fan.p39         | BPTS01DM | 22W, <=63dB |
 | Xiaomi Smart Standing Air Circulation Fan | xiaomi.fan.p76 | JLLDS01XY | - |
 | Xiaomi Smart Desktop Air Circulation Fan  | xiaomi.fan.p70 | - | - |
+| Mi Smart Standing Fan 2 Lite              | xiaomi.fan.2lite | - | - |
 
 
 ## Features
