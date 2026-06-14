@@ -259,6 +259,22 @@ Turn to the given direction. Supported values are left, right, up and down. (P76
 |---------------------------|----------|----------------------------------------------------------------------|
 | `direction`               |       no | Direction. Valid values are `left`, `right`, `up` and `down`.        |
 
+#### Service `xiaomi_miio_fan.fan_set_vertical_oscillation_on`
+
+Turn the vertical oscillation on. (P70 and P76 only)
+
+| Service data attribute    | Optional | Description                                                          |
+|---------------------------|----------|----------------------------------------------------------------------|
+| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
+
+#### Service `xiaomi_miio_fan.fan_set_vertical_oscillation_off`
+
+Turn the vertical oscillation off. (P70 and P76 only)
+
+| Service data attribute    | Optional | Description                                                          |
+|---------------------------|----------|----------------------------------------------------------------------|
+| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
+
 #### Service `xiaomi_miio_fan.fan_set_vertical_oscillation_angle`
 
 Set the vertical oscillation angle. (P70 and P76 only)

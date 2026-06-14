@@ -102,6 +102,26 @@
         }
       }
     },
+    "fan_set_vertical_oscillation_on": {
+      "name": "Set vertical oscillation on",
+      "description": "Turn the vertical oscillation on. (P70 and P76 only)",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the Xiaomi Mi Smart Fan entity."
+        }
+      }
+    },
+    "fan_set_vertical_oscillation_off": {
+      "name": "Set vertical oscillation off",
+      "description": "Turn the vertical oscillation off. (P70 and P76 only)",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the Xiaomi Mi Smart Fan entity."
+        }
+      }
+    },
     "fan_turn": {
       "name": "Turn",
       "description": "Turn to the given direction. (P76 only)",
