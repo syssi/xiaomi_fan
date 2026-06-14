@@ -374,6 +374,7 @@ FEATURE_SET_NATURAL_MODE = 32
 FEATURE_SET_ANION = 64
 FEATURE_SET_VERTICAL_OSCILLATION = 128
 FEATURE_TURN = 256
+FEATURE_SET_VERTICAL_OSCILLATION_ANGLE = 512
 
 FEATURE_FLAGS_FAN = (
     FEATURE_SET_BUZZER
@@ -423,6 +424,7 @@ FEATURE_FLAGS_FAN_P76 = (
     | FEATURE_SET_NATURAL_MODE
     | FEATURE_SET_VERTICAL_OSCILLATION
     | FEATURE_TURN
+    | FEATURE_SET_VERTICAL_OSCILLATION_ANGLE
 )
 
 FEATURE_FLAGS_FAN_P70 = (
@@ -432,6 +434,7 @@ FEATURE_FLAGS_FAN_P70 = (
     | FEATURE_SET_OSCILLATION_ANGLE
     | FEATURE_SET_NATURAL_MODE
     | FEATURE_SET_VERTICAL_OSCILLATION
+    | FEATURE_SET_VERTICAL_OSCILLATION_ANGLE
 )
 
 SERVICE_SET_BUZZER_ON = "fan_set_buzzer_on"
@@ -449,6 +452,7 @@ SERVICE_SET_ANION_OFF = "fan_set_anion_off"
 SERVICE_SET_VERTICAL_OSCILLATION_ON = "fan_set_vertical_oscillation_on"
 SERVICE_SET_VERTICAL_OSCILLATION_OFF = "fan_set_vertical_oscillation_off"
 SERVICE_TURN = "fan_turn"
+SERVICE_SET_VERTICAL_OSCILLATION_ANGLE = "fan_set_vertical_oscillation_angle"
 
 AIRPURIFIER_SERVICE_SCHEMA = vol.Schema({vol.Optional(ATTR_ENTITY_ID): cv.entity_ids})
 
@@ -470,6 +474,10 @@ SERVICE_SCHEMA_DELAY_OFF = AIRPURIFIER_SERVICE_SCHEMA.extend(
 
 SERVICE_SCHEMA_TURN = AIRPURIFIER_SERVICE_SCHEMA.extend(
     {vol.Required(ATTR_DIRECTION): vol.All(vol.Coerce(str), vol.In(["left", "right", "up", "down"]))}
+)
+
+SERVICE_SCHEMA_VERTICAL_OSCILLATION_ANGLE = AIRPURIFIER_SERVICE_SCHEMA.extend(
+    {vol.Required(ATTR_VERTICAL_ANGLE): cv.positive_int}
 )
 
 SERVICE_TO_METHOD = {
@@ -502,6 +510,10 @@ SERVICE_TO_METHOD = {
     SERVICE_TURN: {
         "method": "async_turn",
         "schema": SERVICE_SCHEMA_TURN,
+    },
+    SERVICE_SET_VERTICAL_OSCILLATION_ANGLE: {
+        "method": "async_set_vertical_oscillation_angle",
+        "schema": SERVICE_SCHEMA_VERTICAL_OSCILLATION_ANGLE,
     },
 }
 
@@ -1034,6 +1046,17 @@ class XiaomiFan(XiaomiGenericDevice):
 
         self._natural_mode = False
         await self.async_set_percentage(self._percentage)
+
+    async def async_set_vertical_oscillation_angle(self, vertical_angle: int) -> None:
+        """Set vertical oscillation angle."""
+        if self._device_features & FEATURE_SET_VERTICAL_OSCILLATION_ANGLE == 0:
+            return
+
+        await self._try_command(
+            "Setting vertical oscillation angle of the miio device failed.",
+            self._device.set_vertical_angle,
+            vertical_angle
+        )
 
 
 class XiaomiFanP5(XiaomiFan):
@@ -3098,6 +3121,15 @@ class FanP70(MiotDevice):
                 + ", ".join(str(i) for i in [30, 60, 90, 120])
             )
         return self.set_property("horizontal_swing_angle", angle)
+
+    def set_vertical_angle(self, angle: int):
+        """Set vertical oscillation angle."""
+        if angle not in [30, 60, 90, 100]:
+            raise FanException(
+                "Unsupported angle. Supported values: "
+                + ", ".join(str(i) for i in [30, 60, 90, 100])
+        )
+        return self.set_property("vertical_swing_angle", angle)
 
     def set_buzzer(self, buzzer: bool):
         """Set buzzer on/off."""
