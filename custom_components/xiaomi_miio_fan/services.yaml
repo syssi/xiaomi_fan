@@ -120,7 +120,7 @@ fan_set_delay_off:
 
 fan_set_vertical_oscillation_on:
   name: Set vertical oscillation on
-  description: Turn the vertical oscillation on. (P76 only)
+  description: Turn the vertical oscillation on. (P70 and P76 only)
   fields:
     entity_id:
       name: Entity ID
@@ -132,7 +132,7 @@ fan_set_vertical_oscillation_on:
 
 fan_set_vertical_oscillation_off:
   name: Set vertical oscillation off
-  description: Turn the vertical oscillation off. (P76 only)
+  description: Turn the vertical oscillation off. (P70 and P76 only)
   fields:
     entity_id:
       name: Entity ID
@@ -157,3 +157,19 @@ fan_turn:
       name: Direction
       description: Supported values are left, right, up and down.
       example: left
+
+fan_set_vertical_oscillation_angle:
+  name: Set vertical oscillation angle
+  description: Set the vertical oscillation angle. (P70 and P76 only)
+  fields:
+    entity_id:
+      name: Entity ID
+      description: Name of the Xiaomi Mi Smart Fan entity.
+      selector:
+        entity:
+          integration: xiaomi_miio_fan
+          domain: fan
+    vertical_angle:
+      name: Vertical angle
+      description: Supported values are 30, 60, 90 or 100 degrees.
+      example: 30
