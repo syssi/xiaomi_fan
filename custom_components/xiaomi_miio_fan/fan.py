@@ -3477,7 +3477,7 @@ class Fan2Lite(MiotDevice):
 
     def set_buzzer(self, buzzer: bool):
         """Set buzzer on/off."""
-        return self.set_property("buzzer", bool(buzzer))
+        return self.set_property("buzzer", buzzer)
 
     def set_child_lock(self, lock: bool):
         """Set child lock on/off."""
