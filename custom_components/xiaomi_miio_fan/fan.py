@@ -21,6 +21,7 @@ from homeassistant.const import (
 )
 from homeassistant.exceptions import PlatformNotReady
 import homeassistant.helpers.config_validation as cv
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.util.percentage import (
     ordered_list_item_to_percentage,
     percentage_to_ordered_list_item,
@@ -38,42 +39,42 @@ from miio.integrations.fan.leshow.fan_leshow import (
 from miio.miot_device import DeviceStatus, MiotDevice
 import voluptuous as vol
 
+from .const import (
+    CONF_MODEL,
+    CONF_PRESET_MODES_OVERRIDE,
+    CONF_RETRIES,
+    DATA_KEY,
+    DEFAULT_NAME,
+    DEFAULT_RETRIES,
+    DOMAIN,
+    MODEL_FAN_1C,
+    MODEL_FAN_LESHOW_SS4,
+    MODEL_FAN_P10,
+    MODEL_FAN_P11,
+    MODEL_FAN_P15,
+    MODEL_FAN_P18,
+    MODEL_FAN_P30,
+    MODEL_FAN_P33,
+    MODEL_FAN_2LITE,
+    MODEL_FAN_P39,
+    MODEL_FAN_P45,
+    MODEL_FAN_P5,
+    MODEL_FAN_P70,
+    MODEL_FAN_P76,
+    MODEL_FAN_P85,
+    MODEL_FAN_P8,
+    MODEL_FAN_P9,
+    MODEL_FAN_SA1,
+    MODEL_FAN_V2,
+    MODEL_FAN_V3,
+    MODEL_FAN_XIAOMI_P30,
+    MODEL_FAN_ZA1,
+    MODEL_FAN_ZA3,
+    MODEL_FAN_ZA4,
+    MODEL_FAN_ZA5,
+)
+
 _LOGGER = logging.getLogger(__name__)
-
-DEFAULT_NAME = "Xiaomi Miio Fan"
-DEFAULT_RETRIES = 20
-DATA_KEY = "fan.xiaomi_miio_fan"
-DOMAIN = "xiaomi_miio_fan"
-
-CONF_MODEL = "model"
-CONF_RETRIES = "retries"
-CONF_PRESET_MODES_OVERRIDE = "preset_modes_override"
-
-MODEL_FAN_V2 = "zhimi.fan.v2"  # Pedestal Fan Fan V2
-MODEL_FAN_V3 = "zhimi.fan.v3"  # Pedestal Fan Fan V3
-MODEL_FAN_SA1 = "zhimi.fan.sa1"  # Pedestal Fan Fan SA1
-MODEL_FAN_ZA1 = "zhimi.fan.za1"  # Pedestal Fan Fan ZA1
-MODEL_FAN_ZA3 = "zhimi.fan.za3"  # Pedestal Fan Fan ZA3
-MODEL_FAN_ZA4 = "zhimi.fan.za4"  # Pedestal Fan Fan ZA4
-MODEL_FAN_ZA5 = "zhimi.fan.za5"  # Smartmi Standing Fan 3
-MODEL_FAN_P5 = "dmaker.fan.p5"  # Pedestal Fan Fan P5
-MODEL_FAN_P8 = "dmaker.fan.p8"  # Pedestal Fan Fan P8
-MODEL_FAN_P9 = "dmaker.fan.p9"  # Pedestal Fan Fan P9
-MODEL_FAN_P10 = "dmaker.fan.p10"  # Pedestal Fan Fan P10
-MODEL_FAN_P11 = "dmaker.fan.p11"  # Mijia Pedestal Fan
-MODEL_FAN_P15 = "dmaker.fan.p15"  # Pedestal Fan Fan P15
-MODEL_FAN_P18 = "dmaker.fan.p18"  # Mi Smart Standing Fan 2 P18
-MODEL_FAN_P30 = "dmaker.fan.p30"  # Mi Smart Standing Fan 2 P30
-MODEL_FAN_P33 = "dmaker.fan.p33"  # Mi Smart Standing Fan Pro 2
-MODEL_FAN_P39 = "dmaker.fan.p39"  # Smart Tower Fan
-MODEL_FAN_P45 = "xiaomi.fan.p45"  # Xiaomi Smart Tower Fan 2 (BHR8846EU)
-MODEL_FAN_XIAOMI_P30 = "xiaomi.fan.p30"  # Mi/Xiaomi Smart Standing Fan 2 P30
-MODEL_FAN_P76 = "xiaomi.fan.p76"  # Xiaomi Smart Standing Air Circulation Fan
-MODEL_FAN_P70 = "xiaomi.fan.p70"  # Smart Desktop Air Circulation Fan
-MODEL_FAN_P85 = "xiaomi.fan.p85"  # Xiaomi Smart Standing Fan Pro Slim
-MODEL_FAN_2LITE = "xiaomi.fan.2lite"  # Mi Smart Standing Fan 2 Lite
-MODEL_FAN_LESHOW_SS4 = "leshow.fan.ss4"
-MODEL_FAN_1C = "dmaker.fan.1c"  # Pedestal Fan Fan 1C
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
@@ -706,18 +707,40 @@ def _filter_request_fields(req):
 # pylint: disable=unused-argument
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up the miio fan device from config."""
-    if DATA_KEY not in hass.data:
-        hass.data[DATA_KEY] = {}
-
     host = config[CONF_HOST]
     token = config[CONF_TOKEN]
     name = config[CONF_NAME]
     model = config.get(CONF_MODEL)
     retries = config[CONF_RETRIES]
     preset_modes_override = config.get(CONF_PRESET_MODES_OVERRIDE)
+    await _async_setup_device(hass, host, token, name, model, retries, preset_modes_override, async_add_entities)
+
+
+async def async_setup_entry(hass, entry, async_add_entities):
+    """Set up the miio fan device from a config entry."""
+    host = entry.data[CONF_HOST]
+    token = entry.data[CONF_TOKEN]
+    name = entry.data.get(CONF_NAME, DEFAULT_NAME)
+    model = entry.data.get(CONF_MODEL) or None
+    retries = entry.options.get(CONF_RETRIES, DEFAULT_RETRIES)
+    preset_modes_override = entry.options.get(CONF_PRESET_MODES_OVERRIDE)
+    fallback_unique_id = entry.unique_id or host
+    await _async_setup_device(
+        hass, host, token, name, model, retries, preset_modes_override,
+        async_add_entities, fallback_unique_id=fallback_unique_id,
+    )
+
+
+async def _async_setup_device(
+    hass, host, token, name, model, retries, preset_modes_override,
+    async_add_entities, fallback_unique_id=None,
+):
+    """Set up a miio fan device and register services."""
+    if DATA_KEY not in hass.data:
+        hass.data[DATA_KEY] = {}
 
     _LOGGER.info("Initializing with host %s (token %s...)", host, token[:5])
-    unique_id = None
+    unique_id = fallback_unique_id
 
     if model is None:
         try:
@@ -831,6 +854,9 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     hass.data[DATA_KEY][host] = device
     async_add_entities([device], update_before_add=True)
 
+    if hass.services.has_service(DOMAIN, SERVICE_SET_BUZZER_ON):
+        return
+
     async def async_service_handler(service):
         """Map services to methods on XiaomiFan."""
         method = SERVICE_TO_METHOD.get(service.service)
@@ -875,6 +901,7 @@ class XiaomiGenericDevice(FanEntity):
         self._device = device
         self._model = model
         self._unique_id = unique_id
+        self._host = device.ip
         self._retry = 0
         self._retries = retries
         self._preset_modes_override = preset_modes_override
@@ -899,6 +926,16 @@ class XiaomiGenericDevice(FanEntity):
     def unique_id(self):
         """Return an unique ID."""
         return self._unique_id
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return device registry information."""
+        return DeviceInfo(
+            identifiers={(DOMAIN, self._unique_id or self._host)},
+            name=self._name,
+            manufacturer="Xiaomi",
+            model=self._model,
+        )
 
     @property
     def name(self):

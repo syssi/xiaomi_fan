@@ -1,4 +1,36 @@
 {
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up Xiaomi Mi Smart Pedestal Fan",
+        "description": "Enter the IP address and token of your fan. Use the [Xiaomi Cloud Tokens Extractor](https://github.com/PiotrMachowski/Xiaomi-cloud-tokens-extractor) to retrieve your token.",
+        "data": {
+          "host": "IP Address",
+          "token": "Token",
+          "name": "Name",
+          "model": "Model (leave empty for auto-detection)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the device. Please check the IP address and token.",
+      "unknown": "Unexpected error occurred."
+    },
+    "abort": {
+      "already_configured": "This device is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Xiaomi Fan Options",
+        "data": {
+          "retries": "Number of retries on connection error",
+          "preset_modes_override": "Preset modes override (comma-separated list, or leave empty for defaults)"
+        }
+      }
+    }
+  },
   "services": {
     "fan_set_buzzer_on": {
       "name": "Set buzzer on",
