@@ -7,6 +7,7 @@ https://home-assistant.io/components/fan.xiaomi_miio/
 
 import asyncio
 import logging
+import math
 from enum import Enum
 from functools import partial
 from typing import Any, Dict, Optional
@@ -25,6 +26,8 @@ from homeassistant.exceptions import PlatformNotReady
 from homeassistant.util.percentage import (
     ordered_list_item_to_percentage,
     percentage_to_ordered_list_item,
+    percentage_to_ranged_value,
+    ranged_value_to_percentage,
 )
 from miio import Device, DeviceException, Fan, Fan1C, FanLeshow, FanMiot, FanP5
 from miio.fan_common import FanException
@@ -3467,7 +3470,7 @@ class Fan2Lite(MiotDevice):
 
     def set_fan_level(self, level: int):
         """Set fan level (0-2)."""
-        if level not in [0, 1, 2]:
+        if level not in range(FAN_2LITE_SPEED_COUNT):
             raise FanException("Invalid fan level: %s" % level)
         return self.set_property("fan_level", level)
 
@@ -3555,8 +3558,8 @@ class XiaomiFan2Lite(XiaomiFanP33):
             if state.fan_level is None:
                 self._percentage = None
             else:
-                self._percentage = int(
-                    round((state.fan_level + 1) * 100 / FAN_2LITE_SPEED_COUNT)
+                self._percentage = ranged_value_to_percentage(
+                    (1, FAN_2LITE_SPEED_COUNT), state.fan_level + 1
                 )
 
             self._state_attrs.update(
@@ -3593,8 +3596,10 @@ class XiaomiFan2Lite(XiaomiFanP33):
             await self.async_turn_off()
             return
 
-        level = max(0, min(FAN_2LITE_SPEED_COUNT - 1,
-                           int((percentage - 1) * FAN_2LITE_SPEED_COUNT / 100)))
+        level = (
+            math.ceil(percentage_to_ranged_value((1, FAN_2LITE_SPEED_COUNT), percentage))
+            - 1
+        )
 
         if not self._state:
             await self._try_command(
