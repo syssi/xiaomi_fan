@@ -142,9 +142,33 @@ fan_set_vertical_oscillation_off:
           integration: xiaomi_miio_fan
           domain: fan
 
+fan_set_indicator_light_on:
+  name: Set indicator light on
+  description: Turn the indicator light on. (P76 and P85)
+  fields:
+    entity_id:
+      name: Entity ID
+      description: Name of the Xiaomi Mi Smart Fan entity.
+      selector:
+        entity:
+          integration: xiaomi_miio_fan
+          domain: fan
+
+fan_set_indicator_light_off:
+  name: Set indicator light off
+  description: Turn the indicator light off. (P76 and P85)
+  fields:
+    entity_id:
+      name: Entity ID
+      description: Name of the Xiaomi Mi Smart Fan entity.
+      selector:
+        entity:
+          integration: xiaomi_miio_fan
+          domain: fan
+
 fan_turn:
   name: Turn
-  description: Turn to the given direction. (P76 only)
+  description: Turn to the given direction. (P76 and P85)
   fields:
     entity_id:
       name: Entity ID
