@@ -514,8 +514,6 @@ SERVICE_SET_ANION_ON = "fan_set_anion_on"
 SERVICE_SET_ANION_OFF = "fan_set_anion_off"
 SERVICE_SET_VERTICAL_OSCILLATION_ON = "fan_set_vertical_oscillation_on"
 SERVICE_SET_VERTICAL_OSCILLATION_OFF = "fan_set_vertical_oscillation_off"
-SERVICE_SET_INDICATOR_LIGHT_ON = "fan_set_indicator_light_on"
-SERVICE_SET_INDICATOR_LIGHT_OFF = "fan_set_indicator_light_off"
 SERVICE_TURN = "fan_turn"
 SERVICE_SET_VERTICAL_OSCILLATION_ANGLE = "fan_set_vertical_oscillation_angle"
 
@@ -572,8 +570,6 @@ SERVICE_TO_METHOD = {
     SERVICE_SET_ANION_OFF: {"method": "async_set_anion_off"},
     SERVICE_SET_VERTICAL_OSCILLATION_ON: {"method": "async_set_vertical_oscillation_on"},
     SERVICE_SET_VERTICAL_OSCILLATION_OFF: {"method": "async_set_vertical_oscillation_off"},
-    SERVICE_SET_INDICATOR_LIGHT_ON: {"method": "async_set_indicator_light_on"},
-    SERVICE_SET_INDICATOR_LIGHT_OFF: {"method": "async_set_indicator_light_off"},
     SERVICE_TURN: {
         "method": "async_turn",
         "schema": SERVICE_SCHEMA_TURN,
@@ -3911,22 +3907,14 @@ class XiaomiFanP85(XiaomiFanP33):
             delay_off_countdown,
         )
 
-    async def async_set_indicator_light_on(self):
+    async def async_set_led_brightness(self, brightness: int = 1):
+        """Set LED on (brightness != 2) or off (brightness == 2)."""
         if self._device_features & FEATURE_SET_LED == 0:
             return
         await self._try_command(
-            "Turning the indicator light on of the miio device failed.",
+            "Setting LED of the miio device failed.",
             self._device.set_light,
-            True,
-        )
-
-    async def async_set_indicator_light_off(self):
-        if self._device_features & FEATURE_SET_LED == 0:
-            return
-        await self._try_command(
-            "Turning the indicator light off of the miio device failed.",
-            self._device.set_light,
-            False,
+            brightness != 2,
         )
 
     async def async_turn(self, direction: str):
