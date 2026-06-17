@@ -3,7 +3,7 @@
     "step": {
       "user": {
         "title": "Set up Xiaomi Mi Smart Pedestal Fan",
-        "description": "Enter the IP address and token of your fan. Use the [Xiaomi Cloud Tokens Extractor](https://github.com/PiotrMachowski/Xiaomi-cloud-tokens-extractor) to retrieve your token.",
+        "description": "Enter the IP address and token of your fan. See the README for instructions on how to retrieve your token.",
         "data": {
           "host": "IP Address",
           "token": "Token",
