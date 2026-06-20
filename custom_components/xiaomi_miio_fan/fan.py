@@ -402,8 +402,6 @@ FAN_PRESET_MODES_P85 = {
     FAN_SPEED_NATURAL4: 4,
 }
 
-FAN_SPEEDS_P85 = [FAN_SPEED_LEVEL1, FAN_SPEED_LEVEL2, FAN_SPEED_LEVEL3, FAN_SPEED_LEVEL4, FAN_SPEED_NATURAL1, FAN_SPEED_NATURAL2, FAN_SPEED_NATURAL3, FAN_SPEED_NATURAL4]
-
 FAN_PRESET_MODE_SLEEP = "Sleep"
 
 FAN_PRESET_MODES_2LITE = [FAN_PRESET_MODE_SLEEP]
@@ -3883,7 +3881,6 @@ class XiaomiFanP85(XiaomiFanP33):
     async def async_set_natural_mode_on(self):
         if self._device_features & FEATURE_SET_NATURAL_MODE == 0:
             return
-        self._natural_mode = True
         await self._try_command(
             "Setting fan natural mode of the miio device failed.",
             self._device.set_mode,
@@ -3893,7 +3890,6 @@ class XiaomiFanP85(XiaomiFanP33):
     async def async_set_natural_mode_off(self):
         if self._device_features & FEATURE_SET_NATURAL_MODE == 0:
             return
-        self._natural_mode = False
         await self._try_command(
             "Setting fan natural mode of the miio device failed.",
             self._device.set_mode,
