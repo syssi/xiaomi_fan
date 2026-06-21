@@ -479,6 +479,7 @@ FEATURE_FLAGS_FAN_P70 = (
     | FEATURE_SET_OSCILLATION_ANGLE
     | FEATURE_SET_NATURAL_MODE
     | FEATURE_SET_VERTICAL_OSCILLATION
+    | FEATURE_TURN
     | FEATURE_SET_VERTICAL_OSCILLATION_ANGLE
 )
 
@@ -3117,6 +3118,10 @@ class FanP70(MiotDevice):
         "buzzer":                 {"siid": 7, "piid": 1},
         "child_lock":             {"siid": 8, "piid": 1},
         "delay_time":             {"siid": 9, "piid": 2},
+        "turn_left":              {"siid": 2, "aiid": 4},
+        "turn_right":             {"siid": 2, "aiid": 5},
+        "turn_up":                {"siid": 2, "aiid": 6},
+        "turn_down":              {"siid": 2, "aiid": 7},
     }
 
     def __init__(
@@ -3229,6 +3234,22 @@ class FanP70(MiotDevice):
             return self.set_property("delay", False)
         self.set_property("delay_time", minutes)
         return self.set_property("delay", True)
+
+    def turn(self, direction: str):
+        """Turn to the given direction."""
+        if direction == "left":
+            return self.call_action("turn_left")
+        elif direction == "right":
+            return self.call_action("turn_right")
+        elif direction == "up":
+            return self.call_action("turn_up")
+        elif direction == "down":
+            return self.call_action("turn_down")
+        else:
+            raise FanException(
+                "Unsupported direction. Supported values: "
+                + ", ".join(["left", "right", "up", "down"])
+            )
 
 
 class XiaomiFanP70(XiaomiFanP33):
@@ -3396,6 +3417,15 @@ class XiaomiFanP70(XiaomiFanP33):
             "Setting vertical oscillation off of the miio device failed.",
             self._device.set_vertical_oscillate,
             False,
+        )
+
+    async def async_turn(self, direction: str):
+        if self._device_features & FEATURE_TURN == 0:
+            return
+        await self._try_command(
+            "Turning the miio device failed.",
+            self._device.turn,
+            direction,
         )
 
 
