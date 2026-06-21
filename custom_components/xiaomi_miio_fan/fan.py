@@ -3104,6 +3104,7 @@ class FanStatusP70(DeviceStatus):
 class FanP70(MiotDevice):
     """Main class representing the Xiaomi Fan P70 (xiaomi.fan.p70)."""
 
+    # https://miot-spec.org/miot-spec-v2/instance?type=urn:miot-spec-v2:device:fan:0000A005:xiaomi-p70:1:0000D062
     mapping = {
         "power":                  {"siid": 2, "piid": 1},
         "fault":                  {"siid": 2, "piid": 2},
