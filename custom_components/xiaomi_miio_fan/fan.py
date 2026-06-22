@@ -3639,10 +3639,7 @@ class FanP70(MiotDevice):
         """Set delay off in minutes (0-480). 0 deactivates the timer."""
         if minutes < 0 or minutes > 480:
             raise FanException("Invalid value for a delayed turn off: %s" % minutes)
-        if minutes == 0:
-            return self.set_property("delay", False)
-        self.set_property("delay_time", minutes)
-        return self.set_property("delay", True)
+        return self.set_property("delay_time", minutes)
 
     def turn(self, direction: str):
         """Turn to the given direction."""
