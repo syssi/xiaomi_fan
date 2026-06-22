@@ -565,7 +565,11 @@ SERVICE_SCHEMA_OSCILLATION_ANGLE = AIRPURIFIER_SERVICE_SCHEMA.extend(
 )
 
 SERVICE_SCHEMA_DELAY_OFF = AIRPURIFIER_SERVICE_SCHEMA.extend(
-    {vol.Required(ATTR_DELAY_OFF_COUNTDOWN): cv.positive_int}
+    {
+        vol.Required(ATTR_DELAY_OFF_COUNTDOWN): vol.All(
+            vol.Coerce(int), vol.Range(min=0, max=480)
+        )
+    }
 )
 
 SERVICE_SCHEMA_TURN = AIRPURIFIER_SERVICE_SCHEMA.extend(
