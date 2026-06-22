@@ -3039,13 +3039,13 @@ class XiaomiFanP76(XiaomiFanP33):
         )
 
     async def async_set_led_brightness(self, brightness: int = 1):
-        """Set LED on (brightness > 0) or off (brightness == 0)."""
+        """Set LED on (brightness != 2) or off (brightness == 2)."""
         if self._device_features & FEATURE_SET_LED == 0:
             return
         await self._try_command(
             "Setting LED of the miio device failed.",
             self._device.set_light,
-            brightness > 0,
+            brightness != 2,
         )
 
     async def async_set_vertical_oscillation_on(self):
@@ -3426,13 +3426,13 @@ class XiaomiFanXiaomiP30(XiaomiFanP33):
         )
 
     async def async_set_led_brightness(self, brightness: int = 1):
-        """Set LED on (brightness > 0) or off (brightness == 0)."""
+        """Set LED on (brightness != 2) or off (brightness == 2)."""
         if self._device_features & FEATURE_SET_LED == 0:
             return
         await self._try_command(
             "Setting LED of the miio device failed.",
             self._device.set_light,
-            brightness > 0,
+            brightness != 2,
         )
 
     async def async_turn(self, direction: str):
@@ -3808,6 +3808,16 @@ class XiaomiFanP70(XiaomiFanP33):
             "Setting fan natural mode of the miio device failed.",
             self._device.set_mode,
             OperationModeFanP70.Straight,
+        )
+
+    async def async_set_led_brightness(self, brightness: int = 1):
+        """Set LED on (brightness != 2) or off (brightness == 2)."""
+        if self._device_features & FEATURE_SET_LED == 0:
+            return
+        await self._try_command(
+            "Setting LED of the miio device failed.",
+            self._device.set_light,
+            brightness != 2,
         )
 
     async def async_set_vertical_oscillation_on(self):
