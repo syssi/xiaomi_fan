@@ -1,0 +1,16 @@
+name: Hassfest
+
+on:  # yamllint disable-line rule:truthy
+  push:
+    branches:
+      - main
+  pull_request:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  validate:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5"  # v4.3.1
+      - uses: home-assistant/actions/hassfest@e91ad1948e57189485b9c1ad608af0c303946f89  # master
