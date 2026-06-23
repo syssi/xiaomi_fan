@@ -2831,14 +2831,17 @@ class FanStatusP45(DeviceStatus):
     """Container for status reports for FanP45 (Xiaomi Smart Tower Fan 2)."""
 
     def __init__(self, data):
+        """Initialize."""
         self.data = data
 
     @property
     def power(self) -> bool:
+        """Return the power state."""
         return self.data["power"]
 
     @property
     def fault(self) -> int:
+        """Return the fault code."""
         return self.data["fault"]
 
     @property
@@ -2853,30 +2856,37 @@ class FanStatusP45(DeviceStatus):
 
     @property
     def mode(self) -> str:
+        """Return the operation mode."""
         return OperationModeFanP45(self.data["mode"]).name
 
     @property
     def horizontal_swing(self) -> bool:
+        """Return the horizontal swing state."""
         return self.data["horizontal_swing"]
 
     @property
     def horizontal_swing_angle(self) -> int:
+        """Return the horizontal swing angle."""
         return self.data["horizontal_swing_angle"]
 
     @property
     def child_lock(self) -> bool:
+        """Return the child lock state."""
         return self.data["child_lock"]
 
     @property
     def led(self) -> bool:
+        """Return the LED state."""
         return self.data["led"]
 
     @property
     def buzzer(self) -> bool:
+        """Return the buzzer state."""
         return self.data["buzzer"]
 
     @property
     def delay(self) -> bool:
+        """Return the delay state."""
         return self.data["delay"]
 
     @property
@@ -2933,7 +2943,10 @@ class FanP45(MiotDevice):
         timeout=5,
         model=MODEL_FAN_P45,
     ):
-        super().__init__(ip, token, start_id, debug, lazy_discover, timeout, model=model)
+        """Initialize."""
+        super().__init__(
+            ip, token, start_id, debug, lazy_discover, timeout, model=model
+        )
 
     def get_properties_for_mapping(self, *, max_properties=15):
         """Retrieve raw properties, skipping action-only entries."""
@@ -2948,6 +2961,7 @@ class FanP45(MiotDevice):
         )
 
     def status(self):
+        """Retrieve properties."""
         return FanStatusP45(
             {
                 prop["did"]: prop["value"] if prop["code"] == 0 else None
@@ -2956,24 +2970,27 @@ class FanP45(MiotDevice):
         )
 
     def on(self):
+        """Power on."""
         return self.set_property("power", True)
 
     def off(self):
+        """Power off."""
         return self.set_property("power", False)
 
     def set_speed(self, speed: int):
         """Set fan speed percentage (1..100)."""
         if speed < 1 or speed > 100:
-            raise FanException("Invalid speed: %s" % speed)
+            raise FanException(f"Invalid speed: {speed}")
         return self.set_property("fan_speed", speed)
 
     def set_fan_level(self, fan_level: int):
         """Set preset fan level (1..4)."""
         if fan_level < 1 or fan_level > 4:
-            raise FanException("Invalid fan level: %s" % fan_level)
+            raise FanException(f"Invalid fan level: {fan_level}")
         return self.set_property("fan_level", fan_level)
 
     def set_oscillate(self, oscillate: bool):
+        """Set horizontal oscillation on/off."""
         return self.set_property("horizontal_swing", bool(oscillate))
 
     def set_angle(self, angle: int):
@@ -2990,21 +3007,25 @@ class FanP45(MiotDevice):
         return self.set_property("horizontal_swing_angle", angle)
 
     def set_mode(self, mode: OperationModeFanP45):
+        """Set mode."""
         return self.set_property("mode", OperationModeFanP45[mode.name].value)
 
     def set_child_lock(self, lock: bool):
+        """Set child lock on/off."""
         return self.set_property("child_lock", bool(lock))
 
     def set_buzzer(self, buzzer: bool):
+        """Set buzzer on/off."""
         return self.set_property("buzzer", bool(buzzer))
 
     def set_light(self, light: bool):
+        """Set indicator state."""
         return self.set_property("led", bool(light))
 
     def delay_off(self, minutes: int):
         """Set delayed turn-off in minutes (0..480; 0 disables)."""
         if minutes < 0 or minutes > 480:
-            raise FanException("Invalid value for a delayed turn off: %s" % minutes)
+            raise FanException(f"Invalid value for a delayed turn off: {minutes}")
         # Toggle the delay enable flag in sync with the time value.
         if minutes == 0:
             self.set_property("delay", False)
@@ -3020,7 +3041,8 @@ class FanP45(MiotDevice):
             return self.call_action("turn_right")
         else:
             raise FanException(
-                "Unsupported direction. Supported values: " + ", ".join(["left", "right"])
+                "Unsupported direction. Supported values: "
+                + ", ".join(["left", "right"])
             )
 
 
@@ -3028,6 +3050,7 @@ class XiaomiFanP45(XiaomiFanMiot):
     """Representation of the Xiaomi Smart Tower Fan 2 (xiaomi.fan.p45)."""
 
     def __init__(self, name, device, model, unique_id, retries, preset_modes_override):
+        """Initialize the fan entity."""
         super().__init__(name, device, model, unique_id, retries, preset_modes_override)
 
         self._device_features = FEATURE_FLAGS_FAN_P45
@@ -3048,6 +3071,7 @@ class XiaomiFanP45(XiaomiFanMiot):
 
     @property
     def supported_features(self) -> int:
+        """Return supported features."""
         return (
             FanEntityFeature.OSCILLATE
             | FanEntityFeature.PRESET_MODE
@@ -3057,6 +3081,7 @@ class XiaomiFanP45(XiaomiFanMiot):
         )
 
     async def async_update(self):
+        """Fetch state from the device."""
         if self._skip_update:
             self._skip_update = False
             return
@@ -3112,21 +3137,26 @@ class XiaomiFanP45(XiaomiFanMiot):
 
     @property
     def percentage(self):
+        """Return the current percentage."""
         return self._percentage
 
     @property
     def preset_modes(self):
+        """Return the list of available preset modes."""
         return self._preset_modes
 
     @property
     def preset_mode(self):
+        """Return the current preset mode."""
         if self._state:
             return self._preset_mode
         return None
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
-        """Set preset mode — combines level (1..4) with Straight/Natural mode,
-        or selects standalone Sleep mode."""
+        """Set preset mode.
+
+        Combines level (1..4) with Straight/Natural mode, or selects standalone Sleep mode.
+        """
         _LOGGER.debug("Setting the preset mode to: %s", preset_mode)
 
         if preset_mode == SPEED_OFF:
@@ -3134,7 +3164,9 @@ class XiaomiFanP45(XiaomiFanMiot):
             return
 
         if not self._state:
-            await self._try_command("Turning the miio device on failed.", self._device.on)
+            await self._try_command(
+                "Turning the miio device on failed.", self._device.on
+            )
 
         if preset_mode == FAN_PRESET_MODE_SLEEP:
             await self._try_command(
@@ -3157,6 +3189,7 @@ class XiaomiFanP45(XiaomiFanMiot):
         )
 
     async def async_set_percentage(self, percentage: int) -> None:
+        """Set the speed percentage of the fan."""
         _LOGGER.debug("Setting the fan speed percentage to: %s", percentage)
 
         if percentage == 0:
@@ -3164,7 +3197,9 @@ class XiaomiFanP45(XiaomiFanMiot):
             return
 
         if not self._state:
-            await self._try_command("Turning the miio device on failed.", self._device.on)
+            await self._try_command(
+                "Turning the miio device on failed.", self._device.on
+            )
 
         await self._try_command(
             "Setting fan speed percentage of the miio device failed.",
@@ -3173,6 +3208,7 @@ class XiaomiFanP45(XiaomiFanMiot):
         )
 
     async def async_set_natural_mode_on(self):
+        """Turn the natural mode on."""
         if self._device_features & FEATURE_SET_NATURAL_MODE == 0:
             return
         await self._try_command(
@@ -3182,6 +3218,7 @@ class XiaomiFanP45(XiaomiFanMiot):
         )
 
     async def async_set_natural_mode_off(self):
+        """Turn the natural mode off."""
         if self._device_features & FEATURE_SET_NATURAL_MODE == 0:
             return
         await self._try_command(
@@ -3191,6 +3228,7 @@ class XiaomiFanP45(XiaomiFanMiot):
         )
 
     async def async_turn(self, direction: str):
+        """Turn fan in the given direction."""
         if self._device_features & FEATURE_TURN == 0:
             return
         await self._try_command(
