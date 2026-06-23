@@ -1,14 +1,32 @@
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.5
+    rev: v0.15.17
     hooks:
-      - id: ruff
+      - id: ruff-check
         args:
           - --fix
+        files: ^(custom_components)/.+\.py$
       - id: ruff-format
-
-  - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
+        files: ^(custom_components)/.+\.py$
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.2
     hooks:
-      - id: flake8
-        additional_dependencies: [flake8-docstrings, flake8-bugbear, flake8-builtins, flake8-print, flake8-pytest-style, flake8-return, flake8-simplify, flake8-annotations]
+      - id: codespell
+        args:
+          - --ignore-words-list=hass,alot,datas,dof,dur,eto,farenheit,hist,iff,ines,ist,lightsensor,mut,nd,pres,referer,ser,serie,te,technik,ue,uint,visability,wan,wanna,withing,hsa
+          - --quiet-level=2
+        exclude_types: [csv, json, ini]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-executables-have-shebangs
+        stages: [manual]
+      - id: check-json
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: v3.6.2
+    hooks:
+      - id: prettier
+        additional_dependencies:
+          - prettier@3.6.2
+          - prettier-plugin-sort-json@4.2.0
+        files: ^custom_components/.+\.json$
