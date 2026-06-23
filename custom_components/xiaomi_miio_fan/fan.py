@@ -881,18 +881,24 @@ class XiaomiGenericDevice(FanEntity):
             return False
 
     async def async_turn_on(
-        self, speed: str | None = None, mode: str | None = None, **kwargs
+        self,
+        percentage: int | None = None,
+        preset_mode: str | None = None,
+        **kwargs: Any,
     ) -> None:
         """Turn the device on."""
-        result = await self._try_command(
-            "Turning the miio device on failed.", self._device.on
-        )
-        if speed:
-            result = await self.async_set_speed(speed)
 
-        if result:
-            self._state = True
-            self._skip_update = True
+        if percentage is not None:
+            await self.async_set_percentage(percentage)
+        elif preset_mode is not None:
+            await self.async_set_preset_mode(preset_mode)
+        else:
+            await self._try_command(
+                "Turning the miio device on failed.", self._device.on
+            )
+
+        self._state = True
+        self._skip_update = True
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the device off."""
