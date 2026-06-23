@@ -3075,6 +3075,7 @@ class XiaomiFanP45(XiaomiFanMiot):
             if state.mode == OperationModeFanP45.Sleep.name:
                 self._preset_mode = FAN_PRESET_MODE_SLEEP
             else:
+                self._preset_mode = None
                 for preset_mode, value in FAN_PRESET_MODES_P45.items():
                     if preset_mode in (SPEED_OFF, FAN_PRESET_MODE_SLEEP):
                         continue
