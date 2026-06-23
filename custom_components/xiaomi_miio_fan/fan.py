@@ -3190,6 +3190,15 @@ class XiaomiFanP45(XiaomiFanMiot):
             OperationModeFanP45.Straight,
         )
 
+    async def async_turn(self, direction: str):
+        if self._device_features & FEATURE_TURN == 0:
+            return
+        await self._try_command(
+            "Turning the miio device failed.",
+            self._device.turn,
+            direction,
+        )
+
 
 class OperationModeFanP76(Enum):
     """Operation mode enum for FanP76."""
