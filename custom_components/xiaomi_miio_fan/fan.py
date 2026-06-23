@@ -862,7 +862,7 @@ class XiaomiGenericDevice(FanEntity):
             return False
 
     async def async_turn_on(
-        self, speed: str = None, mode: str = None, **kwargs
+        self, speed: str | None = None, mode: str | None = None, **kwargs
     ) -> None:
         """Turn the device on."""
         result = await self._try_command(
@@ -1996,8 +1996,8 @@ class FanZA5(MiotDevice):
 
     def __init__(
         self,
-        ip: str = None,
-        token: str = None,
+        ip: str | None = None,
+        token: str | None = None,
         start_id: int = 0,
         debug: int = 0,
         lazy_discover: bool = True,
@@ -2296,8 +2296,8 @@ class FanP33(MiotDevice):
 
     def __init__(
         self,
-        ip: str = None,
-        token: str = None,
+        ip: str | None = None,
+        token: str | None = None,
         start_id: int = 0,
         debug: int = 0,
         lazy_discover: bool = True,
@@ -2570,8 +2570,8 @@ class FanP39(MiotDevice):
 
     def __init__(
         self,
-        ip: str = None,
-        token: str = None,
+        ip: str | None = None,
+        token: str | None = None,
         start_id: int = 0,
         debug: int = 0,
         lazy_discover: bool = True,
@@ -2763,8 +2763,8 @@ class FanP76(MiotDevice):
 
     def __init__(
         self,
-        ip: str = None,
-        token: str = None,
+        ip: str | None = None,
+        token: str | None = None,
         start_id: int = 0,
         debug: int = 0,
         lazy_discover: bool = True,
@@ -2918,7 +2918,7 @@ class XiaomiFanP76(XiaomiFanP33):
         )
 
     @property
-    def current_direction(self) -> str:
+    def current_direction(self) -> str | None:
         if self._vertical_oscillate is None:
             return None
         return "forward" if self._vertical_oscillate else "reverse"
@@ -3180,8 +3180,8 @@ class FanXiaomiP30(MiotDevice):
 
     def __init__(
         self,
-        ip: str = None,
-        token: str = None,
+        ip: str | None = None,
+        token: str | None = None,
         start_id: int = 0,
         debug: int = 0,
         lazy_discover: bool = True,
@@ -3539,8 +3539,8 @@ class FanP70(MiotDevice):
 
     def __init__(
         self,
-        ip: str = None,
-        token: str = None,
+        ip: str | None = None,
+        token: str | None = None,
         start_id: int = 0,
         debug: int = 0,
         lazy_discover: bool = True,
@@ -3697,7 +3697,7 @@ class XiaomiFanP70(XiaomiFanP33):
         )
 
     @property
-    def current_direction(self) -> str:
+    def current_direction(self) -> str | None:
         if self._vertical_oscillate is None:
             return None
         return "forward" if self._vertical_oscillate else "reverse"
@@ -3916,8 +3916,8 @@ class Fan2Lite(MiotDevice):
 
     def __init__(
         self,
-        ip: str = None,
-        token: str = None,
+        ip: str | None = None,
+        token: str | None = None,
         start_id: int = 0,
         debug: int = 0,
         lazy_discover: bool = True,
@@ -4176,8 +4176,8 @@ class FanP85(FanP70):
 
     def __init__(
         self,
-        ip: str = None,
-        token: str = None,
+        ip: str | None = None,
+        token: str | None = None,
         start_id: int = 0,
         debug: int = 0,
         lazy_discover: bool = True,
