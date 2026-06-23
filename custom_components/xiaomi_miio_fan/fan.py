@@ -9,7 +9,7 @@ from enum import Enum
 from functools import partial
 import logging
 import math
-from typing import Any
+from typing import Any, Optional
 
 from homeassistant.components.fan import PLATFORM_SCHEMA, FanEntity, FanEntityFeature
 from homeassistant.const import (
@@ -881,27 +881,24 @@ class XiaomiGenericDevice(FanEntity):
             return False
 
     async def async_turn_on(
-        self,
-        percentage: int | None = None,
-        preset_mode: str | None = None,
-        **kwargs,
+            self,
+            percentage: Optional[int] = None,
+            preset_mode: Optional[str] = None,
+            **kwargs: Any,
     ) -> None:
         """Turn the device on."""
-        result = await self._try_command(
-            "Turning the miio device on failed.", self._device.on
-        )
-
-        if not result:
-            return
-
-        self._state = True
-        self._skip_update = True
 
         if percentage is not None:
             await self.async_set_percentage(percentage)
-
-        if preset_mode is not None:
+        elif preset_mode is not None:
             await self.async_set_preset_mode(preset_mode)
+        else:
+            await self._try_command(
+                "Turning the miio device on failed.", self._device.on
+            )
+
+        self._state = True
+        self._skip_update = True
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the device off."""
