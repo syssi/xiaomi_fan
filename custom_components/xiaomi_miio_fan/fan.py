@@ -2993,7 +2993,6 @@ class FanP45(MiotDevice):
         return self.set_property("mode", OperationModeFanP45[mode.name].value)
 
     def set_child_lock(self, lock: bool):
-        self.status()
         return self.set_property("child_lock", bool(lock))
 
     def set_buzzer(self, buzzer: bool):
