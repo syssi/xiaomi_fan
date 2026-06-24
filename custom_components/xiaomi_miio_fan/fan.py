@@ -1712,7 +1712,7 @@ class XiaomiFan1C(XiaomiFan):
             delay_off_countdown,
         )
 
-    async def async_set_led_brightness(self, brightness: int = 1):
+    async def async_set_led_brightness(self, brightness: int = 2):
         """Set LED on (brightness != 2) or off (brightness == 2)."""
         if self._device_features & FEATURE_SET_LED == 0:
             return
