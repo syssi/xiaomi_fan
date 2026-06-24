@@ -1400,6 +1400,16 @@ class XiaomiFanP5(XiaomiFan):
             delay_off_countdown,
         )
 
+    async def async_set_led_brightness(self, brightness: int = 2):
+        """Set LED on (brightness != 2) or off (brightness == 2)."""
+        if self._device_features & FEATURE_SET_LED == 0:
+            return
+        await self._try_command(
+            "Setting LED of the miio device failed.",
+            self._device.set_led,
+            brightness != 2,
+        )
+
 
 class XiaomiFanMiot(XiaomiFanP5):
     """Representation of a Xiaomi Pedestal Fan P9, P10, P11, P18, P30."""
