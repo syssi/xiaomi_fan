@@ -517,7 +517,13 @@ FEATURE_FLAGS_FAN_P5 = (
 )
 
 FEATURE_FLAGS_FAN_LESHOW_SS4 = FEATURE_SET_BUZZER
-FEATURE_FLAGS_FAN_1C = FEATURE_FLAGS_FAN
+FEATURE_FLAGS_FAN_1C = (
+    FEATURE_SET_BUZZER
+    | FEATURE_SET_CHILD_LOCK
+    | FEATURE_SET_LED
+    | FEATURE_SET_OSCILLATION_ANGLE
+    | FEATURE_SET_NATURAL_MODE
+)
 
 FEATURE_FLAGS_FAN_ZA5 = (
     FEATURE_SET_BUZZER
@@ -1394,6 +1400,16 @@ class XiaomiFanP5(XiaomiFan):
             delay_off_countdown,
         )
 
+    async def async_set_led_brightness(self, brightness: int = 2):
+        """Set LED on (brightness != 2) or off (brightness == 2)."""
+        if self._device_features & FEATURE_SET_LED == 0:
+            return
+        await self._try_command(
+            "Setting LED of the miio device failed.",
+            self._device.set_led,
+            brightness != 2,
+        )
+
 
 class XiaomiFanMiot(XiaomiFanP5):
     """Representation of a Xiaomi Pedestal Fan P9, P10, P11, P18, P30."""
@@ -1704,6 +1720,16 @@ class XiaomiFan1C(XiaomiFan):
             "Setting delay off miio device failed.",
             self._device.delay_off,
             delay_off_countdown,
+        )
+
+    async def async_set_led_brightness(self, brightness: int = 2):
+        """Set LED on (brightness != 2) or off (brightness == 2)."""
+        if self._device_features & FEATURE_SET_LED == 0:
+            return
+        await self._try_command(
+            "Setting LED of the miio device failed.",
+            self._device.set_led,
+            brightness != 2,
         )
 
     async def async_set_natural_mode_on(self):
@@ -3642,7 +3668,7 @@ class XiaomiFanP76(XiaomiFanP33):
             OperationModeFanP76.Straight,
         )
 
-    async def async_set_led_brightness(self, brightness: int = 1):
+    async def async_set_led_brightness(self, brightness: int = 2):
         """Set LED on (brightness != 2) or off (brightness == 2)."""
         if self._device_features & FEATURE_SET_LED == 0:
             return
@@ -4061,7 +4087,7 @@ class XiaomiFanXiaomiP30(XiaomiFanP33):
             OperationModeFanXiaomiP30.Normal,
         )
 
-    async def async_set_led_brightness(self, brightness: int = 1):
+    async def async_set_led_brightness(self, brightness: int = 2):
         """Set LED on (brightness != 2) or off (brightness == 2)."""
         if self._device_features & FEATURE_SET_LED == 0:
             return
@@ -4472,7 +4498,7 @@ class XiaomiFanP70(XiaomiFanP33):
             OperationModeFanP70.Straight,
         )
 
-    async def async_set_led_brightness(self, brightness: int = 1):
+    async def async_set_led_brightness(self, brightness: int = 2):
         """Set LED on (brightness != 2) or off (brightness == 2)."""
         if self._device_features & FEATURE_SET_LED == 0:
             return
@@ -5050,7 +5076,7 @@ class XiaomiFanP85(XiaomiFanP33):
             delay_off_countdown,
         )
 
-    async def async_set_led_brightness(self, brightness: int = 1):
+    async def async_set_led_brightness(self, brightness: int = 2):
         """Set LED on (brightness != 2) or off (brightness == 2)."""
         if self._device_features & FEATURE_SET_LED == 0:
             return
