@@ -517,7 +517,13 @@ FEATURE_FLAGS_FAN_P5 = (
 )
 
 FEATURE_FLAGS_FAN_LESHOW_SS4 = FEATURE_SET_BUZZER
-FEATURE_FLAGS_FAN_1C = FEATURE_FLAGS_FAN
+FEATURE_FLAGS_FAN_1C = (
+    FEATURE_SET_BUZZER
+    | FEATURE_SET_CHILD_LOCK
+    | FEATURE_SET_LED
+    | FEATURE_SET_OSCILLATION_ANGLE
+    | FEATURE_SET_NATURAL_MODE
+)
 
 FEATURE_FLAGS_FAN_ZA5 = (
     FEATURE_SET_BUZZER
@@ -1704,6 +1710,16 @@ class XiaomiFan1C(XiaomiFan):
             "Setting delay off miio device failed.",
             self._device.delay_off,
             delay_off_countdown,
+        )
+
+    async def async_set_led_brightness(self, brightness: int = 2):
+        """Set LED on (brightness != 2) or off (brightness == 2)."""
+        if self._device_features & FEATURE_SET_LED == 0:
+            return
+        await self._try_command(
+            "Setting LED of the miio device failed.",
+            self._device.set_led,
+            brightness != 2,
         )
 
     async def async_set_natural_mode_on(self):
