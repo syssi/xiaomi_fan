@@ -132,7 +132,7 @@
         },
         "delay_off_countdown": {
           "name": "Delay off countdown",
-          "description": "Time in minutes. Valid values are 0, 60, 120, 180, 240, 300, 240, 300, 360, 420, 480 minutes."
+          "description": "Time in minutes. Valid values are 0, 60, 120, 180, 240, 300, 360, 420, 480 minutes."
         }
       }
     },
