@@ -950,15 +950,21 @@ class XiaomiGenericDevice(FanEntity):
         **kwargs: Any,
     ) -> None:
         """Turn the device on."""
+        if percentage == 0 or preset_mode == SPEED_OFF:
+            await self.async_turn_off(**kwargs)
+            return
 
         if percentage is not None:
             await self.async_set_percentage(percentage)
         elif preset_mode is not None:
             await self.async_set_preset_mode(preset_mode)
         else:
-            await self._try_command(
+            result = await self._try_command(
                 "Turning the miio device on failed.", self._device.on
             )
+
+            if not result:
+                return
 
         self._state = True
         self._skip_update = True
