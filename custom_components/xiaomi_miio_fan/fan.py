@@ -938,6 +938,9 @@ class XiaomiGenericDevice(FanEntity):
             _LOGGER.debug("Response received from miio device: %s", result)
 
             return result == SUCCESS
+        except FanException as exc:
+            _LOGGER.error(mask_error, exc)
+            return False
         except DeviceException as exc:
             _LOGGER.error(mask_error, exc)
             self._available = False
