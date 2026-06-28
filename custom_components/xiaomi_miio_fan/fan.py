@@ -939,7 +939,7 @@ class XiaomiGenericDevice(FanEntity):
 
             return result == SUCCESS
         except FanException as exc:
-            _LOGGER.error(mask_error, exc)
+            _LOGGER.warning(mask_error, exc)
             return False
         except DeviceException as exc:
             _LOGGER.error(mask_error, exc)
