@@ -8,7 +8,7 @@
 
 This is a custom component for home assistant to integrate the Xiaomi Mi Smart Fan.
 
-Please follow the instructions on [Retrieving the Access Token](https://www.home-assistant.io/integrations/xiaomi_miio/#xiaomi-cloud-tokens-extractor) to get the API token to use in the configuration.yaml file.
+To retrieve the API token for your device, use the [Xiaomi Cloud Tokens Extractor](https://github.com/PiotrMachowski/Xiaomi-cloud-tokens-extractor).
 
 Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all the work.
 
@@ -100,11 +100,23 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
 
 ## Install
 
-You can install this custom component via [HACS](https://hacs.xyz/). Search for 'Xiaomi Mi Smart Pedestal Fan Integration' at the integration page of HACS. Alternatively, you can install it manually by copying the custom_components folder to your Home Assistant configuration folder.
+You can install this custom component via [HACS](https://hacs.xyz/). Search for 'Xiaomi Mi Smart Pedestal Fan Integration' at the integration page of HACS. Alternatively, you can install it manually by copying the `custom_components` folder to your Home Assistant configuration folder.
 
-As next step you have to setup the custom component at your `configuration.yaml`. This custom component doesn't provide a `config-flow` right now. A restart of Home Assistant is required afterwards.
+After installation, restart Home Assistant. The integration can then be configured via the UI (Settings → Integrations → Add Integration → search for "Xiaomi Mi Smart Pedestal Fan").
 
 ## Setup
+
+### UI (recommended)
+
+1. Go to **Settings → Integrations → Add Integration** and search for **Xiaomi Mi Smart Pedestal Fan**.
+2. Enter your fan's **IP address** and **token**.
+   - To retrieve the token, use the [Xiaomi Cloud Tokens Extractor](https://github.com/PiotrMachowski/Xiaomi-cloud-tokens-extractor).
+3. Optionally provide a **name** and select the **model** (leave empty for auto-detection).
+4. After setup, open the integration options to adjust **retries** and **preset mode overrides**.
+
+### YAML (legacy)
+
+YAML configuration is still supported for backwards compatibility.
 
 ```yaml
 # configuration.yaml
@@ -118,7 +130,7 @@ fan:
 
 Configuration variables:
 - **host** (*Required*): The IP of your fan.
-- **token** (*Required*): The API token of your fan.
+- **token** (*Required*): The API token of your fan. Use the [Xiaomi Cloud Tokens Extractor](https://github.com/PiotrMachowski/Xiaomi-cloud-tokens-extractor) to retrieve it.
 - **name** (*Optional*): The name of your fan.
 - **model** (*Optional*): The model of your device. This setting can be used to bypass the device model detection and is recommended if your device isn't always available.
 - **preset_modes_override** (*Optional*): Overrides the list of preset modes. Can be used to suppress the preset mode switches at homekit by passing an empty list (`preset_modes_override: []`).
