@@ -48,22 +48,22 @@ from .const import (
     DEFAULT_RETRIES,
     DOMAIN,
     MODEL_FAN_1C,
+    MODEL_FAN_2LITE,
     MODEL_FAN_LESHOW_SS4,
+    MODEL_FAN_P5,
+    MODEL_FAN_P8,
+    MODEL_FAN_P9,
     MODEL_FAN_P10,
     MODEL_FAN_P11,
     MODEL_FAN_P15,
     MODEL_FAN_P18,
     MODEL_FAN_P30,
     MODEL_FAN_P33,
-    MODEL_FAN_2LITE,
     MODEL_FAN_P39,
     MODEL_FAN_P45,
-    MODEL_FAN_P5,
     MODEL_FAN_P70,
     MODEL_FAN_P76,
     MODEL_FAN_P85,
-    MODEL_FAN_P8,
-    MODEL_FAN_P9,
     MODEL_FAN_SA1,
     MODEL_FAN_V2,
     MODEL_FAN_V3,
@@ -713,7 +713,16 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     model = config.get(CONF_MODEL)
     retries = config[CONF_RETRIES]
     preset_modes_override = config.get(CONF_PRESET_MODES_OVERRIDE)
-    await _async_setup_device(hass, host, token, name, model, retries, preset_modes_override, async_add_entities)
+    await _async_setup_device(
+        hass,
+        host,
+        token,
+        name,
+        model,
+        retries,
+        preset_modes_override,
+        async_add_entities,
+    )
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -726,14 +735,28 @@ async def async_setup_entry(hass, entry, async_add_entities):
     preset_modes_override = entry.options.get(CONF_PRESET_MODES_OVERRIDE)
     fallback_unique_id = entry.unique_id or host
     await _async_setup_device(
-        hass, host, token, name, model, retries, preset_modes_override,
-        async_add_entities, fallback_unique_id=fallback_unique_id,
+        hass,
+        host,
+        token,
+        name,
+        model,
+        retries,
+        preset_modes_override,
+        async_add_entities,
+        fallback_unique_id=fallback_unique_id,
     )
 
 
 async def _async_setup_device(
-    hass, host, token, name, model, retries, preset_modes_override,
-    async_add_entities, fallback_unique_id=None,
+    hass,
+    host,
+    token,
+    name,
+    model,
+    retries,
+    preset_modes_override,
+    async_add_entities,
+    fallback_unique_id=None,
 ):
     """Set up a miio fan device and register services."""
     if DATA_KEY not in hass.data:

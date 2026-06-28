@@ -1,12 +1,13 @@
 """Config flow for Xiaomi Mi Smart Pedestal Fan."""
-import logging
-from typing import Any, Dict, Optional
 
-import voluptuous as vol
+import logging
+from typing import Any
+
 from homeassistant import config_entries
 from homeassistant.const import CONF_HOST, CONF_NAME, CONF_TOKEN
 from homeassistant.core import callback
 from miio import Device, DeviceException
+import voluptuous as vol
 
 from .const import (
     CONF_MODEL,
@@ -25,7 +26,7 @@ STEP_USER_SCHEMA = vol.Schema(
         vol.Required(CONF_HOST): str,
         vol.Required(CONF_TOKEN): vol.All(str, vol.Length(min=32, max=32)),
         vol.Optional(CONF_NAME, default=DEFAULT_NAME): str,
-        vol.Optional(CONF_MODEL, default=""): vol.In([""] + SUPPORTED_MODELS),
+        vol.Optional(CONF_MODEL, default=""): vol.In(["", *SUPPORTED_MODELS]),
     }
 )
 
@@ -35,11 +36,9 @@ class XiaomiFanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
-    async def async_step_user(
-        self, user_input: Optional[Dict[str, Any]] = None
-    ):
+    async def async_step_user(self, user_input: dict[str, Any] | None = None):
         """Handle the initial step."""
-        errors: Dict[str, str] = {}
+        errors: dict[str, str] = {}
 
         if user_input is not None:
             host = user_input[CONF_HOST]
@@ -83,12 +82,14 @@ class XiaomiFanConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 class XiaomiFanOptionsFlow(config_entries.OptionsFlow):
     """Handle options flow for Xiaomi Mi Smart Pedestal Fan."""
 
-    async def async_step_init(self, user_input: Optional[Dict[str, Any]] = None):
+    async def async_step_init(self, user_input: dict[str, Any] | None = None):
         """Manage the options."""
         if user_input is not None:
             pmo_raw = (user_input.get(CONF_PRESET_MODES_OVERRIDE) or "").strip()
             user_input[CONF_PRESET_MODES_OVERRIDE] = (
-                [m.strip() for m in pmo_raw.split(",") if m.strip()] if pmo_raw else None
+                [m.strip() for m in pmo_raw.split(",") if m.strip()]
+                if pmo_raw
+                else None
             )
             return self.async_create_entry(title="", data=user_input)
 
