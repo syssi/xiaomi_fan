@@ -86,6 +86,20 @@
         }
       }
     },
+    "fan_set_raw_led_brightness": {
+      "name": "Set raw LED brightness",
+      "description": "Set the raw LED brightness.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the Xiaomi Mi Smart Fan entity."
+        },
+        "brightness": {
+          "name": "Brightness",
+          "description": "Raw brightness value."
+        }
+      }
+    },
     "fan_set_natural_mode_on": {
       "name": "Set natural mode on",
       "description": "Turn the natural mode on.",
@@ -99,6 +113,26 @@
     "fan_set_natural_mode_off": {
       "name": "Set natural mode off",
       "description": "Turn the natural mode off.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the Xiaomi Mi Smart Fan entity."
+        }
+      }
+    },
+    "fan_set_anion_on": {
+      "name": "Set anion on",
+      "description": "Turn the ionizer on.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the Xiaomi Mi Smart Fan entity."
+        }
+      }
+    },
+    "fan_set_anion_off": {
+      "name": "Set anion off",
+      "description": "Turn the ionizer off.",
       "fields": {
         "entity_id": {
           "name": "Entity ID",
@@ -130,7 +164,7 @@
         },
         "delay_off_countdown": {
           "name": "Delay off countdown",
-          "description": "Time in minutes. Valid values are 0, 60, 120, 180, 240, 300, 240, 300, 360, 420, 480 minutes."
+          "description": "Time in minutes. Valid values are 0, 60, 120, 180, 240, 300, 360, 420, 480 minutes."
         }
       }
     },

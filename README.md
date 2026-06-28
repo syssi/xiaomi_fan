@@ -31,8 +31,8 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
 | Mijia Pedestal Fan          | dmaker.fan.p11         | BPLDS03DM  | 2800mAh, 24W, <=58dB  |
 | Smart Standing Fan 2 Pro    | dmaker.fan.p33         | BPLDS03DM  | 2800mAh, 24W, <=58dB  |
 | Pedestal Fan Fan P15        | dmaker.fan.p15         | | |
-| Mi Smart Standing Fan 2 P18 | dmaker.fan.p18         | BPLDS02DM  | AC, 15W, 30.2-55.8bB  |
-| Mi Smart Standing Fan 2 P30 | dmaker.fan.p30         | BPLDS02DM  | AC, 15W, 30.2-55.8bB  |
+| Mi Smart Standing Fan 2 P18 | dmaker.fan.p18         | BPLDS02DM  | AC, 15W, 30.2-55.8dB  |
+| Mi Smart Standing Fan 2 P30 | dmaker.fan.p30         | BPLDS02DM  | AC, 15W, 30.2-55.8dB  |
 | Rosou SS4 Ventilator        | leshow.fan.ss4         | | |
 | Xiaomi Smart Tower Fan      | dmaker.fan.p39         | BPTS01DM | 22W, <=63dB |
 | Xiaomi Smart Standing Air Circulation Fan | xiaomi.fan.p76 | JLLDS01XY | - |
@@ -190,7 +190,7 @@ Set the scheduled turn off time. Supported values are 0, 60, 120, 180, 240, 300,
 | Service data attribute    | Optional | Description                                                          |
 |---------------------------|----------|----------------------------------------------------------------------|
 | `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
-| `delay_off_countdown`     |       no | Time in minutes. Valid values are `0`, `60`, `120`, `180`, `240`, `300`, `240`, `300`, `360`, `420`, `480` minutes. |
+| `delay_off_countdown`     |       no | Time in minutes. Valid values are `0`, `60`, `120`, `180`, `240`, `300`, `360`, `420`, `480` minutes. |
 
 #### Service `xiaomi_miio_fan.fan_set_natural_mode_on`
 
@@ -267,11 +267,12 @@ Turn the ionizer off.
 
 #### Service `xiaomi_miio_fan.fan_turn`
 
-Turn to the given direction. Supported values are left, right, up and down. (P76 only)
+Turn to the given direction. Supported values are `left`, `right`, `up` and `down`. (P76 only)
 
-| Service data attribute    | Optional | Description                                                          |
-|---------------------------|----------|----------------------------------------------------------------------|
-| `direction`               |       no | Direction. Valid values are `left`, `right`, `up` and `down`.        |
+| Service data attribute | Optional | Description                                                   |
+|------------------------|----------|---------------------------------------------------------------|
+| `entity_id`            | yes      | Only act on a specific xiaomi miio entity. Else targets all.  |
+| `direction`            | no       | Direction. Valid values are `left`, `right`, `up` and `down`. |
 
 #### Service `xiaomi_miio_fan.fan_set_vertical_oscillation_on`
 

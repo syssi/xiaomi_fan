@@ -625,11 +625,11 @@ SERVICE_SET_VERTICAL_OSCILLATION_ANGLE = "fan_set_vertical_oscillation_angle"
 AIRPURIFIER_SERVICE_SCHEMA = vol.Schema({vol.Optional(ATTR_ENTITY_ID): cv.entity_ids})
 
 SERVICE_SCHEMA_LED_BRIGHTNESS = AIRPURIFIER_SERVICE_SCHEMA.extend(
-    {vol.Required(ATTR_BRIGHTNESS): vol.All(vol.Coerce(int), vol.Clamp(min=0, max=2))}
+    {vol.Required(ATTR_BRIGHTNESS): vol.All(vol.Coerce(int), vol.Range(min=0, max=2))}
 )
 
 SERVICE_SCHEMA_RAW_LED_BRIGHTNESS = AIRPURIFIER_SERVICE_SCHEMA.extend(
-    {vol.Required(ATTR_BRIGHTNESS): vol.Coerce(int)}
+    {vol.Required(ATTR_BRIGHTNESS): vol.All(vol.Coerce(int), vol.Range(min=0, max=100))}
 )
 
 SERVICE_SCHEMA_OSCILLATION_ANGLE = AIRPURIFIER_SERVICE_SCHEMA.extend(
@@ -998,6 +998,9 @@ class XiaomiGenericDevice(FanEntity):
             _LOGGER.debug("Response received from miio device: %s", result)
 
             return result == SUCCESS
+        except FanException as exc:
+            _LOGGER.warning(mask_error, exc)
+            return False
         except DeviceException as exc:
             _LOGGER.error(mask_error, exc)
             self._available = False
@@ -1010,15 +1013,21 @@ class XiaomiGenericDevice(FanEntity):
         **kwargs: Any,
     ) -> None:
         """Turn the device on."""
+        if percentage == 0 or preset_mode == SPEED_OFF:
+            await self.async_turn_off(**kwargs)
+            return
 
         if percentage is not None:
             await self.async_set_percentage(percentage)
         elif preset_mode is not None:
             await self.async_set_preset_mode(preset_mode)
         else:
-            await self._try_command(
+            result = await self._try_command(
                 "Turning the miio device on failed.", self._device.on
             )
+
+            if not result:
+                return
 
         self._state = True
         self._skip_update = True
