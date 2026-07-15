@@ -2534,6 +2534,10 @@ class FanP33(MiotDevice):
         """Set indicator state."""
         return self.set_property("light", light)
 
+    def set_led(self, led: bool):
+        """Set indicator state through the common fan LED interface."""
+        return self.set_light(led)
+
     def set_mode(self, mode: OperationModeFanP33):
         """Set mode."""
         return self.set_property("mode", OperationModeFanP33[mode.name].value)
