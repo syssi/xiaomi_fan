@@ -5144,6 +5144,7 @@ class XiaomiFanP85(XiaomiFanP33):
             direction,
         )
 
+
 OperationModeFanP43 = OperationModeFanP70
 
 
@@ -5173,18 +5174,20 @@ class FanP43(FanP70):
         "turn_right": {"siid": 2, "aiid": 3},
     }
 
-
     def __init__(
         self,
-        ip: str = None,
-        token: str = None,
+        ip: str | None = None,
+        token: str | None = None,
         start_id: int = 0,
         debug: int = 0,
         lazy_discover: bool = True,
         timeout: int = 5,
         model: str = MODEL_FAN_P43,
-    ):
-        super().__init__(ip, token, start_id, debug, lazy_discover, timeout, model=model)
+    ) -> None:
+        """Initialize."""
+        super().__init__(
+            ip, token, start_id, debug, lazy_discover, timeout, model=model
+        )
 
     def status(self):
         """Retrieve properties."""
@@ -5198,7 +5201,7 @@ class FanP43(FanP70):
     def set_fan_level(self, fan_level: int):
         """Set fan level (1-4)."""
         if fan_level not in [1, 2, 3, 4]:
-            raise FanException("Invalid fan level: %s" % fan_level)
+            raise FanException(f"Invalid fan level: {fan_level}")
         return self.set_property("fan_level", fan_level)
 
     def set_angle(self, angle: int):
@@ -5217,15 +5220,14 @@ class FanP43(FanP70):
         elif direction == "right":
             return self.call_action("turn_right")
         else:
-            raise FanException(
-                "Unsupported direction. Supported values: left, right"
-            )
+            raise FanException("Unsupported direction. Supported values: left, right")
 
 
 class XiaomiFanP43(XiaomiFanP33):
     """Representation of a Xiaomi Fan P43 (Xiaomi Smart Standing Fan Pro Slim)."""
 
     def __init__(self, name, device, model, unique_id, retries, preset_modes_override):
+        """Initialize the fan entity."""
         super().__init__(name, device, model, unique_id, retries, preset_modes_override)
 
         self._device_features = FEATURE_FLAGS_FAN_P43
@@ -5246,6 +5248,7 @@ class XiaomiFanP43(XiaomiFanP33):
 
     @property
     def supported_features(self) -> int:
+        """Return supported features."""
         return (
             FanEntityFeature.OSCILLATE
             | FanEntityFeature.PRESET_MODE
@@ -5255,6 +5258,7 @@ class XiaomiFanP43(XiaomiFanP33):
         )
 
     async def async_update(self):
+        """Fetch state from the device."""
         if self._skip_update:
             self._skip_update = False
             return
@@ -5305,6 +5309,7 @@ class XiaomiFanP43(XiaomiFanP33):
                 )
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
+        """Set the preset mode of the fan."""
         _LOGGER.debug("Setting the preset mode to: %s", preset_mode)
 
         if preset_mode == SPEED_OFF:
@@ -5329,6 +5334,7 @@ class XiaomiFanP43(XiaomiFanP33):
         )
 
     async def async_set_natural_mode_on(self):
+        """Turn the natural mode on."""
         if self._device_features & FEATURE_SET_NATURAL_MODE == 0:
             return
         await self._try_command(
@@ -5338,6 +5344,7 @@ class XiaomiFanP43(XiaomiFanP33):
         )
 
     async def async_set_natural_mode_off(self):
+        """Turn the natural mode off."""
         if self._device_features & FEATURE_SET_NATURAL_MODE == 0:
             return
         await self._try_command(
@@ -5347,6 +5354,7 @@ class XiaomiFanP43(XiaomiFanP33):
         )
 
     async def async_set_delay_off(self, delay_off_countdown: int) -> None:
+        """Set delay off countdown."""
         await self._try_command(
             "Setting delay off miio device failed.",
             self._device.delay_off,
@@ -5364,6 +5372,7 @@ class XiaomiFanP43(XiaomiFanP33):
         )
 
     async def async_turn(self, direction: str):
+        """Turn fan in the given direction."""
         if self._device_features & FEATURE_TURN == 0:
             return
         await self._try_command(
@@ -5371,4 +5380,3 @@ class XiaomiFanP43(XiaomiFanP33):
             self._device.turn,
             direction,
         )
-
