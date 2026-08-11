@@ -3061,6 +3061,10 @@ class FanP45(MiotDevice):
         """Set indicator state."""
         return self.set_property("led", bool(light))
 
+    def set_led(self, led: bool):
+        """Set indicator state through the common fan LED interface."""
+        return self.set_light(led)
+
     def delay_off(self, minutes: int):
         """Set delayed turn-off in minutes (0..480; 0 disables)."""
         if minutes < 0 or minutes > 480:
