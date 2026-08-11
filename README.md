@@ -39,6 +39,7 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
 | Xiaomi Smart Desktop Air Circulation Fan  | xiaomi.fan.p70 | - | - |
 | Mi Smart Standing Fan 2 Lite              | xiaomi.fan.2lite | - | - |
 | Xiaomi Smart Standing Fan Pro Slim        | xiaomi.fan.p85 | - | - |
+| Xiaomi Smart Standing Fan Pro Slim 2       | xiaomi.fan.p43 | - | - |
 
 
 ## Features
