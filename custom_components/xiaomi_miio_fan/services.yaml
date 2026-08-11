@@ -184,7 +184,7 @@ fan_set_vertical_oscillation_off:
 
 fan_turn:
   name: Turn
-  description: Turn to the given direction. (P30, P70, P76 and P85)
+  description: Turn to the given direction. (P30, P70, P76, P85, and P43)
   fields:
     entity_id:
       name: Entity ID
