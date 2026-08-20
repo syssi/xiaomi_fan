@@ -40,6 +40,7 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
 | Mi Smart Standing Fan 2 Lite              | xiaomi.fan.2lite | - | - |
 | Xiaomi Smart Standing Fan Pro Slim        | xiaomi.fan.p85 | - | - |
 | Xiaomi Smart Standing Fan Pro Slim 2       | xiaomi.fan.p43 | - | - |
+| Mijia Smart Evaporative Cooling Fan | dmaker.fan.p44 | - | - |
 
 
 ## Features

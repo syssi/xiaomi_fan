@@ -72,6 +72,7 @@ MODEL_FAN_P76 = "xiaomi.fan.p76"  # Xiaomi Smart Standing Air Circulation Fan
 MODEL_FAN_P70 = "xiaomi.fan.p70"  # Smart Desktop Air Circulation Fan
 MODEL_FAN_P85 = "xiaomi.fan.p85"  # Xiaomi Smart Standing Fan Pro Slim
 MODEL_FAN_P43 = "xiaomi.fan.p43"  # Xiaomi Smart Standing Fan Pro Slim 2
+MODEL_FAN_P44 = "dmaker.fan.p44"  # Mijia Smart Evaporative Cooling Fan
 MODEL_FAN_2LITE = "xiaomi.fan.2lite"  # Mi Smart Standing Fan 2 Lite
 MODEL_FAN_LESHOW_SS4 = "leshow.fan.ss4"
 MODEL_FAN_1C = "dmaker.fan.1c"  # Pedestal Fan Fan 1C
@@ -106,6 +107,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
                 MODEL_FAN_P70,
                 MODEL_FAN_P85,
                 MODEL_FAN_P43,
+                MODEL_FAN_P44,
                 MODEL_FAN_2LITE,
                 MODEL_FAN_LESHOW_SS4,
                 MODEL_FAN_1C,
@@ -144,6 +146,7 @@ ATTR_USE_TIME = "use_time"
 ATTR_BUTTON_PRESSED = "button_pressed"
 ATTR_RAW_SPEED = "raw_speed"
 ATTR_IONIZER = "anion"
+ATTR_AIR_COOLER = "air_cooler"
 ATTR_VERTICAL_OSCILLATE = "vertical_oscillate"
 ATTR_VERTICAL_ANGLE = "vertical_angle"
 
@@ -282,6 +285,18 @@ AVAILABLE_ATTRIBUTES_FAN_P43 = {
     ATTR_BUZZER: "buzzer",
     ATTR_CHILD_LOCK: "child_lock",
     ATTR_RAW_SPEED: "fan_speed",
+}
+
+AVAILABLE_ATTRIBUTES_FAN_P44 = {
+    ATTR_MODE: "mode",
+    ATTR_OSCILLATE: "horizontal_swing",
+    ATTR_DELAY_OFF_COUNTDOWN: "delay_time",
+    ATTR_LED: "led",
+    ATTR_BUZZER: "buzzer",
+    ATTR_CHILD_LOCK: "child_lock",
+    ATTR_RAW_SPEED: "fan_level",
+    ATTR_AIR_COOLER: "air_cooler",
+    ATTR_ERROR_DETECTED: "fault",
 }
 
 AVAILABLE_ATTRIBUTES_FAN_LESHOW_SS4 = {
@@ -512,6 +527,22 @@ FAN_PRESET_MODES_2LITE = [FAN_PRESET_MODE_SLEEP]
 
 FAN_2LITE_SPEED_COUNT = 3
 
+FAN_PRESET_MODE_COLD_AIR = "ColdAir"
+
+FAN_PRESET_MODES_P44 = {
+    SPEED_OFF: -1,
+    FAN_SPEED_LEVEL1: 1,
+    FAN_SPEED_LEVEL2: 2,
+    FAN_SPEED_LEVEL3: 3,
+    FAN_SPEED_LEVEL4: 4,
+    FAN_SPEED_NATURAL1: 1,
+    FAN_SPEED_NATURAL2: 2,
+    FAN_SPEED_NATURAL3: 3,
+    FAN_SPEED_NATURAL4: 4,
+    FAN_PRESET_MODE_SLEEP: 1,
+    FAN_PRESET_MODE_COLD_AIR: 1,
+}
+
 SUCCESS = ["ok"]
 
 FEATURE_SET_BUZZER = 1
@@ -524,6 +555,7 @@ FEATURE_SET_ANION = 64
 FEATURE_SET_VERTICAL_OSCILLATION = 128
 FEATURE_TURN = 256
 FEATURE_SET_VERTICAL_OSCILLATION_ANGLE = 512
+FEATURE_SET_AIR_COOLER = 1024
 
 FEATURE_FLAGS_FAN = (
     FEATURE_SET_BUZZER
@@ -638,6 +670,14 @@ FEATURE_FLAGS_FAN_P43 = (
     | FEATURE_TURN
 )
 
+FEATURE_FLAGS_FAN_P44 = (
+    FEATURE_SET_BUZZER
+    | FEATURE_SET_CHILD_LOCK
+    | FEATURE_SET_LED
+    | FEATURE_SET_NATURAL_MODE
+    | FEATURE_SET_AIR_COOLER
+)
+
 SERVICE_SET_BUZZER_ON = "fan_set_buzzer_on"
 SERVICE_SET_BUZZER_OFF = "fan_set_buzzer_off"
 SERVICE_SET_CHILD_LOCK_ON = "fan_set_child_lock_on"
@@ -650,6 +690,8 @@ SERVICE_SET_NATURAL_MODE_ON = "fan_set_natural_mode_on"
 SERVICE_SET_NATURAL_MODE_OFF = "fan_set_natural_mode_off"
 SERVICE_SET_ANION_ON = "fan_set_anion_on"
 SERVICE_SET_ANION_OFF = "fan_set_anion_off"
+SERVICE_SET_AIR_COOLER_ON = "fan_set_air_cooler_on"
+SERVICE_SET_AIR_COOLER_OFF = "fan_set_air_cooler_off"
 SERVICE_SET_VERTICAL_OSCILLATION_ON = "fan_set_vertical_oscillation_on"
 SERVICE_SET_VERTICAL_OSCILLATION_OFF = "fan_set_vertical_oscillation_off"
 SERVICE_TURN = "fan_turn"
@@ -714,6 +756,8 @@ SERVICE_TO_METHOD = {
     SERVICE_SET_NATURAL_MODE_OFF: {"method": "async_set_natural_mode_off"},
     SERVICE_SET_ANION_ON: {"method": "async_set_anion_on"},
     SERVICE_SET_ANION_OFF: {"method": "async_set_anion_off"},
+    SERVICE_SET_AIR_COOLER_ON: {"method": "async_set_air_cooler_on"},
+    SERVICE_SET_AIR_COOLER_OFF: {"method": "async_set_air_cooler_off"},
     SERVICE_SET_VERTICAL_OSCILLATION_ON: {
         "method": "async_set_vertical_oscillation_on"
     },
@@ -851,6 +895,11 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     elif model == MODEL_FAN_P43:
         fan = FanP43(host, token, model=model)
         device = XiaomiFanP43(
+            name, fan, model, unique_id, retries, preset_modes_override
+        )
+    elif model == MODEL_FAN_P44:
+        fan = FanP44(host, token, model=model)
+        device = XiaomiFanP44(
             name, fan, model, unique_id, retries, preset_modes_override
         )
     elif model == MODEL_FAN_2LITE:
@@ -5387,4 +5436,368 @@ class XiaomiFanP43(XiaomiFanP33):
             "Turning the miio device failed.",
             self._device.turn,
             direction,
+        )
+
+
+class OperationModeFanP44(Enum):
+    """Operation mode enum for FanP44 (Mijia Smart Evaporative Cooling Fan)."""
+
+    Straight = 0
+    Natural = 1
+    Sleep = 2
+    Cold = 3
+
+
+class FanStatusP44(DeviceStatus):
+    """Container for status reports for FanP44."""
+
+    def __init__(self, data: dict[str, Any]) -> None:
+        """Initialize."""
+        self.data = data
+
+    @property
+    def power(self) -> bool:
+        """Return the power state."""
+        return self.data["power"]
+
+    @property
+    def fault(self) -> int:
+        """Return the fault code (0=No Fault, 1=Lack Water, 2=No Connect)."""
+        return self.data["fault"]
+
+    @property
+    def mode(self) -> str:
+        """Return the operation mode."""
+        return OperationModeFanP44(self.data["mode"]).name
+
+    @property
+    def fan_level(self) -> int:
+        """Return the fan level (1-4)."""
+        return self.data["fan_level"]
+
+    @property
+    def horizontal_swing(self) -> bool:
+        """Return the horizontal swing state."""
+        return self.data["horizontal_swing"]
+
+    @property
+    def led(self) -> bool:
+        """Return the LED state."""
+        return self.data["led"]
+
+    @property
+    def buzzer(self) -> bool:
+        """Return the buzzer state."""
+        return self.data["buzzer"]
+
+    @property
+    def child_lock(self) -> bool:
+        """Return the child lock state."""
+        return self.data["child_lock"]
+
+    @property
+    def delay_time(self) -> int:
+        """Return the delay time in minutes."""
+        return self.data["delay_time"]
+
+    @property
+    def air_cooler(self) -> bool:
+        """Return the evaporative water cooling state."""
+        return self.data["air_cooler"]
+
+
+class FanP44(MiotDevice):
+    """Representing of a Mijia Smart Evaporative Cooling Fan (dmaker.fan.p44)."""
+
+    mapping = {
+        # urn:miot-spec-v2:device:fan:0000A005:dmaker-p44:1
+        "power": {"siid": 2, "piid": 1},
+        "fan_level": {"siid": 2, "piid": 2},
+        "mode": {"siid": 2, "piid": 3},
+        "horizontal_swing": {"siid": 2, "piid": 4},
+        "air_cooler": {"siid": 2, "piid": 6},
+        "fault": {"siid": 2, "piid": 7, "access": ["read"]},
+        "led": {"siid": 4, "piid": 1},
+        "buzzer": {"siid": 5, "piid": 1},
+        "child_lock": {"siid": 7, "piid": 1},
+        "delay_time": {"siid": 3, "piid": 1},
+    }
+
+    def __init__(
+        self,
+        ip: str | None = None,
+        token: str | None = None,
+        start_id: int = 0,
+        debug: int = 0,
+        lazy_discover: bool = True,
+        timeout: int = 5,
+        model: str = MODEL_FAN_P44,
+    ) -> None:
+        """Initialize."""
+        super().__init__(
+            ip, token, start_id, debug, lazy_discover, timeout, model=model
+        )
+
+    def get_properties_for_mapping(self, *, max_properties=15) -> list:
+        """Retrieve raw properties."""
+        mapping = self._get_mapping()
+
+        properties = [
+            {"did": k, **_filter_request_fields(v)}
+            for k, v in mapping.items()
+            if "aiid" not in v and ("access" not in v or "read" in v["access"])
+        ]
+
+        return self.get_properties(
+            properties, property_getter="get_properties", max_properties=max_properties
+        )
+
+    def status(self):
+        """Retrieve properties."""
+        return FanStatusP44(
+            {
+                prop["did"]: prop["value"] if prop["code"] == 0 else None
+                for prop in self.get_properties_for_mapping()
+            }
+        )
+
+    def on(self):
+        """Power on."""
+        return self.set_property("power", True)
+
+    def off(self):
+        """Power off."""
+        return self.set_property("power", False)
+
+    def set_fan_level(self, fan_level: int):
+        """Set fan level (1-4)."""
+        if fan_level not in [1, 2, 3, 4]:
+            raise FanException(f"Invalid fan level: {fan_level}")
+        return self.set_property("fan_level", fan_level)
+
+    def set_oscillate(self, oscillate: bool):
+        """Set horizontal oscillation on/off."""
+        return self.set_property("horizontal_swing", bool(oscillate))
+
+    def set_mode(self, mode: OperationModeFanP44):
+        """Set mode."""
+        return self.set_property("mode", mode.value)
+
+    def set_child_lock(self, lock: bool):
+        """Set child lock on/off."""
+        return self.set_property("child_lock", bool(lock))
+
+    def set_buzzer(self, buzzer: bool):
+        """Set buzzer on/off."""
+        return self.set_property("buzzer", bool(buzzer))
+
+    def set_light(self, light: bool):
+        """Set indicator state."""
+        return self.set_property("led", bool(light))
+
+    def set_air_cooler(self, air_cooler: bool):
+        """Set the evaporative water cooling on/off."""
+        return self.set_property("air_cooler", bool(air_cooler))
+
+    def delay_off(self, minutes: int):
+        """Set delay off in minutes (0-480). 0 deactivates the timer."""
+        if minutes < 0 or minutes > 480:
+            raise FanException(f"Invalid value for a delayed turn off: {minutes}")
+        return self.set_property("delay_time", minutes)
+
+
+class XiaomiFanP44(XiaomiFanP33):
+    """Representation of the Mijia Smart Evaporative Cooling Fan (dmaker.fan.p44)."""
+
+    def __init__(self, name, device, model, unique_id, retries, preset_modes_override):
+        """Initialize the fan entity."""
+        super().__init__(name, device, model, unique_id, retries, preset_modes_override)
+
+        self._device_features = FEATURE_FLAGS_FAN_P44
+        self._available_attributes = AVAILABLE_ATTRIBUTES_FAN_P44
+        self._percentage = None
+        self._preset_modes = list(FAN_PRESET_MODES_P44)
+        if preset_modes_override is not None:
+            self._preset_modes = preset_modes_override
+
+        self._preset_mode = None
+        self._oscillate = None
+        self._natural_mode = False
+
+        self._state_attrs = {
+            ATTR_MODEL: self._model,
+            **{attribute: None for attribute in self._available_attributes},
+        }
+
+    @property
+    def supported_features(self) -> int:
+        """Return supported features."""
+        return (
+            FanEntityFeature.OSCILLATE
+            | FanEntityFeature.PRESET_MODE
+            | FanEntityFeature.SET_SPEED
+            | FanEntityFeature.TURN_OFF
+            | FanEntityFeature.TURN_ON
+        )
+
+    async def async_update(self):
+        """Fetch state from the device."""
+        if self._skip_update:
+            self._skip_update = False
+            return
+
+        try:
+            state = await self.hass.async_add_executor_job(self._device.status)
+            _LOGGER.debug("Got new state: %s", state)
+
+            self._available = True
+            self._oscillate = state.horizontal_swing
+            self._natural_mode = state.mode == OperationModeFanP44.Natural.name
+            self._state = state.power
+
+            if state.fan_level is None:
+                self._percentage = None
+            else:
+                self._percentage = ranged_value_to_percentage(
+                    (1, 4), state.fan_level
+                )
+
+            if state.mode == OperationModeFanP44.Sleep.name:
+                self._preset_mode = FAN_PRESET_MODE_SLEEP
+            elif state.mode == OperationModeFanP44.Cold.name:
+                self._preset_mode = FAN_PRESET_MODE_COLD_AIR
+            else:
+                self._preset_mode = None
+                for preset_mode, value in FAN_PRESET_MODES_P44.items():
+                    if preset_mode in (
+                        SPEED_OFF,
+                        FAN_PRESET_MODE_SLEEP,
+                        FAN_PRESET_MODE_COLD_AIR,
+                    ):
+                        continue
+                    is_natural = preset_mode.startswith("Natural")
+                    if state.fan_level == value and is_natural == self._natural_mode:
+                        self._preset_mode = preset_mode
+                        break
+
+            self._state_attrs.update(
+                {
+                    key: self._extract_value_from_attribute(state, value)
+                    for key, value in self._available_attributes.items()
+                    if hasattr(state, value)
+                }
+            )
+            self._retry = 0
+
+        except DeviceException as ex:
+            self._retry = self._retry + 1
+            if self._retry < self._retries:
+                _LOGGER.info(
+                    "%s Got exception while fetching the state: %s , _retry=%s",
+                    self.__class__.__name__,
+                    ex,
+                    self._retry,
+                )
+            else:
+                self._available = False
+                _LOGGER.error(
+                    "%s Got exception while fetching the state: %s , _retry=%s",
+                    self.__class__.__name__,
+                    ex,
+                    self._retry,
+                )
+
+    async def async_set_preset_mode(self, preset_mode: str) -> None:
+        """Set the preset mode of the fan.
+
+        Combines level (1..4) with Straight/Natural mode, or selects a
+        standalone Sleep or Cold Air mode.
+        """
+        _LOGGER.debug("Setting the preset mode to: %s", preset_mode)
+
+        if preset_mode == SPEED_OFF:
+            await self.async_turn_off()
+            return
+
+        if not self._state:
+            await self._try_command(
+                "Turning the miio device on failed.", self._device.on
+            )
+
+        if preset_mode == FAN_PRESET_MODE_SLEEP:
+            await self._try_command(
+                "Setting fan mode failed.",
+                self._device.set_mode,
+                OperationModeFanP44.Sleep,
+            )
+            return
+
+        if preset_mode == FAN_PRESET_MODE_COLD_AIR:
+            await self._try_command(
+                "Setting fan mode failed.",
+                self._device.set_mode,
+                OperationModeFanP44.Cold,
+            )
+            return
+
+        natural = preset_mode.startswith("Natural")
+        await self._try_command(
+            "Setting fan mode failed.",
+            self._device.set_mode,
+            OperationModeFanP44.Natural if natural else OperationModeFanP44.Straight,
+        )
+        await self._try_command(
+            "Setting fan level of the miio device failed.",
+            self._device.set_fan_level,
+            FAN_PRESET_MODES_P44[preset_mode],
+        )
+
+    async def async_set_natural_mode_on(self):
+        """Turn the natural mode on."""
+        if self._device_features & FEATURE_SET_NATURAL_MODE == 0:
+            return
+        await self._try_command(
+            "Setting fan natural mode of the miio device failed.",
+            self._device.set_mode,
+            OperationModeFanP44.Natural,
+        )
+
+    async def async_set_natural_mode_off(self):
+        """Turn the natural mode off."""
+        if self._device_features & FEATURE_SET_NATURAL_MODE == 0:
+            return
+        await self._try_command(
+            "Setting fan natural mode of the miio device failed.",
+            self._device.set_mode,
+            OperationModeFanP44.Straight,
+        )
+
+    async def async_set_led_brightness(self, brightness: int = 2):
+        """Set LED on (brightness != 2) or off (brightness == 2)."""
+        if self._device_features & FEATURE_SET_LED == 0:
+            return
+        await self._try_command(
+            "Setting LED of the miio device failed.",
+            self._device.set_light,
+            brightness != 2,
+        )
+
+    async def async_set_air_cooler_on(self):
+        """Turn the evaporative water cooling on."""
+        if self._device_features & FEATURE_SET_AIR_COOLER == 0:
+            return
+        await self._try_command(
+            "Setting air cooler of the miio device failed.",
+            self._device.set_air_cooler,
+            True,
+        )
+
+    async def async_set_air_cooler_off(self):
+        """Turn the evaporative water cooling off."""
+        if self._device_features & FEATURE_SET_AIR_COOLER == 0:
+            return
+        await self._try_command(
+            "Setting air cooler of the miio device failed.",
+            self._device.set_air_cooler,
+            False,
         )
