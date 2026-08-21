@@ -147,6 +147,7 @@ ATTR_BUTTON_PRESSED = "button_pressed"
 ATTR_RAW_SPEED = "raw_speed"
 ATTR_IONIZER = "anion"
 ATTR_AIR_COOLER = "air_cooler"
+ATTR_WATER_TANK_EMPTY = "water_tank_empty"
 ATTR_VERTICAL_OSCILLATE = "vertical_oscillate"
 ATTR_VERTICAL_ANGLE = "vertical_angle"
 
@@ -296,7 +297,8 @@ AVAILABLE_ATTRIBUTES_FAN_P44 = {
     ATTR_CHILD_LOCK: "child_lock",
     ATTR_RAW_SPEED: "fan_level",
     ATTR_AIR_COOLER: "air_cooler",
-    ATTR_ERROR_DETECTED: "fault",
+    ATTR_ERROR_DETECTED: "error_detected",
+    ATTR_WATER_TANK_EMPTY: "water_tank_empty",
 }
 
 AVAILABLE_ATTRIBUTES_FAN_LESHOW_SS4 = {
@@ -5450,6 +5452,14 @@ class OperationModeFanP44(Enum):
     Cold = 3
 
 
+class FaultFanP44(Enum):
+    """Fault codes reported by FanP44 (Mijia Smart Evaporative Cooling Fan)."""
+
+    NoFault = 0
+    LackWater = 1
+    NoConnect = 2
+
+
 class FanStatusP44(DeviceStatus):
     """Container for status reports for FanP44."""
 
@@ -5466,6 +5476,16 @@ class FanStatusP44(DeviceStatus):
     def fault(self) -> int:
         """Return the fault code (0=No Fault, 1=Lack Water, 2=No Connect)."""
         return self.data["fault"]
+
+    @property
+    def error_detected(self) -> bool:
+        """Return True if the device reports a fault."""
+        return self.data["fault"] != FaultFanP44.NoFault.value
+
+    @property
+    def water_tank_empty(self) -> bool:
+        """Return True if the device reports a lack of water."""
+        return self.data["fault"] == FaultFanP44.LackWater.value
 
     @property
     def mode(self) -> str:
@@ -5625,6 +5645,7 @@ class XiaomiFanP44(XiaomiFanP33):
         self._preset_mode = None
         self._oscillate = None
         self._natural_mode = False
+        self._water_tank_empty = None
 
         self._state_attrs = {
             ATTR_MODEL: self._model,
@@ -5646,6 +5667,15 @@ class XiaomiFanP44(XiaomiFanP33):
     def speed_count(self) -> int:
         """Return the number of speeds the fan supports."""
         return FAN_P44_SPEED_COUNT
+
+    def _warn_if_water_tank_empty(self) -> None:
+        """Warn about running the evaporative cooling without water."""
+        if self._water_tank_empty:
+            _LOGGER.warning(
+                "%s reports an empty water tank. Running the "
+                "evaporative cooling without water is not recommended",
+                self._name,
+            )
 
     async def async_set_percentage(self, percentage: int) -> None:
         """Set the speed percentage of the fan."""
@@ -5690,7 +5720,21 @@ class XiaomiFanP44(XiaomiFanP33):
             self._available = True
             self._oscillate = state.horizontal_swing
             self._natural_mode = state.mode == OperationModeFanP44.Natural.name
+            was_water_tank_empty = self._water_tank_empty
+            self._water_tank_empty = state.water_tank_empty
             self._state = state.power
+
+            if (
+                state.water_tank_empty
+                and not was_water_tank_empty
+                and state.power
+                and (state.air_cooler or state.mode == OperationModeFanP44.Cold.name)
+            ):
+                _LOGGER.warning(
+                    "%s ran out of water while the evaporative cooling is "
+                    "running. Refill the water tank or switch the mode",
+                    self._name,
+                )
 
             if state.fan_level is None:
                 self._percentage = None
@@ -5770,6 +5814,7 @@ class XiaomiFanP44(XiaomiFanP33):
             return
 
         if preset_mode == FAN_PRESET_MODE_COLD_AIR:
+            self._warn_if_water_tank_empty()
             await self._try_command(
                 "Setting fan mode failed.",
                 self._device.set_mode,
@@ -5823,6 +5868,7 @@ class XiaomiFanP44(XiaomiFanP33):
         """Turn the evaporative water cooling on."""
         if self._device_features & FEATURE_SET_AIR_COOLER == 0:
             return
+        self._warn_if_water_tank_empty()
         await self._try_command(
             "Setting air cooler of the miio device failed.",
             self._device.set_air_cooler,
