@@ -543,6 +543,8 @@ FAN_PRESET_MODES_P44 = {
     FAN_PRESET_MODE_COLD_AIR: 1,
 }
 
+FAN_P44_SPEED_COUNT = 4
+
 SUCCESS = ["ok"]
 
 FEATURE_SET_BUZZER = 1
@@ -5640,6 +5642,41 @@ class XiaomiFanP44(XiaomiFanP33):
             | FanEntityFeature.TURN_ON
         )
 
+    @property
+    def speed_count(self) -> int:
+        """Return the number of speeds the fan supports."""
+        return FAN_P44_SPEED_COUNT
+
+    async def async_set_percentage(self, percentage: int) -> None:
+        """Set the speed percentage of the fan."""
+        _LOGGER.debug("Setting the fan percentage to: %s", percentage)
+
+        if percentage == 0:
+            await self.async_turn_off()
+            return
+
+        level = math.ceil(
+            percentage_to_ranged_value((1, FAN_P44_SPEED_COUNT), percentage)
+        )
+
+        if not self._state:
+            await self._try_command(
+                "Turning the miio device on failed.", self._device.on
+            )
+
+        if self._preset_mode == FAN_PRESET_MODE_SLEEP:
+            await self._try_command(
+                "Setting fan mode of the miio device failed.",
+                self._device.set_mode,
+                OperationModeFanP44.Straight,
+            )
+
+        await self._try_command(
+            "Setting fan level of the miio device failed.",
+            self._device.set_fan_level,
+            level,
+        )
+
     async def async_update(self):
         """Fetch state from the device."""
         if self._skip_update:
@@ -5659,7 +5696,7 @@ class XiaomiFanP44(XiaomiFanP33):
                 self._percentage = None
             else:
                 self._percentage = ranged_value_to_percentage(
-                    (1, 4), state.fan_level
+                    (1, FAN_P44_SPEED_COUNT), state.fan_level
                 )
 
             if state.mode == OperationModeFanP44.Sleep.name:
