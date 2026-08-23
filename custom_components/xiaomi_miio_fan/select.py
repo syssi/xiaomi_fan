@@ -98,13 +98,17 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     except DeviceException as ex:
         if model is None:
             raise PlatformNotReady from ex
-        _LOGGER.warning("Could not read device info (%s); continuing with model %s", ex, model)
+        _LOGGER.warning(
+            "Could not read device info (%s); continuing with model %s", ex, model
+        )
 
     angles = MODEL_TO_ANGLES.get(model, ANGLES_DEFAULT)
     device = _build_device(host, token, model)
     unique_id = f"{model}-{mac}-oscillation_angle" if mac else None
 
-    _LOGGER.info("Adding oscillation-angle select for %s (%s), angles=%s", name, model, angles)
+    _LOGGER.info(
+        "Adding oscillation-angle select for %s (%s), angles=%s", name, model, angles
+    )
     async_add_entities(
         [XiaomiFanAngleSelect(name, device, model, unique_id, angles)],
         update_before_add=True,
@@ -117,6 +121,7 @@ class XiaomiFanAngleSelect(SelectEntity):
     _attr_icon = "mdi:angle-acute"
 
     def __init__(self, name, device, model, unique_id, angles):
+        """Initialize the oscillation-angle select entity."""
         self._device = device
         self._model = model
         self._angles = angles
