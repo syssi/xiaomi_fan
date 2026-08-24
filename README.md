@@ -40,6 +40,7 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
 | Mi Smart Standing Fan 2 Lite              | xiaomi.fan.2lite | - | - |
 | Xiaomi Smart Standing Fan Pro Slim        | xiaomi.fan.p85 | - | - |
 | Xiaomi Smart Standing Fan Pro Slim 2       | xiaomi.fan.p43 | - | - |
+| Mijia Smart Evaporative Cooling Fan | dmaker.fan.p44 | - | - |
 
 
 ## Features
@@ -249,6 +250,22 @@ Turn the ionizer on.
 #### Service `xiaomi_miio_fan.fan_set_anion_off`
 
 Turn the ionizer off.
+
+| Service data attribute    | Optional | Description                                                          |
+|---------------------------|----------|----------------------------------------------------------------------|
+| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
+
+#### Service `xiaomi_miio_fan.fan_set_air_cooler_on`
+
+Turn the evaporative water cooling on. (P44 only)
+
+| Service data attribute    | Optional | Description                                                          |
+|---------------------------|----------|----------------------------------------------------------------------|
+| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
+
+#### Service `xiaomi_miio_fan.fan_set_air_cooler_off`
+
+Turn the evaporative water cooling off. (P44 only)
 
 | Service data attribute    | Optional | Description                                                          |
 |---------------------------|----------|----------------------------------------------------------------------|

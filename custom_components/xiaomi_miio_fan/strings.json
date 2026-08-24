@@ -108,6 +108,26 @@
         }
       }
     },
+    "fan_set_air_cooler_on": {
+      "name": "Set air cooler on",
+      "description": "Turn the evaporative water cooling on.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the Xiaomi Mi Smart Fan entity."
+        }
+      }
+    },
+    "fan_set_air_cooler_off": {
+      "name": "Set air cooler off",
+      "description": "Turn the evaporative water cooling off.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "Name of the Xiaomi Mi Smart Fan entity."
+        }
+      }
+    },
     "fan_set_oscillation_angle": {
       "name": "Set oscillation angle",
       "description": "Set the oscillation angle.",
