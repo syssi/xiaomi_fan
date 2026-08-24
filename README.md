@@ -255,6 +255,22 @@ Turn the ionizer off.
 |---------------------------|----------|----------------------------------------------------------------------|
 | `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
 
+#### Service `xiaomi_miio_fan.fan_set_air_cooler_on`
+
+Turn the evaporative water cooling on. (P44 only)
+
+| Service data attribute    | Optional | Description                                                          |
+|---------------------------|----------|----------------------------------------------------------------------|
+| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
+
+#### Service `xiaomi_miio_fan.fan_set_air_cooler_off`
+
+Turn the evaporative water cooling off. (P44 only)
+
+| Service data attribute    | Optional | Description                                                          |
+|---------------------------|----------|----------------------------------------------------------------------|
+| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
+
 #### Service `xiaomi_miio_fan.fan_turn`
 
 Turn to the given direction. Supported values are `left`, `right`, `up` and `down`. (P76 only)
