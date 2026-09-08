@@ -43,6 +43,7 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
 | Mijia Smart Evaporative Cooling Fan | dmaker.fan.p44 | - | - |
 | Xiaomi Smart Standing Air Circulation Fan / Mijia Circulation Fan | xiaomi.fan.p51 | - | - |
 | Rosou SS310 Ventilator | leshow.fan.ss310 | - | - |
+| Mijia Fan | dmaker.fan.p28 | - | - |
 
 
 ## Features
@@ -284,7 +285,7 @@ Turn to the given direction. Supported values are `left` and `right`, plus `up` 
 
 #### Service `xiaomi_miio_fan.fan_set_vertical_oscillation_on`
 
-Turn the vertical oscillation on. (P70, P76 and SS310 only)
+Turn the vertical oscillation on. (P70, P76, SS310 and P28 only)
 
 | Service data attribute    | Optional | Description                                                          |
 |---------------------------|----------|----------------------------------------------------------------------|
@@ -292,7 +293,7 @@ Turn the vertical oscillation on. (P70, P76 and SS310 only)
 
 #### Service `xiaomi_miio_fan.fan_set_vertical_oscillation_off`
 
-Turn the vertical oscillation off. (P70, P76 and SS310 only)
+Turn the vertical oscillation off. (P70, P76, SS310 and P28 only)
 
 | Service data attribute    | Optional | Description                                                          |
 |---------------------------|----------|----------------------------------------------------------------------|
@@ -300,7 +301,7 @@ Turn the vertical oscillation off. (P70, P76 and SS310 only)
 
 #### Service `xiaomi_miio_fan.fan_set_vertical_oscillation_angle`
 
-Set the vertical oscillation angle. (P70 and P76 only)
+Set the vertical oscillation angle. (P70, P76 and P28 only)
 
 | Service data attribute    | Optional | Description                                                          |
 |---------------------------|----------|----------------------------------------------------------------------|
