@@ -41,6 +41,7 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
 | Xiaomi Smart Standing Fan Pro Slim        | xiaomi.fan.p85 | - | - |
 | Xiaomi Smart Standing Fan Pro Slim 2       | xiaomi.fan.p43 | - | - |
 | Mijia Smart Evaporative Cooling Fan | dmaker.fan.p44 | - | - |
+| Xiaomi Smart Standing Air Circulation Fan / Mijia Circulation Fan | xiaomi.fan.p51 | - | - |
 
 
 ## Features
@@ -273,7 +274,7 @@ Turn the evaporative water cooling off. (P44 only)
 
 #### Service `xiaomi_miio_fan.fan_turn`
 
-Turn to the given direction. Supported values are `left`, `right`, `up` and `down`. (P76 only)
+Turn to the given direction. Supported values are `left`, `right`, `up` and `down`. (P30, P45, P70, P76, P85, P43, and P51)
 
 | Service data attribute | Optional | Description                                                   |
 |------------------------|----------|---------------------------------------------------------------|
