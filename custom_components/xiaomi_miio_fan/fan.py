@@ -75,6 +75,7 @@ MODEL_FAN_P43 = "xiaomi.fan.p43"  # Xiaomi Smart Standing Fan Pro Slim 2
 MODEL_FAN_P44 = "dmaker.fan.p44"  # Mijia Smart Evaporative Cooling Fan
 MODEL_FAN_2LITE = "xiaomi.fan.2lite"  # Mi Smart Standing Fan 2 Lite
 MODEL_FAN_LESHOW_SS4 = "leshow.fan.ss4"
+MODEL_FAN_LESHOW_SS310 = "leshow.fan.ss310"
 MODEL_FAN_1C = "dmaker.fan.1c"  # Pedestal Fan Fan 1C
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
@@ -110,6 +111,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
                 MODEL_FAN_P44,
                 MODEL_FAN_2LITE,
                 MODEL_FAN_LESHOW_SS4,
+                MODEL_FAN_LESHOW_SS310,
                 MODEL_FAN_1C,
             ]
         ),
@@ -310,6 +312,13 @@ AVAILABLE_ATTRIBUTES_FAN_LESHOW_SS4 = {
     ATTR_ERROR_DETECTED: "error_detected",
 }
 
+AVAILABLE_ATTRIBUTES_FAN_LESHOW_SS310 = {
+    ATTR_MODE: "mode",
+    ATTR_OSCILLATE: "horizontal_swing",
+    ATTR_VERTICAL_OSCILLATE: "vertical_swing",
+    ATTR_RAW_SPEED: "fan_level",
+}
+
 AVAILABLE_ATTRIBUTES_FAN_1C = {
     ATTR_MODE: "mode",
     ATTR_RAW_SPEED: "speed",
@@ -347,6 +356,7 @@ FAN_SPEED_LEVEL1 = "Level 1"
 FAN_SPEED_LEVEL2 = "Level 2"
 FAN_SPEED_LEVEL3 = "Level 3"
 FAN_SPEED_LEVEL4 = "Level 4"
+FAN_SPEED_LEVEL5 = "Level 5"
 
 FAN_SPEED_NATURAL1 = "Natural 1"
 FAN_SPEED_NATURAL2 = "Natural 2"
@@ -547,6 +557,22 @@ FAN_PRESET_MODES_P44 = {
 
 FAN_P44_SPEED_COUNT = 4
 
+# leshow.fan.ss310 exposes a closed 5-value fan-level enum whose raw values
+# are themselves percentage-shaped (1, 25, 50, 75, 100). The ordered list of
+# level names is used with Home Assistant's ordered-list percentage helpers
+# (the same pattern already used for FAN_SPEEDS_1C) to deterministically
+# quantize an arbitrary HA percentage down to one of the five legal raw
+# device values, and to convert a raw device value back to a percentage.
+FAN_LEVELS_SS310 = {
+    FAN_SPEED_LEVEL1: 1,
+    FAN_SPEED_LEVEL2: 25,
+    FAN_SPEED_LEVEL3: 50,
+    FAN_SPEED_LEVEL4: 75,
+    FAN_SPEED_LEVEL5: 100,
+}
+
+FAN_SPEEDS_SS310 = list(FAN_LEVELS_SS310)
+
 SUCCESS = ["ok"]
 
 FEATURE_SET_BUZZER = 1
@@ -578,6 +604,7 @@ FEATURE_FLAGS_FAN_P5 = (
 )
 
 FEATURE_FLAGS_FAN_LESHOW_SS4 = FEATURE_SET_BUZZER
+FEATURE_FLAGS_FAN_LESHOW_SS310 = FEATURE_SET_VERTICAL_OSCILLATION
 FEATURE_FLAGS_FAN_1C = (
     FEATURE_SET_BUZZER
     | FEATURE_SET_CHILD_LOCK
@@ -854,6 +881,11 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     elif model == MODEL_FAN_LESHOW_SS4:
         fan = FanLeshow(host, token, model=model)
         device = XiaomiFanLeshow(
+            name, fan, model, unique_id, retries, preset_modes_override
+        )
+    elif model == MODEL_FAN_LESHOW_SS310:
+        fan = FanSS310(host, token, model=model)
+        device = XiaomiFanLeshowSS310(
             name, fan, model, unique_id, retries, preset_modes_override
         )
     elif model in [MODEL_FAN_1C, MODEL_FAN_P8]:
@@ -5882,5 +5914,312 @@ class XiaomiFanP44(XiaomiFanP33):
         await self._try_command(
             "Setting air cooler of the miio device failed.",
             self._device.set_air_cooler,
+            False,
+        )
+
+
+class OperationModeSS310(Enum):
+    """Operation mode enum for FanSS310."""
+
+    Normal = 0
+    Sleep = 1
+
+
+class FanStatusSS310(DeviceStatus):
+    """Container for status reports for FanSS310."""
+
+    def __init__(self, data: dict[str, Any]) -> None:
+        """Initialize."""
+        self.data = data
+
+    @property
+    def power(self) -> bool:
+        """Return the power state."""
+        return self.data["power"]
+
+    @property
+    def mode(self) -> str:
+        """Return the operation mode."""
+        return OperationModeSS310(self.data["mode"]).name
+
+    @property
+    def fan_level(self) -> int:
+        """Return the fan level (one of 1, 25, 50, 75, 100)."""
+        return self.data["fan_level"]
+
+    @property
+    def horizontal_swing(self) -> bool:
+        """Return the horizontal swing state."""
+        return self.data["horizontal_swing"]
+
+    @property
+    def vertical_swing(self) -> bool:
+        """Return the vertical swing state."""
+        return self.data["vertical_swing"]
+
+
+class FanSS310(MiotDevice):
+    """Main class representing the Rosou SS310 Ventilator (leshow.fan.ss310)."""
+
+    mapping = {
+        # urn:miot-spec-v2:device:fan:0000A005:leshow-ss310:1
+        "power": {"siid": 2, "piid": 1},
+        "fan_level": {"siid": 2, "piid": 2},
+        "mode": {"siid": 2, "piid": 3},
+        "horizontal_swing": {"siid": 2, "piid": 4},
+        "vertical_swing": {"siid": 2, "piid": 5},
+    }
+
+    def __init__(
+        self,
+        ip: str | None = None,
+        token: str | None = None,
+        start_id: int = 0,
+        debug: int = 0,
+        lazy_discover: bool = True,
+        timeout: int = 5,
+        model: str = MODEL_FAN_LESHOW_SS310,
+    ) -> None:
+        """Initialize."""
+        super().__init__(
+            ip, token, start_id, debug, lazy_discover, timeout, model=model
+        )
+
+    # backported and adapted from current master
+    def get_properties_for_mapping(self, *, max_properties=15) -> list:
+        """Retrieve raw properties based on mapping."""
+        mapping = self._get_mapping()
+
+        # We send property key in "did" because it's sent back via response and we can identify the property.
+        properties = [
+            {"did": k, **_filter_request_fields(v)}
+            for k, v in mapping.items()
+            if "aiid" not in v and ("access" not in v or "read" in v["access"])
+        ]
+
+        return self.get_properties(
+            properties, property_getter="get_properties", max_properties=max_properties
+        )
+
+    def status(self):
+        """Retrieve properties."""
+        return FanStatusSS310(
+            {
+                prop["did"]: prop["value"] if prop["code"] == 0 else None
+                for prop in self.get_properties_for_mapping()
+            }
+        )
+
+    def on(self):
+        """Power on."""
+        return self.set_property("power", True)
+
+    def off(self):
+        """Power off."""
+        return self.set_property("power", False)
+
+    def set_fan_level(self, level: int):
+        """Set fan level. Only 1, 25, 50, 75 or 100 are valid."""
+        if level not in (1, 25, 50, 75, 100):
+            raise FanException(f"Invalid fan level: {level}")
+        return self.set_property("fan_level", level)
+
+    def set_mode(self, mode: OperationModeSS310):
+        """Set mode."""
+        return self.set_property("mode", mode.value)
+
+    def set_horizontal_oscillation(self, oscillate: bool):
+        """Set horizontal oscillation on/off."""
+        return self.set_property("horizontal_swing", oscillate)
+
+    def set_vertical_oscillation(self, oscillate: bool):
+        """Set vertical oscillation on/off."""
+        return self.set_property("vertical_swing", oscillate)
+
+
+class XiaomiFanLeshowSS310(XiaomiGenericDevice):
+    """Representation of a Rosou SS310 Ventilator (leshow.fan.ss310)."""
+
+    def __init__(self, name, device, model, unique_id, retries, preset_modes_override):
+        """Initialize the fan entity."""
+        super().__init__(name, device, model, unique_id, retries, preset_modes_override)
+
+        self._device_features = FEATURE_FLAGS_FAN_LESHOW_SS310
+        self._available_attributes = AVAILABLE_ATTRIBUTES_FAN_LESHOW_SS310
+        self._preset_modes = [FAN_PRESET_MODE_SLEEP]
+        if preset_modes_override is not None:
+            self._preset_modes = preset_modes_override
+
+        self._current_level = None
+        self._sleep_mode = False
+        self._oscillate = None
+        self._vertical_oscillate = None
+
+        self._state_attrs.update(
+            {attribute: None for attribute in self._available_attributes}
+        )
+
+    @property
+    def supported_features(self) -> int:
+        """Return supported features."""
+        return (
+            FanEntityFeature.OSCILLATE
+            | FanEntityFeature.PRESET_MODE
+            | FanEntityFeature.SET_SPEED
+            | FanEntityFeature.TURN_OFF
+            | FanEntityFeature.TURN_ON
+        )
+
+    async def async_update(self):
+        """Fetch state from the device."""
+        if self._skip_update:
+            self._skip_update = False
+            return
+
+        try:
+            state = await self.hass.async_add_executor_job(self._device.status)
+            _LOGGER.debug("Got new state: %s", state)
+
+            self._available = True
+            self._oscillate = state.horizontal_swing
+            self._vertical_oscillate = state.vertical_swing
+            self._sleep_mode = state.mode == OperationModeSS310.Sleep.name
+            self._state = state.power
+
+            self._current_level = None
+            for level_name, value in FAN_LEVELS_SS310.items():
+                if state.fan_level == value:
+                    self._current_level = level_name
+                    break
+
+            self._state_attrs.update(
+                {
+                    key: self._extract_value_from_attribute(state, value)
+                    for key, value in self._available_attributes.items()
+                    if hasattr(state, value)
+                }
+            )
+            self._retry = 0
+
+        except DeviceException as ex:
+            self._retry = self._retry + 1
+            if self._retry < self._retries:
+                _LOGGER.info(
+                    "%s Got exception while fetching the state: %s , _retry=%s",
+                    self.__class__.__name__,
+                    ex,
+                    self._retry,
+                )
+            else:
+                self._available = False
+                _LOGGER.error(
+                    "%s Got exception while fetching the state: %s , _retry=%s",
+                    self.__class__.__name__,
+                    ex,
+                    self._retry,
+                )
+
+    @property
+    def percentage(self) -> int | None:
+        """Return the current speed percentage."""
+        if self._current_level not in FAN_SPEEDS_SS310:
+            return None
+        return ordered_list_item_to_percentage(FAN_SPEEDS_SS310, self._current_level)
+
+    @property
+    def speed_count(self) -> int:
+        """Return the number of speeds the fan supports."""
+        return len(FAN_SPEEDS_SS310)
+
+    @property
+    def preset_modes(self):
+        """Return the list of available preset modes."""
+        return self._preset_modes
+
+    @property
+    def preset_mode(self):
+        """Return the current preset mode."""
+        if self._state and self._sleep_mode:
+            return FAN_PRESET_MODE_SLEEP
+        return None
+
+    @property
+    def oscillating(self):
+        """Return the oscillation state."""
+        return self._oscillate
+
+    async def async_oscillate(self, oscillating: bool) -> None:
+        """Set (horizontal) oscillation."""
+        await self._try_command(
+            "Setting oscillate of the miio device failed.",
+            self._device.set_horizontal_oscillation,
+            oscillating,
+        )
+
+    async def async_set_percentage(self, percentage: int) -> None:
+        """Set the speed percentage of the fan."""
+        _LOGGER.debug("Setting the fan speed percentage to: %s", percentage)
+
+        if percentage == 0:
+            await self.async_turn_off()
+            return
+
+        level_name = percentage_to_ordered_list_item(FAN_SPEEDS_SS310, percentage)
+
+        if not self._state:
+            await self._try_command(
+                "Turning the miio device on failed.", self._device.on
+            )
+
+        if self._sleep_mode:
+            await self._try_command(
+                "Setting fan mode of the miio device failed.",
+                self._device.set_mode,
+                OperationModeSS310.Normal,
+            )
+
+        await self._try_command(
+            "Setting fan level of the miio device failed.",
+            self._device.set_fan_level,
+            FAN_LEVELS_SS310[level_name],
+        )
+
+    async def async_set_preset_mode(self, preset_mode: str) -> None:
+        """Set the preset mode of the fan."""
+        _LOGGER.debug("Setting the preset mode to: %s", preset_mode)
+
+        if not self._state:
+            await self._try_command(
+                "Turning the miio device on failed.", self._device.on
+            )
+
+        mode = (
+            OperationModeSS310.Sleep
+            if preset_mode == FAN_PRESET_MODE_SLEEP
+            else OperationModeSS310.Normal
+        )
+        await self._try_command(
+            "Setting fan mode of the miio device failed.",
+            self._device.set_mode,
+            mode,
+        )
+
+    async def async_set_vertical_oscillation_on(self):
+        """Turn vertical oscillation on."""
+        if self._device_features & FEATURE_SET_VERTICAL_OSCILLATION == 0:
+            return
+        await self._try_command(
+            "Setting vertical oscillation on of the miio device failed.",
+            self._device.set_vertical_oscillation,
+            True,
+        )
+
+    async def async_set_vertical_oscillation_off(self):
+        """Turn vertical oscillation off."""
+        if self._device_features & FEATURE_SET_VERTICAL_OSCILLATION == 0:
+            return
+        await self._try_command(
+            "Setting vertical oscillation off of the miio device failed.",
+            self._device.set_vertical_oscillation,
             False,
         )
