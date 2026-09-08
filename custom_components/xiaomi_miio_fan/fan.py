@@ -1901,9 +1901,10 @@ class XiaomiFanZA5(XiaomiFan):
             self._natural_mode = state.mode == FanOperationMode.Nature
             self._state = state.power
 
-            for preset_mode, value in FAN_PRESET_MODES_ZA5.items():
-                if state.fan_level == value:
+            for preset_mode, speed_range in FAN_PRESET_MODES.items():
+                if state.fan_speed in speed_range:
                     self._preset_mode = preset_mode
+                    break
 
             self._state_attrs.update(
                 {
@@ -1964,7 +1965,7 @@ class XiaomiFanZA5(XiaomiFan):
         await self._try_command(
             "Setting preset mode of the miio device failed.",
             self._device.set_speed,
-            FAN_PRESET_MODE_VALUES[preset_mode],
+            FAN_PRESET_MODES_ZA5[preset_mode],
         )
 
     async def async_set_percentage(self, percentage: int) -> None:
