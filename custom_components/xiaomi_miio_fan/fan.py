@@ -2708,8 +2708,8 @@ class XiaomiFanP39(XiaomiFanMiot):
             self._natural_mode = state.mode == OperationModeFanP39.Nature
             self._state = state.power
 
-            for preset_mode, value in FAN_PRESET_MODES_P39.items():
-                if state.fan_level == value:
+            for preset_mode, speed_range in FAN_PRESET_MODES.items():
+                if state.fan_speed in speed_range:
                     self._preset_mode = preset_mode
                     break
 
