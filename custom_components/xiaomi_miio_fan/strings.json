@@ -158,7 +158,7 @@
     },
     "fan_set_vertical_oscillation_on": {
       "name": "Set vertical oscillation on",
-      "description": "Turn the vertical oscillation on. (P70 and P76 only)",
+      "description": "Turn the vertical oscillation on. (P70, P76 and P28 only)",
       "fields": {
         "entity_id": {
           "name": "Entity ID",
@@ -168,7 +168,7 @@
     },
     "fan_set_vertical_oscillation_off": {
       "name": "Set vertical oscillation off",
-      "description": "Turn the vertical oscillation off. (P70 and P76 only)",
+      "description": "Turn the vertical oscillation off. (P70, P76 and P28 only)",
       "fields": {
         "entity_id": {
           "name": "Entity ID",
@@ -192,7 +192,7 @@
     },
     "fan_set_vertical_oscillation_angle": {
       "name": "Set vertical oscillation angle",
-      "description": "Set the vertical oscillation angle. (P70 and P76 only)",
+      "description": "Set the vertical oscillation angle. (P70, P76 and P28 only)",
       "fields": {
         "entity_id": {
           "name": "Entity ID",
