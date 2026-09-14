@@ -208,7 +208,7 @@ fan_set_vertical_oscillation_off:
 
 fan_turn:
   name: Turn
-  description: Turn to the given direction. (P30, P70, P76, P85, and P43)
+  description: Turn to the given direction. (P30, P45, P70, P76, P85, and P43)
   fields:
     entity_id:
       name: Entity ID
@@ -219,7 +219,7 @@ fan_turn:
           domain: fan
     direction:
       name: Direction
-      description: Supported values are left, right, up and down.
+      description: Supported values are left and right; up and down only on P70 and P76.
       example: left
 
 fan_set_vertical_oscillation_angle:

@@ -273,12 +273,12 @@ Turn the evaporative water cooling off. (P44 only)
 
 #### Service `xiaomi_miio_fan.fan_turn`
 
-Turn to the given direction. Supported values are `left`, `right`, `up` and `down`. (P76 only)
+Turn to the given direction. Supported values are `left` and `right`, plus `up` and `down` on P70 and P76. (P30, P45, P70, P76, P85, and P43)
 
-| Service data attribute | Optional | Description                                                   |
-|------------------------|----------|---------------------------------------------------------------|
-| `entity_id`            | yes      | Only act on a specific xiaomi miio entity. Else targets all.  |
-| `direction`            | no       | Direction. Valid values are `left`, `right`, `up` and `down`. |
+| Service data attribute | Optional | Description                                                                          |
+|------------------------|----------|--------------------------------------------------------------------------------------|
+| `entity_id`            | yes      | Only act on a specific xiaomi miio entity. Else targets all.                         |
+| `direction`            | no       | Direction. Valid values are `left` and `right`; `up` and `down` only on P70 and P76. |
 
 #### Service `xiaomi_miio_fan.fan_set_vertical_oscillation_on`
 
