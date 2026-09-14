@@ -5892,65 +5892,11 @@ class XiaomiFanP44(XiaomiFanP33):
 OperationModeFanP51 = OperationModeFanP70
 
 
-class FanStatusP51(DeviceStatus):
+class FanStatusP51(FanStatusP70):
     """Container for status reports for FanP51."""
 
-    def __init__(self, data: dict[str, Any]) -> None:
-        """Initialize."""
-        self.data = data
 
-    @property
-    def power(self) -> bool:
-        """Return the power state."""
-        return self.data["power"]
-
-    @property
-    def mode(self) -> str:
-        """Return the operation mode."""
-        return OperationModeFanP51(self.data["mode"]).name
-
-    @property
-    def fan_level(self) -> int:
-        """Return the fan level."""
-        return self.data["fan_level"]
-
-    @property
-    def fan_speed(self) -> int:
-        """Return the fan speed."""
-        return self.data["fan_speed"]
-
-    @property
-    def horizontal_swing(self) -> bool:
-        """Return the horizontal swing state."""
-        return self.data["horizontal_swing"]
-
-    @property
-    def horizontal_swing_angle(self) -> int:
-        """Return the horizontal swing angle."""
-        return self.data["horizontal_swing_angle"]
-
-    @property
-    def led(self) -> bool:
-        """Return the LED state."""
-        return self.data["led"]
-
-    @property
-    def buzzer(self) -> bool:
-        """Return the buzzer state."""
-        return self.data["buzzer"]
-
-    @property
-    def child_lock(self) -> bool:
-        """Return the child lock state."""
-        return self.data["child_lock"]
-
-    @property
-    def delay_time(self) -> int:
-        """Return the delay time."""
-        return self.data["delay_time"]
-
-
-class FanP51(MiotDevice):
+class FanP51(FanP70):
     """Main class representing the Xiaomi Fan P51 (xiaomi.fan.p51)."""
 
     mapping = {
@@ -5986,22 +5932,6 @@ class FanP51(MiotDevice):
             ip, token, start_id, debug, lazy_discover, timeout, model=model
         )
 
-    # backported and adapted from current master
-    def get_properties_for_mapping(self, *, max_properties=15) -> list:
-        """Retrieve raw properties based on mapping."""
-        mapping = self._get_mapping()
-
-        # We send property key in "did" because it's sent back via response and we can identify the property.
-        properties = [
-            {"did": k, **_filter_request_fields(v)}
-            for k, v in mapping.items()
-            if "aiid" not in v and ("access" not in v or "read" in v["access"])
-        ]
-
-        return self.get_properties(
-            properties, property_getter="get_properties", max_properties=max_properties
-        )
-
     def status(self):
         """Retrieve properties."""
         return FanStatusP51(
@@ -6011,63 +5941,11 @@ class FanP51(MiotDevice):
             }
         )
 
-    def on(self):
-        """Power on."""
-        return self.set_property("power", True)
-
-    def off(self):
-        """Power off."""
-        return self.set_property("power", False)
-
-    def set_speed(self, speed: int):
-        """Set fan speed (1-100)."""
-        if speed < 1 or speed > 100:
-            raise FanException(f"Invalid speed: {speed}")
-        return self.set_property("fan_speed", speed)
-
-    def set_fan_level(self, level: int):
+    def set_fan_level(self, fan_level: int):
         """Set fan level (1-4)."""
-        if level not in [1, 2, 3, 4]:
-            raise FanException(f"Invalid fan level: {level}")
-        return self.set_property("fan_level", level)
-
-    def set_oscillate(self, oscillate: bool):
-        """Set horizontal oscillation on/off."""
-        return self.set_property("horizontal_swing", oscillate)
-
-    def set_angle(self, angle: int):
-        """Set the horizontal oscillation angle."""
-        if angle not in [30, 60, 90, 120]:
-            raise FanException(
-                "Unsupported angle. Supported values: "
-                + ", ".join(str(i) for i in [30, 60, 90, 120])
-            )
-        return self.set_property("horizontal_swing_angle", angle)
-
-    def set_buzzer(self, buzzer: bool):
-        """Set buzzer on/off."""
-        if buzzer:
-            return self.set_property("buzzer", True)
-        else:
-            return self.set_property("buzzer", False)
-
-    def set_child_lock(self, lock: bool):
-        """Set child lock on/off."""
-        return self.set_property("child_lock", lock)
-
-    def set_light(self, light: bool):
-        """Set indicator state."""
-        return self.set_property("led", light)
-
-    def set_mode(self, mode: OperationModeFanP51):
-        """Set mode."""
-        return self.set_property("mode", mode.value)
-
-    def delay_off(self, minutes: int):
-        """Set delay off in minutes (0-480). 0 deactivates the timer."""
-        if minutes < 0 or minutes > 480:
-            raise FanException(f"Invalid value for a delayed turn off: {minutes}")
-        return self.set_property("delay_time", minutes)
+        if fan_level not in [1, 2, 3, 4]:
+            raise FanException(f"Invalid fan level: {fan_level}")
+        return self.set_property("fan_level", fan_level)
 
     def turn(self, direction: str):
         """Turn to the given direction."""
@@ -6187,24 +6065,6 @@ class XiaomiFanP51(XiaomiFanP33):
             "Setting fan level of the miio device failed.",
             self._device.set_fan_level,
             FAN_PRESET_MODES_P51[preset_mode],
-        )
-
-    async def async_set_percentage(self, percentage: int) -> None:
-        """Set the speed percentage of the fan."""
-        _LOGGER.debug("Setting the fan speed percentage to: %s", percentage)
-
-        if percentage == 0:
-            await self.async_turn_off()
-            return
-
-        if not self._state:
-            await self._try_command(
-                "Turning the miio device on failed.", self._device.on
-            )
-        await self._try_command(
-            "Setting fan speed percentage of the miio device failed.",
-            self._device.set_speed,
-            percentage,
         )
 
     async def async_set_natural_mode_on(self):
