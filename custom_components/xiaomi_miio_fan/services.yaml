@@ -219,7 +219,7 @@ fan_turn:
           domain: fan
     direction:
       name: Direction
-      description: Supported values are left, right, up and down.
+      description: Supported values are left and right; up and down only on P70 and P76.
       example: left
 
 fan_set_vertical_oscillation_angle:
