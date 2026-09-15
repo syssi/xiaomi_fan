@@ -6497,7 +6497,7 @@ class XiaomiFanLeshowSS310(XiaomiGenericDevice):
         )
 
 
-class OperationModeP28(Enum):
+class OperationModeFanP28(Enum):
     """Operation mode enum for FanP28.
 
     Smart (2) exists on the device but is not exposed as a settable preset
@@ -6525,7 +6525,7 @@ class FanStatusP28(DeviceStatus):
     @property
     def mode(self) -> str:
         """Return the operation mode."""
-        return OperationModeP28(self.data["mode"]).name
+        return OperationModeFanP28(self.data["mode"]).name
 
     @property
     def fan_level(self) -> int:
@@ -6721,7 +6721,7 @@ class FanP28(MiotDevice):
         """Set indicator state."""
         return self.set_property("led", light)
 
-    def set_mode(self, mode: OperationModeP28):
+    def set_mode(self, mode: OperationModeFanP28):
         """Set mode."""
         return self.set_property("mode", mode.value)
 
@@ -6785,10 +6785,10 @@ class XiaomiFanP28(XiaomiFanP33):
             self._available = True
             self._percentage = state.speed
             self._oscillate = state.horizontal_swing
-            self._natural_mode = state.mode == OperationModeP28.Natural.name
+            self._natural_mode = state.mode == OperationModeFanP28.Natural.name
             self._state = state.power
 
-            if state.mode == OperationModeP28.Sleep.name:
+            if state.mode == OperationModeFanP28.Sleep.name:
                 self._preset_mode = FAN_PRESET_MODE_SLEEP
             else:
                 self._preset_mode = None
@@ -6848,7 +6848,7 @@ class XiaomiFanP28(XiaomiFanP33):
             await self._try_command(
                 "Setting fan mode failed.",
                 self._device.set_mode,
-                OperationModeP28.Sleep,
+                OperationModeFanP28.Sleep,
             )
             return
 
@@ -6856,7 +6856,7 @@ class XiaomiFanP28(XiaomiFanP33):
         await self._try_command(
             "Setting fan mode failed.",
             self._device.set_mode,
-            OperationModeP28.Natural if natural else OperationModeP28.Straight,
+            OperationModeFanP28.Natural if natural else OperationModeFanP28.Straight,
         )
         await self._try_command(
             "Setting fan level of the miio device failed.",
@@ -6871,7 +6871,7 @@ class XiaomiFanP28(XiaomiFanP33):
         await self._try_command(
             "Setting fan natural mode of the miio device failed.",
             self._device.set_mode,
-            OperationModeP28.Natural,
+            OperationModeFanP28.Natural,
         )
 
     async def async_set_natural_mode_off(self):
@@ -6881,7 +6881,7 @@ class XiaomiFanP28(XiaomiFanP33):
         await self._try_command(
             "Setting fan natural mode of the miio device failed.",
             self._device.set_mode,
-            OperationModeP28.Straight,
+            OperationModeFanP28.Straight,
         )
 
     async def async_set_delay_off(self, delay_off_countdown: int) -> None:
