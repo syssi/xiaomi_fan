@@ -542,12 +542,7 @@ FAN_PRESET_MODES_P51 = {
     FAN_SPEED_NATURAL4: 4,
 }
 
-# leshow.fan.ss310 exposes a closed 5-value fan-level enum whose raw values
-# are themselves percentage-shaped (1, 25, 50, 75, 100). The ordered list of
-# level names is used with Home Assistant's ordered-list percentage helpers
-# (the same pattern already used for FAN_SPEEDS_1C) to deterministically
-# quantize an arbitrary HA percentage down to one of the five legal raw
-# device values, and to convert a raw device value back to a percentage.
+# Raw fan_level values of the leshow.fan.ss310 MIoT spec
 FAN_LEVELS_SS310 = {
     FAN_SPEED_LEVEL1: 1,
     FAN_SPEED_LEVEL2: 25,
