@@ -6148,7 +6148,7 @@ class XiaomiFanP51(XiaomiFanP33):
         )
 
 
-class OperationModeSS310(Enum):
+class OperationModeFanSS310(Enum):
     """Operation mode enum for FanSS310."""
 
     Normal = 0
@@ -6170,7 +6170,7 @@ class FanStatusSS310(DeviceStatus):
     @property
     def mode(self) -> str:
         """Return the operation mode."""
-        return OperationModeSS310(self.data["mode"]).name
+        return OperationModeFanSS310(self.data["mode"]).name
 
     @property
     def fan_level(self) -> int:
@@ -6254,7 +6254,7 @@ class FanSS310(MiotDevice):
             raise FanException(f"Invalid fan level: {level}")
         return self.set_property("fan_level", level)
 
-    def set_mode(self, mode: OperationModeSS310):
+    def set_mode(self, mode: OperationModeFanSS310):
         """Set mode."""
         return self.set_property("mode", mode.value)
 
@@ -6313,7 +6313,7 @@ class XiaomiFanLeshowSS310(XiaomiGenericDevice):
             self._available = True
             self._oscillate = state.horizontal_swing
             self._vertical_oscillate = state.vertical_swing
-            self._sleep_mode = state.mode == OperationModeSS310.Sleep.name
+            self._sleep_mode = state.mode == OperationModeFanSS310.Sleep.name
             self._state = state.power
 
             self._current_level = None
@@ -6405,7 +6405,7 @@ class XiaomiFanLeshowSS310(XiaomiGenericDevice):
             await self._try_command(
                 "Setting fan mode of the miio device failed.",
                 self._device.set_mode,
-                OperationModeSS310.Normal,
+                OperationModeFanSS310.Normal,
             )
 
         await self._try_command(
@@ -6424,9 +6424,9 @@ class XiaomiFanLeshowSS310(XiaomiGenericDevice):
             )
 
         mode = (
-            OperationModeSS310.Sleep
+            OperationModeFanSS310.Sleep
             if preset_mode == FAN_PRESET_MODE_SLEEP
-            else OperationModeSS310.Normal
+            else OperationModeFanSS310.Normal
         )
         await self._try_command(
             "Setting fan mode of the miio device failed.",
