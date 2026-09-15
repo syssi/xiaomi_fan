@@ -6498,11 +6498,7 @@ class XiaomiFanLeshowSS310(XiaomiGenericDevice):
 
 
 class OperationModeFanP28(Enum):
-    """Operation mode enum for FanP28.
-
-    Smart (2) exists on the device but is not exposed as a settable preset
-    in this integration; its interaction with fan_level/speed is unverified.
-    """
+    """Operation mode enum for FanP28."""
 
     Straight = 0
     Natural = 1
@@ -6589,16 +6585,7 @@ class FanStatusP28(DeviceStatus):
 
 
 class FanP28(MiotDevice):
-    """Main class representing the Xiaomi/Mijia Fan P28 (dmaker.fan.p28).
-
-    Does not implement: fan_turn (start-left/right/up/down are write-only
-    bool properties in the vendor dm-service with unverified movement
-    semantics), swing-updown-manual, swing-lr-manual, swing-all,
-    back-to-center, off-to-center, the off-delay-time toggle action, or the
-    dm-service toggle-mode/loop-gear actions. None of those are necessary
-    for basic operation and their real behavior cannot be confirmed from
-    the published spec alone.
-    """
+    """Main class representing the Xiaomi/Mijia Fan P28 (dmaker.fan.p28)."""
 
     mapping = {
         # urn:miot-spec-v2:device:fan:0000A005:dmaker-p28:1
@@ -6726,13 +6713,7 @@ class FanP28(MiotDevice):
         return self.set_property("mode", mode.value)
 
     def delay_off(self, minutes: int):
-        """Set delay off in minutes.
-
-        The device property range is 0-720 minutes. This validates against
-        that actual device range; the shared Home Assistant service schema
-        (SERVICE_SCHEMA_DELAY_OFF) is unchanged by this PR and still caps
-        input at its own existing maximum before it ever reaches here.
-        """
+        """Set delay off in minutes (0-720)."""
         if minutes < 0 or minutes > 720:
             raise FanException(f"Invalid value for a delayed turn off: {minutes}")
         return self.set_property("delay_time", minutes)
@@ -6828,11 +6809,7 @@ class XiaomiFanP28(XiaomiFanP33):
                 )
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
-        """Set the preset mode of the fan.
-
-        Combines level (1..4) with Straight/Natural mode, or selects the
-        standalone Sleep mode.
-        """
+        """Set the preset mode of the fan."""
         _LOGGER.debug("Setting the preset mode to: %s", preset_mode)
 
         if preset_mode == SPEED_OFF:
