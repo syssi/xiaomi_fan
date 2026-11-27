@@ -126,6 +126,30 @@ fan_set_anion_off:
           integration: xiaomi_miio_fan
           domain: fan
 
+fan_set_air_cooler_on:
+  name: Set air cooler on
+  description: Turn the evaporative water cooling on.
+  fields:
+    entity_id:
+      name: Entity ID
+      description: Name of the Xiaomi Mi Smart Fan entity.
+      selector:
+        entity:
+          integration: xiaomi_miio_fan
+          domain: fan
+
+fan_set_air_cooler_off:
+  name: Set air cooler off
+  description: Turn the evaporative water cooling off.
+  fields:
+    entity_id:
+      name: Entity ID
+      description: Name of the Xiaomi Mi Smart Fan entity.
+      selector:
+        entity:
+          integration: xiaomi_miio_fan
+          domain: fan
+
 fan_set_oscillation_angle:
   name: Set oscillation angle
   description: Set the oscillation angle.
@@ -160,7 +184,7 @@ fan_set_delay_off:
 
 fan_set_vertical_oscillation_on:
   name: Set vertical oscillation on
-  description: Turn the vertical oscillation on. (P70 and P76 only)
+  description: Turn the vertical oscillation on. (P70, P76, SS310 and P28 only)
   fields:
     entity_id:
       name: Entity ID
@@ -172,7 +196,7 @@ fan_set_vertical_oscillation_on:
 
 fan_set_vertical_oscillation_off:
   name: Set vertical oscillation off
-  description: Turn the vertical oscillation off. (P70 and P76 only)
+  description: Turn the vertical oscillation off. (P70, P76, SS310 and P28 only)
   fields:
     entity_id:
       name: Entity ID
@@ -184,7 +208,7 @@ fan_set_vertical_oscillation_off:
 
 fan_turn:
   name: Turn
-  description: Turn to the given direction. (P30, P70, P76 and P85)
+  description: Turn to the given direction. (P30, P45, P70, P76, P85, P43, and P51)
   fields:
     entity_id:
       name: Entity ID
@@ -195,12 +219,12 @@ fan_turn:
           domain: fan
     direction:
       name: Direction
-      description: Supported values are left, right, up and down.
+      description: Supported values are left and right; up and down only on P70 and P76.
       example: left
 
 fan_set_vertical_oscillation_angle:
   name: Set vertical oscillation angle
-  description: Set the vertical oscillation angle. (P70 and P76 only)
+  description: Set the vertical oscillation angle. (P70, P76 and P28 only)
   fields:
     entity_id:
       name: Entity ID

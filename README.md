@@ -39,6 +39,11 @@ Credits: Thanks to [Rytilahti](https://github.com/rytilahti/python-miio) for all
 | Xiaomi Smart Desktop Air Circulation Fan  | xiaomi.fan.p70 | - | - |
 | Mi Smart Standing Fan 2 Lite              | xiaomi.fan.2lite | - | - |
 | Xiaomi Smart Standing Fan Pro Slim        | xiaomi.fan.p85 | - | - |
+| Xiaomi Smart Standing Fan Pro Slim 2       | xiaomi.fan.p43 | - | - |
+| Mijia Smart Evaporative Cooling Fan | dmaker.fan.p44 | - | - |
+| Xiaomi Smart Standing Air Circulation Fan / Mijia Circulation Fan | xiaomi.fan.p51 | - | - |
+| Rosou SS310 Ventilator | leshow.fan.ss310 | - | - |
+| Mijia Fan | dmaker.fan.p28 | - | - |
 
 
 ## Features
@@ -265,18 +270,34 @@ Turn the ionizer off.
 |---------------------------|----------|----------------------------------------------------------------------|
 | `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
 
+#### Service `xiaomi_miio_fan.fan_set_air_cooler_on`
+
+Turn the evaporative water cooling on. (P44 only)
+
+| Service data attribute    | Optional | Description                                                          |
+|---------------------------|----------|----------------------------------------------------------------------|
+| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
+
+#### Service `xiaomi_miio_fan.fan_set_air_cooler_off`
+
+Turn the evaporative water cooling off. (P44 only)
+
+| Service data attribute    | Optional | Description                                                          |
+|---------------------------|----------|----------------------------------------------------------------------|
+| `entity_id`               |      yes | Only act on a specific xiaomi miio entity. Else targets all.         |
+
 #### Service `xiaomi_miio_fan.fan_turn`
 
-Turn to the given direction. Supported values are `left`, `right`, `up` and `down`. (P76 only)
+Turn to the given direction. Supported values are `left` and `right`, plus `up` and `down` on P70 and P76. (P30, P45, P70, P76, P85, P43, and P51)
 
-| Service data attribute | Optional | Description                                                   |
-|------------------------|----------|---------------------------------------------------------------|
-| `entity_id`            | yes      | Only act on a specific xiaomi miio entity. Else targets all.  |
-| `direction`            | no       | Direction. Valid values are `left`, `right`, `up` and `down`. |
+| Service data attribute | Optional | Description                                                                          |
+|------------------------|----------|--------------------------------------------------------------------------------------|
+| `entity_id`            | yes      | Only act on a specific xiaomi miio entity. Else targets all.                         |
+| `direction`            | no       | Direction. Valid values are `left` and `right`; `up` and `down` only on P70 and P76. |
 
 #### Service `xiaomi_miio_fan.fan_set_vertical_oscillation_on`
 
-Turn the vertical oscillation on. (P70 and P76 only)
+Turn the vertical oscillation on. (P70, P76, SS310 and P28 only)
 
 | Service data attribute    | Optional | Description                                                          |
 |---------------------------|----------|----------------------------------------------------------------------|
@@ -284,7 +305,7 @@ Turn the vertical oscillation on. (P70 and P76 only)
 
 #### Service `xiaomi_miio_fan.fan_set_vertical_oscillation_off`
 
-Turn the vertical oscillation off. (P70 and P76 only)
+Turn the vertical oscillation off. (P70, P76, SS310 and P28 only)
 
 | Service data attribute    | Optional | Description                                                          |
 |---------------------------|----------|----------------------------------------------------------------------|
@@ -292,7 +313,7 @@ Turn the vertical oscillation off. (P70 and P76 only)
 
 #### Service `xiaomi_miio_fan.fan_set_vertical_oscillation_angle`
 
-Set the vertical oscillation angle. (P70 and P76 only)
+Set the vertical oscillation angle. (P70, P76 and P28 only)
 
 | Service data attribute    | Optional | Description                                                          |
 |---------------------------|----------|----------------------------------------------------------------------|
