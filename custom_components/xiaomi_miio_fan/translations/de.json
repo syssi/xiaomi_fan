@@ -1,0 +1,53 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Xiaomi Mi Smart Pedestal Fan einrichten",
+        "description": "Gib die IP-Adresse und den Token deines Ventilators ein. Wie du den Token ausliest, steht in der README.",
+        "data": {
+          "host": "IP-Adresse",
+          "token": "Token",
+          "name": "Name",
+          "model": "Modell (leer lassen für automatische Erkennung)"
+        }
+      },
+      "reconfigure": {
+        "title": "Xiaomi Mi Smart Pedestal Fan neu konfigurieren",
+        "description": "IP-Adresse oder Token ändern, z. B. nachdem der Ventilator zurückgesetzt oder neu mit der Mi-Home-App gekoppelt wurde.",
+        "data": {
+          "host": "IP-Adresse",
+          "token": "Token"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Keine Verbindung zum Gerät. Bitte IP-Adresse und Token prüfen.",
+      "unsupported_model": "Das erkannte Modell wird von dieser Integration nicht unterstützt.",
+      "unknown": "Unerwarteter Fehler."
+    },
+    "abort": {
+      "already_configured": "Dieses Gerät ist bereits eingerichtet.",
+      "cannot_connect": "Keine Verbindung zum Gerät.",
+      "unsupported_model": "Das erkannte Modell wird von dieser Integration nicht unterstützt.",
+      "reconfigure_successful": "Der Ventilator wurde erfolgreich neu konfiguriert.",
+      "wrong_device": "Unter dieser Adresse antwortet ein anderer Ventilator."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Xiaomi-Ventilator Optionen",
+        "data": {
+          "retries": "Anzahl Wiederholungen bei Verbindungsfehlern",
+          "preset_modes_override": "Preset-Modi überschreiben (kommagetrennt, leer für Standard)"
+        }
+      }
+    }
+  },
+  "issues": {
+    "deprecated_yaml": {
+      "title": "YAML-Konfiguration des Xiaomi-Ventilators ist veraltet",
+      "description": "Der Ventilator unter {host} wurde in die UI-Konfiguration übernommen. Entferne seinen `xiaomi_miio_fan`-Eintrag aus der `configuration.yaml` und starte Home Assistant neu."
+    }
+  }
+}
