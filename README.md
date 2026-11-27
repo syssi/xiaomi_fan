@@ -119,7 +119,7 @@ After installation, restart Home Assistant. The integration can then be configur
 3. Optionally provide a **name** and select the **model** (leave empty for auto-detection).
 4. After setup, open the integration options to adjust **retries** and **preset mode overrides**.
 
-Each fan is registered as a device in Home Assistant. If the IP address or token changes (e.g. after the fan was reset or re-paired in the Mi Home app), use **Reconfigure** in the menu of the integration entry. Home Assistant 2024.11 or newer is required.
+Each fan is registered as a device in Home Assistant. If the IP address or token changes (e.g. after the fan was reset or re-paired in the Mi Home app), use **Reconfigure** in the menu of the integration entry. Home Assistant 2024.12 or newer is required.
 
 ### YAML (legacy)
 
