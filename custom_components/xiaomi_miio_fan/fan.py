@@ -12,6 +12,7 @@ import math
 from typing import Any
 
 from homeassistant.components.fan import PLATFORM_SCHEMA, FanEntity, FanEntityFeature
+from homeassistant.config_entries import SOURCE_IMPORT
 from homeassistant.const import (
     ATTR_ENTITY_ID,
     ATTR_MODE,
@@ -19,9 +20,15 @@ from homeassistant.const import (
     CONF_NAME,
     CONF_TOKEN,
 )
+from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.exceptions import PlatformNotReady
 import homeassistant.helpers.config_validation as cv
-from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers.device_registry import (
+    CONNECTION_NETWORK_MAC,
+    DeviceInfo,
+    format_mac,
+)
+from homeassistant.helpers.issue_registry import IssueSeverity, async_create_issue
 from homeassistant.util.percentage import (
     ordered_list_item_to_percentage,
     percentage_to_ordered_list_item,
@@ -40,6 +47,8 @@ from miio.miot_device import DeviceStatus, MiotDevice
 import voluptuous as vol
 
 from .const import (
+    CONF_IMPORTED_HOST,
+    CONF_MAC,
     CONF_MODEL,
     CONF_PRESET_MODES_OVERRIDE,
     CONF_RETRIES,
@@ -814,8 +823,58 @@ def _filter_request_fields(req):
 
 # pylint: disable=unused-argument
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
-    """Set up the miio fan device from config."""
+    """Set up the miio fan device from config.
+
+    The YAML configuration is imported into a config entry. If the import
+    fails (e.g. the fan is offline during startup) the legacy YAML setup is
+    used, so the fan never silently disappears.
+    """
     host = config[CONF_HOST]
+    import_data = {
+        key: config[key]
+        for key in (
+            CONF_HOST,
+            CONF_TOKEN,
+            CONF_NAME,
+            CONF_MODEL,
+            CONF_RETRIES,
+            CONF_PRESET_MODES_OVERRIDE,
+        )
+        if key in config
+    }
+    # Host and token may have been changed via reconfigure, so any match counts.
+    already_imported = any(
+        host in (entry.data.get(CONF_HOST), entry.data.get(CONF_IMPORTED_HOST))
+        or entry.data.get(CONF_TOKEN) == config[CONF_TOKEN]
+        for entry in hass.config_entries.async_entries(DOMAIN)
+    )
+    if already_imported:
+        result = {"type": FlowResultType.ABORT, "reason": "already_configured"}
+    else:
+        result = await hass.config_entries.flow.async_init(
+            DOMAIN, context={"source": SOURCE_IMPORT}, data=import_data
+        )
+    if result["type"] is FlowResultType.CREATE_ENTRY or (
+        result["type"] is FlowResultType.ABORT
+        and result.get("reason") == "already_configured"
+    ):
+        async_create_issue(
+            hass,
+            DOMAIN,
+            f"deprecated_yaml_{host}",
+            is_fixable=False,
+            severity=IssueSeverity.WARNING,
+            translation_key="deprecated_yaml",
+            translation_placeholders={"host": host},
+        )
+        return
+
+    _LOGGER.warning(
+        "Import of the YAML configuration of %s failed (%s), "
+        "falling back to the legacy YAML setup",
+        host,
+        result.get("reason"),
+    )
     token = config[CONF_TOKEN]
     name = config[CONF_NAME]
     model = config.get(CONF_MODEL)
@@ -841,8 +900,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
     model = entry.data.get(CONF_MODEL) or None
     retries = entry.options.get(CONF_RETRIES, DEFAULT_RETRIES)
     preset_modes_override = entry.options.get(CONF_PRESET_MODES_OVERRIDE)
-    fallback_unique_id = entry.unique_id or host
-    await _async_setup_device(
+    mac = entry.data.get(CONF_MAC)
+    device = await _async_setup_device(
         hass,
         host,
         token,
@@ -851,8 +910,22 @@ async def async_setup_entry(hass, entry, async_add_entities):
         retries,
         preset_modes_override,
         async_add_entities,
-        fallback_unique_id=fallback_unique_id,
+        fallback_unique_id=entry.unique_id,
+        device_info=DeviceInfo(
+            identifiers={(DOMAIN, entry.unique_id)},
+            connections={(CONNECTION_NETWORK_MAC, format_mac(mac))} if mac else set(),
+            name=name,
+            manufacturer="Xiaomi",
+            model=model,
+        ),
     )
+    if device is not None:
+
+        def _forget_device() -> None:
+            """Stop targeting this fan with the integration services."""
+            hass.data[DATA_KEY].pop(host, None)
+
+        entry.async_on_unload(_forget_device)
 
 
 async def _async_setup_device(
@@ -865,6 +938,7 @@ async def _async_setup_device(
     preset_modes_override,
     async_add_entities,
     fallback_unique_id=None,
+    device_info=None,
 ):
     """Set up a miio fan device and register services."""
     if DATA_KEY not in hass.data:
@@ -1005,13 +1079,15 @@ async def _async_setup_device(
             "and provide the following data: %s",
             model,
         )
-        return False
+        return None
 
+    if device_info is not None:
+        device._attr_device_info = device_info
     hass.data[DATA_KEY][host] = device
     async_add_entities([device], update_before_add=True)
 
     if hass.services.has_service(DOMAIN, SERVICE_SET_BUZZER_ON):
-        return
+        return device
 
     async def async_service_handler(service):
         """Map services to methods on XiaomiFan."""
@@ -1045,6 +1121,8 @@ async def _async_setup_device(
             DOMAIN, air_purifier_service, async_service_handler, schema=schema
         )
 
+    return device
+
 
 class XiaomiGenericDevice(FanEntity):
     """Representation of a generic Xiaomi device."""
@@ -1057,7 +1135,6 @@ class XiaomiGenericDevice(FanEntity):
         self._device = device
         self._model = model
         self._unique_id = unique_id
-        self._host = device.ip
         self._retry = 0
         self._retries = retries
         self._preset_modes_override = preset_modes_override
@@ -1082,16 +1159,6 @@ class XiaomiGenericDevice(FanEntity):
     def unique_id(self):
         """Return an unique ID."""
         return self._unique_id
-
-    @property
-    def device_info(self) -> DeviceInfo:
-        """Return device registry information."""
-        return DeviceInfo(
-            identifiers={(DOMAIN, self._unique_id or self._host)},
-            name=self._name,
-            manufacturer="Xiaomi",
-            model=self._model,
-        )
 
     @property
     def name(self):

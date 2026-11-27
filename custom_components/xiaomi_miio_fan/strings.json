@@ -10,14 +10,27 @@
           "name": "Name",
           "model": "Model (leave empty for auto-detection)"
         }
+      },
+      "reconfigure": {
+        "title": "Reconfigure Xiaomi Mi Smart Pedestal Fan",
+        "description": "Update the IP address or token, e.g. after the fan was reset or re-paired in the Mi Home app.",
+        "data": {
+          "host": "IP Address",
+          "token": "Token"
+        }
       }
     },
     "error": {
       "cannot_connect": "Failed to connect to the device. Please check the IP address and token.",
+      "unsupported_model": "The detected model is not supported by this integration.",
       "unknown": "Unexpected error occurred."
     },
     "abort": {
-      "already_configured": "This device is already configured."
+      "already_configured": "This device is already configured.",
+      "cannot_connect": "Failed to connect to the device.",
+      "unsupported_model": "The detected model is not supported by this integration.",
+      "reconfigure_successful": "The fan was reconfigured successfully.",
+      "wrong_device": "The device at this address is a different fan."
     }
   },
   "options": {
@@ -235,6 +248,12 @@
           "description": "Supported values are 30, 60, 90 or 100 degrees."
         }
       }
+    }
+  },
+  "issues": {
+    "deprecated_yaml": {
+      "title": "Xiaomi fan YAML configuration is deprecated",
+      "description": "The fan at {host} was imported into the UI configuration. Remove its `xiaomi_miio_fan` entry from `configuration.yaml` and restart Home Assistant."
     }
   }
 }

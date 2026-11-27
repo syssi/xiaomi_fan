@@ -119,9 +119,11 @@ After installation, restart Home Assistant. The integration can then be configur
 3. Optionally provide a **name** and select the **model** (leave empty for auto-detection).
 4. After setup, open the integration options to adjust **retries** and **preset mode overrides**.
 
+Each fan is registered as a device in Home Assistant. If the IP address or token changes (e.g. after the fan was reset or re-paired in the Mi Home app), use **Reconfigure** in the menu of the integration entry. Home Assistant 2024.11 or newer is required.
+
 ### YAML (legacy)
 
-YAML configuration is still supported for backwards compatibility.
+YAML configuration is deprecated. On startup each YAML fan is imported into a UI config entry, preserving the existing entity ID where possible. A repair issue asks you to remove the YAML entry afterwards. If the fan is not reachable during the import, it keeps running from YAML and the import is retried on the next restart.
 
 ```yaml
 # configuration.yaml

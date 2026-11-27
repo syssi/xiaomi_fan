@@ -6,6 +6,8 @@ DATA_KEY = "fan.xiaomi_miio_fan"
 DEFAULT_NAME = "Xiaomi Miio Fan"
 DEFAULT_RETRIES = 20
 
+CONF_IMPORTED_HOST = "imported_host"
+CONF_MAC = "mac"
 CONF_MODEL = "model"
 CONF_RETRIES = "retries"
 CONF_PRESET_MODES_OVERRIDE = "preset_modes_override"
